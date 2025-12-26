@@ -122,6 +122,19 @@ const HeroSection = () => {
           />
         </Box>
 
+        {/* Dark Overlay for Text Readability */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.4)',
+            zIndex: 1,
+          }}
+        />
+
         {/* Animated City Skyline */}
         <Box
           sx={{
@@ -226,7 +239,7 @@ const HeroSection = () => {
          maxWidth="lg" 
          sx={{ 
            position: 'relative', 
-           zIndex: 2,
+           zIndex: 3,
            height: '100%',
            display: 'flex',
            alignItems: 'center',
@@ -405,7 +418,7 @@ const HeroSection = () => {
            bottom: { xs: 16, sm: 24, md: 32 },
            left: '50%',
            transform: 'translateX(-50%)',
-           zIndex: 2,
+           zIndex: 3,
            animation: `${bounce} 2s infinite`,
            display: { xs: 'none', sm: 'block' },
          }}

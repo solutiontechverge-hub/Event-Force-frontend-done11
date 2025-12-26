@@ -400,6 +400,7 @@ const Header = () => {
                 display: { lg: 'none' }, 
                 flex: '0 0 auto',
                 ml: 'auto',
+                color: 'white',
               }}
             >
               <MenuIcon />
