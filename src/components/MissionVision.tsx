@@ -43,10 +43,11 @@ const MissionVision = () => {
 
   return (
     <Box sx={{ 
-      mt: { xs: -20, sm: 6 }, 
+      mt: { xs: 4, sm: 6 }, 
       px: 2,
       position: 'relative',
-      zIndex: { xs: 0, sm: 'auto' },
+      zIndex: 1,
+      backgroundColor: 'transparent',
     }}>
       {/* <Container maxWidth="lg"> */}
         {/* Mission Section */}

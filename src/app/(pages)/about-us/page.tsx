@@ -34,8 +34,9 @@ const AboutUsPage = () => {
       <Header />
       <Box 
         sx={{ 
-          pt: 8,
-          minHeight: '70vh',
+          pt: { xs: 12, sm: 10, md: 8 },
+          pb: { xs: 6, sm: 4, md: 0 },
+          minHeight: { xs: '60vh', sm: '65vh', md: '70vh' },
           position: 'relative',
           display: 'flex',
           alignItems: 'center',
@@ -101,12 +102,19 @@ const AboutUsPage = () => {
                   variant="h2" 
                   component="h1" 
                   sx={{ 
-                    fontWeight: { xs: 700, sm: 700, md: 'bold' }, 
+                    fontFamily: 'Montserrat, sans-serif',
+                    fontWeight: { xs: 700, sm: 600, md: 600 }, 
                     mb: { xs: 2, sm: 3, md: 4 },
                     color: 'white',
                     textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
-                    fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem', lg: '3rem' },
-                    lineHeight: { xs: 1.2, sm: 1.3, md: 1.3 }
+                    fontSize: { 
+                      xs: '1.75rem', 
+                      sm: '2.5rem', 
+                      md: '3.5rem', 
+                      lg: '4.5rem',
+                      xl: '5rem'
+                    },
+                    lineHeight: { xs: 1.1, sm: 1.2, md: 1.2 }
                   }}
                 >
                   About Event Force
@@ -116,12 +124,15 @@ const AboutUsPage = () => {
                 <Typography 
                   variant="h5" 
                   sx={{ 
+                    fontFamily: 'Poppins, sans-serif',
                     color: 'rgba(255,255,255,0.9)', 
-                    lineHeight: { xs: 1.4, sm: 1.5, md: 1.6 },
+                    lineHeight: { xs: 1.5, sm: 1.6, md: 1.6 },
                     textShadow: '1px 1px 2px rgba(0,0,0,0.5)',
-                    fontSize: { xs: '0.875rem', sm: '1rem', md: '1.25rem', lg: '1.5rem' },
-                    fontWeight: { xs: 400, sm: 400, md: 400 },
-                    px: { xs: 2, sm: 0, md: 0 }
+                    fontSize: { xs: '0.875rem', sm: '1rem', md: '1.25rem' },
+                    fontWeight: { xs: 400, sm: 300, md: 300 },
+                    px: { xs: 2, sm: 0, md: 0 },
+                    letterSpacing: { xs: '0.3px', sm: '0.5px', md: '0.5px' },
+                    opacity: 0.9
                   }}
                 >
                   We are Saudi Arabia's premier transportation and event logistics company, 

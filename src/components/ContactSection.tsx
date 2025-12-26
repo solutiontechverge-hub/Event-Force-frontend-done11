@@ -211,7 +211,8 @@ const ContactSection = () => {
                         fontWeight: 'bold',
                         mb: 1,
                         fontFamily: 'Poppins, sans-serif',
-                        color: '#333333'
+                        color: '#333333',
+                        fontSize: { xs: '0.875rem', sm: '1rem' }
                       }}
                     >
                       Your Email *
@@ -224,10 +225,20 @@ const ContactSection = () => {
                       onChange={handleInputChange}
                       required
                       placeholder="Enter your email address"
+                      inputProps={{
+                        inputMode: 'email',
+                        autoComplete: 'email',
+                      }}
                       sx={{
+                        width: '100%',
                         '& .MuiOutlinedInput-root': {
                           backgroundColor: '#F5F5F5',
                           borderRadius: 1,
+                          fontSize: { xs: '16px', sm: '1rem' },
+                          '& input': {
+                            fontSize: { xs: '16px', sm: '1rem' },
+                            padding: { xs: '12px 14px', sm: '14px' },
+                          },
                           '& fieldset': {
                             borderColor: '#E0E0E0',
                           },
@@ -399,7 +410,8 @@ const ContactSection = () => {
                         fontWeight: 'bold',
                         mb: 1,
                         fontFamily: 'Poppins, sans-serif',
-                        color: '#333333'
+                        color: '#333333',
+                        fontSize: { xs: '0.875rem', sm: '1rem' }
                       }}
                     >
                       Your Email *
@@ -412,10 +424,20 @@ const ContactSection = () => {
                       onChange={handleInputChange}
                       required
                       placeholder="Enter your email address"
+                      inputProps={{
+                        inputMode: 'email',
+                        autoComplete: 'email',
+                      }}
                       sx={{
+                        width: '100%',
                         '& .MuiOutlinedInput-root': {
                           backgroundColor: '#F5F5F5',
                           borderRadius: 1,
+                          fontSize: { xs: '16px', sm: '1rem' },
+                          '& input': {
+                            fontSize: { xs: '16px', sm: '1rem' },
+                            padding: { xs: '12px 14px', sm: '14px' },
+                          },
                           '& fieldset': {
                             borderColor: '#E0E0E0',
                           },
