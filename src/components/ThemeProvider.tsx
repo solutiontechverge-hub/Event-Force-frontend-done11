@@ -2,19 +2,8 @@
 
 import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { CacheProvider } from '@emotion/react';
-import createEmotionCache from '@/lib/emotion-cache';
+import EmotionRegistry from '@/components/EmotionRegistry';
 import { useEffect, useState } from 'react';
-
-// Create a cache for emotion - use singleton pattern to ensure consistency
-let cache: ReturnType<typeof createEmotionCache> | null = null;
-
-function getEmotionCache() {
-  if (!cache) {
-    cache = createEmotionCache();
-  }
-  return cache;
-}
 
 const theme = createTheme({
   typography: {
@@ -52,24 +41,21 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
     // Signal that styles are loaded
     document.body.classList.add('styles-loaded');
     
-    // Hide initial loading screen
+    // Hide initial loading screen (only add class, don't remove from DOM to avoid hydration issues)
     const loadingScreen = document.getElementById('initial-loading-screen');
-    if (loadingScreen) {
+    if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
       loadingScreen.classList.add('hidden');
-      setTimeout(() => {
-        loadingScreen.remove();
-      }, 300);
     }
   }, []);
 
   return (
-    <CacheProvider value={getEmotionCache()}>
+    <EmotionRegistry>
       <MuiThemeProvider theme={theme}>
         <CssBaseline />
         <div style={{ visibility: mounted ? 'visible' : 'hidden' }}>
           {children}
         </div>
       </MuiThemeProvider>
-    </CacheProvider>
+    </EmotionRegistry>
   );
 }

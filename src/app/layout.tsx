@@ -137,17 +137,12 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               // Mark body as styles loaded and hide loading screen
+              // Only hide via CSS class, let React handle DOM removal to avoid hydration issues
               (function() {
                 function hideLoadingScreen() {
                   var loadingScreen = document.getElementById('initial-loading-screen');
-                  if (loadingScreen) {
+                  if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
                     loadingScreen.classList.add('hidden');
-                    // Remove from DOM after transition
-                    setTimeout(function() {
-                      if (loadingScreen.parentNode) {
-                        loadingScreen.parentNode.removeChild(loadingScreen);
-                      }
-                    }, 300);
                   }
                   document.body.classList.add('styles-loaded');
                 }
