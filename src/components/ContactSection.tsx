@@ -58,7 +58,7 @@ const ContactSection = () => {
               <Card sx={{
               backgroundColor: '#000000',
               color: '#FFFFFF',
-              p: { xs: 4, lg: 6 },
+              p: { xs: 3, sm: 4, lg: 6 },
               height: '100%',
               boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
               borderRadius: 2,
@@ -73,40 +73,62 @@ const ContactSection = () => {
                   component="h2"
                   sx={{
                     fontWeight: 'bold',
-                    mb: 4,
+                    mb: { xs: 3, sm: 4 },
                     fontFamily: 'Poppins, sans-serif',
+                    fontSize: { xs: '1.25rem', sm: '1.5rem', md: '1.75rem' },
                   }}
                 >
                   Contact Us
                 </Typography>
 
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <IconButton size="small" sx={{ color: '#52A4C1', mr: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: { xs: 1.5, sm: 2 } }}>
+                  <IconButton size="small" sx={{ color: '#52A4C1', mr: { xs: 1.5, sm: 2 } }}>
                     <MobileIcon />
                   </IconButton>
-                  <Typography variant="body1" sx={{ fontSize: '16px', fontFamily: 'Poppins, sans-serif' }}>
+                  <Typography 
+                    variant="body1" 
+                    sx={{ 
+                      fontSize: { xs: '0.875rem', sm: '1rem' }, 
+                      fontFamily: 'Poppins, sans-serif',
+                      lineHeight: 1.6,
+                    }}
+                  >
                     +966 59 427 9012
                   </Typography>
                 </Box>
 
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <IconButton size="small" sx={{ color: '#52A4C1', mr: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: { xs: 1.5, sm: 2 } }}>
+                  <IconButton size="small" sx={{ color: '#52A4C1', mr: { xs: 1.5, sm: 2 } }}>
                     <EmailIcon />
                   </IconButton>
-                  <Typography variant="body1" sx={{ fontSize: '16px', fontFamily: 'Poppins, sans-serif' }}>
+                  <Typography 
+                    variant="body1" 
+                    sx={{ 
+                      fontSize: { xs: '0.875rem', sm: '1rem' }, 
+                      fontFamily: 'Poppins, sans-serif',
+                      lineHeight: 1.6,
+                      wordBreak: 'break-word',
+                    }}
+                  >
                     Reservations@eventforce.sa.com
                   </Typography>
                 </Box>
 
-                <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 4 }}>
-                  <IconButton size="small" sx={{ color: '#52A4C1', mr: 2, mt: '2px' }}>
+                <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: { xs: 3, sm: 4 } }}>
+                  <IconButton size="small" sx={{ color: '#52A4C1', mr: { xs: 1.5, sm: 2 }, mt: '2px' }}>
                     <LocationIcon />
                   </IconButton>
-                  <Typography variant="body1" sx={{ fontSize: '16px', fontFamily: 'Poppins, sans-serif' }}>
-                    <Box component="span" sx={{ fontWeight: 'bold' }}>Head Quarter:</Box><br />
+                  <Typography 
+                    variant="body1" 
+                    sx={{ 
+                      fontSize: { xs: '0.875rem', sm: '1rem' }, 
+                      fontFamily: 'Poppins, sans-serif',
+                      lineHeight: 1.7,
+                    }}
+                  >
+                    <Box component="span" sx={{ fontWeight: 'bold', display: 'block', mb: 0.5 }}>Head Quarter:</Box>
                     White Space 2444 Taha Khasiyfan - Ash Shati Dist. Unit No 4707 Jeddah 23511
-                    <br />
-                    <Box component="span" sx={{ fontWeight: 'bold' }}>Branch:</Box><br />
+                    <Box component="span" sx={{ fontWeight: 'bold', display: 'block', mt: 1.5, mb: 0.5 }}>Branch:</Box>
                     White Space, King Abdullah Dt. Riyadh 12211, Saudi Arabia
                   </Typography>
                 </Box>

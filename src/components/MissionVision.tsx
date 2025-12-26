@@ -47,7 +47,8 @@ const MissionVision = () => {
       px: 2,
       position: 'relative',
       zIndex: 1,
-      backgroundColor: 'transparent',
+      backgroundColor: '#FFFFFF',
+      py: { xs: 4, sm: 0 },
     }}>
       {/* <Container maxWidth="lg"> */}
         {/* Mission Section */}
@@ -73,10 +74,9 @@ const MissionVision = () => {
                     sx={{
                       fontFamily: 'Poppins, sans-serif',
                       fontWeight: 'bold',
-                      color: { xs: 'white', sm: 'text.primary' },
+                      color: 'text.primary',
                       mb: 3,
                       fontSize: { xs: '1.75rem', sm: '2rem', md: '2.25rem' },
-                      textShadow: { xs: '0 2px 4px rgba(0,0,0,0.5)', sm: 'none' },
                     }}
                   >
                     Our Mission
@@ -87,11 +87,10 @@ const MissionVision = () => {
                     variant="body1"
                     sx={{
                       fontFamily: 'Poppins, sans-serif',
-                      color: { xs: 'rgba(255,255,255,0.9)', sm: 'text.secondary' },
+                      color: 'text.secondary',
                       lineHeight: 1.7,
                       fontWeight: 400,
                       fontSize: '16px',
-                      textShadow: { xs: '0 1px 2px rgba(0,0,0,0.5)', sm: 'none' },
                     }}
                   >
                     To deliver seamless, high-quality transportation and logistical solutions that elevate events and experiences across Saudi Arabia, with a focus on professionalism, precision, and customer satisfaction.
@@ -125,10 +124,9 @@ const MissionVision = () => {
                     sx={{
                       fontFamily: 'Poppins, sans-serif',
                       fontWeight: 'bold',
-                      color: { xs: 'white', sm: 'text.primary' },
+                      color: 'text.primary',
                       mb: 3,
                       fontSize: { xs: '1.75rem', sm: '2rem', md: '2.25rem' },
-                      textShadow: { xs: '0 2px 4px rgba(0,0,0,0.5)', sm: 'none' },
                     }}
                   >
                     Our Vision
@@ -139,11 +137,10 @@ const MissionVision = () => {
                     variant="body1"
                     sx={{
                       fontFamily: 'Poppins, sans-serif',
-                      color: { xs: 'rgba(255,255,255,0.9)', sm: 'text.secondary' },
+                      color: 'text.secondary',
                       lineHeight: 1.7,
                       fontWeight: 400,
                       fontSize: '16px',
-                      textShadow: { xs: '0 1px 2px rgba(0,0,0,0.5)', sm: 'none' },
                     }}
                   >
                     To become the leading name in event logistics and VIP transportation in the Kingdom, known for our reliability, excellence in service, and commitment to supporting Saudi Arabia's growing entertainment and hospitality sectors.
