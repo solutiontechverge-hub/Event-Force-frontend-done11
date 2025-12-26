@@ -107,14 +107,64 @@ export default function RootLayout({
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="shortcut icon" href="/favicon.ico" />
+        {/* Preload critical fonts */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className={`${outfit.className}`} suppressHydrationWarning={true}>
+        {/* Initial Loading Screen - Shows while JS/CSS loads */}
+        <div id="initial-loading-screen" className="initial-loading-screen">
+          <img 
+            src="/logo-event-force.png" 
+            alt="Event Force" 
+            className="loading-logo"
+            width={180}
+            height={54}
+          />
+          <div className="loading-spinner"></div>
+          <p className="loading-text">Loading...</p>
+        </div>
+        
         <ThemeProvider>
           <AuthProvider>
             {children}
             <PerformanceMonitor />
           </AuthProvider>
         </ThemeProvider>
+        
+        {/* Script to hide loading screen once styles are ready */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // Mark body as styles loaded and hide loading screen
+              (function() {
+                function hideLoadingScreen() {
+                  var loadingScreen = document.getElementById('initial-loading-screen');
+                  if (loadingScreen) {
+                    loadingScreen.classList.add('hidden');
+                    // Remove from DOM after transition
+                    setTimeout(function() {
+                      if (loadingScreen.parentNode) {
+                        loadingScreen.parentNode.removeChild(loadingScreen);
+                      }
+                    }, 300);
+                  }
+                  document.body.classList.add('styles-loaded');
+                }
+                
+                // Hide loading screen when DOM is ready and styles are loaded
+                if (document.readyState === 'complete') {
+                  hideLoadingScreen();
+                } else {
+                  window.addEventListener('load', hideLoadingScreen);
+                }
+                
+                // Fallback: Hide after max 3 seconds
+                setTimeout(hideLoadingScreen, 3000);
+              })();
+            `,
+          }}
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `

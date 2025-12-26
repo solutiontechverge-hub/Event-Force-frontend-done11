@@ -18,11 +18,8 @@ const HomePage = () => {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsMounted(true);
-    }, 500);
-    
-    return () => clearTimeout(timer);
+    // Mount immediately - the global loading screen handles initial load
+    setIsMounted(true);
   }, []);
 
   if (!isMounted) {
