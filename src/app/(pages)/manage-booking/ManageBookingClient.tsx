@@ -18,6 +18,8 @@ import {
   InputAdornment,
   IconButton,
   Skeleton,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import {
   CalendarToday,
@@ -29,6 +31,7 @@ import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { SlideUpInView } from '@/components/animations';
+import { sendBookingEmail } from '@/services/emailService';
 import {
   CarBmw7Series,
   CarChinesbus49Sea,
@@ -38,7 +41,7 @@ import {
   CarMercedesS450,
   CarMercedesVClass,
   CarToyotaCoaster,
-  HeroImages,
+  ManageBookingBg,
   MeTrendCrystalSolidWhite10,
   MeTrendWhitePlatinumTriCoat01,
   MeTrendHotPepperRed01,
@@ -184,6 +187,12 @@ const ManageBookingClient = () => {
   const [isMounted, setIsMounted] = useState(false);
   const [heroImageLoaded, setHeroImageLoaded] = useState(false);
   const [hoveredCarImage, setHoveredCarImage] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success' as 'success' | 'error' | 'info' | 'warning',
+  });
   
   const [formData, setFormData] = useState({
     fullName: '',
@@ -507,11 +516,35 @@ const ManageBookingClient = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Booking submitted:', formData);
-    // Handle booking submission here
-    alert('Booking submitted successfully!');
+    setIsSubmitting(true);
+    
+    try {
+      await sendBookingEmail(formData);
+      setSnackbar({
+        open: true,
+        message: 'Your booking details submitted successfully! A message will be provided to you soon.',
+        severity: 'success',
+      });
+      // Optionally reset form after successful submission
+      // setFormData({ ... });
+    } catch (error: any) {
+      setSnackbar({
+        open: true,
+        message: error.message || 'Failed to submit booking. Please try again later.',
+        severity: 'error',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCloseSnackbar = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSnackbar(prev => ({ ...prev, open: false }));
   };
 
   const handleCancel = () => {
@@ -977,7 +1010,7 @@ const ManageBookingClient = () => {
             }}
           >
             <Image
-              src={HeroImages.src || HeroImages}
+              src={ManageBookingBg.src || ManageBookingBg}
               alt="Booking Form Hero Background"
               fill
               style={{
@@ -1658,7 +1691,7 @@ const ManageBookingClient = () => {
                       </Box>
                     </Box>
 
-                    {/* Pickup Date */}
+                    {/* Pickup Date (Required) */}
                     <Box sx={{ mb: 3 }}>
                       <Typography
                         variant="body2"
@@ -1669,7 +1702,7 @@ const ManageBookingClient = () => {
                           fontSize: '0.875rem',
                         }}
                       >
-                        Pickup Date
+                        Pickup Date*
                       </Typography>
                       <TextField
                         fullWidth
@@ -1677,6 +1710,7 @@ const ManageBookingClient = () => {
                         type="date"
                         value={formData.pickupDate}
                         onChange={handleInputChange}
+                        required
                         size="small"
                         InputProps={{
                           endAdornment: (
@@ -1694,7 +1728,7 @@ const ManageBookingClient = () => {
                       />
                     </Box>
 
-                    {/* Return Date */}
+                    {/* Return Date (Optional but recommended) */}
                     <Box sx={{ mb: 4 }}>
                       <Typography
                         variant="body2"
@@ -1705,7 +1739,7 @@ const ManageBookingClient = () => {
                           fontSize: '0.875rem',
                         }}
                       >
-                        Pickup Date
+                        Return Date
                       </Typography>
                       <TextField
                         fullWidth
@@ -1739,13 +1773,14 @@ const ManageBookingClient = () => {
                         sx={{
                           py: 1.5,
                           borderRadius: '8px',
-                          borderColor: '#ccc',
-                          color: '#666',
+                          borderColor: '#D8D8D8',
+                          backgroundColor: '#D8D8D8',
+                          color: '#333',
                           textTransform: 'none',
                           fontWeight: 'bold',
                           '&:hover': {
-                            borderColor: '#999',
-                            backgroundColor: '#f5f5f5',
+                            borderColor: '#C0C0C0',
+                            backgroundColor: '#C0C0C0',
                           },
                         }}
                       >
@@ -1755,6 +1790,7 @@ const ManageBookingClient = () => {
                         type="submit"
                         variant="contained"
                         fullWidth
+                        disabled={isSubmitting}
                         sx={{
                           py: 1.5,
                           borderRadius: '8px',
@@ -1766,7 +1802,7 @@ const ManageBookingClient = () => {
                           },
                         }}
                       >
-                        Confirm
+                        {isSubmitting ? 'Submitting...' : 'Confirm'}
                       </Button>
                     </Box>
                   </Box>
@@ -1776,6 +1812,24 @@ const ManageBookingClient = () => {
           </Grid>
         </Container>
       </Box>
+      
+      {/* Toast Notification */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbar.severity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+      
       <Footer />
     </>
   );

@@ -32,7 +32,7 @@ import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { ScaleInView, SlideUpInView } from '@/components/animations';
-import { HeroImages } from '@/assets/images';
+import { FaqBg } from '@/assets/images';
 
 const FAQPageClient = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -74,7 +74,7 @@ const FAQPageClient = () => {
     {
       title: 'Booking & Reservations',
       icon: <CarRental />,
-      color: '#1976d2',
+      color: '#52A4C1',
       questions: [
         {
           question: 'How do I make a booking?',
@@ -97,7 +97,7 @@ const FAQPageClient = () => {
     {
       title: 'Payment & Pricing',
       icon: <Payment />,
-      color: '#4caf50',
+      color: '#52A4C1',
       questions: [
         {
           question: 'What payment methods do you accept?',
@@ -120,7 +120,7 @@ const FAQPageClient = () => {
     {
       title: 'Event Logistics',
       icon: <Event />,
-      color: '#f57c00',
+      color: '#52A4C1',
       questions: [
         {
           question: 'What is included in event logistics services?',
@@ -143,7 +143,7 @@ const FAQPageClient = () => {
     {
       title: 'Safety & Security',
       icon: <Security />,
-      color: '#9c27b0',
+      color: '#52A4C1',
       questions: [
         {
           question: 'Are your drivers licensed and insured?',
@@ -285,7 +285,7 @@ const FAQPageClient = () => {
             }}
           >
             <Image
-              src={HeroImages.src || HeroImages}
+              src={FaqBg.src || FaqBg}
               alt="FAQ Hero Background"
               fill
               style={{
@@ -405,12 +405,12 @@ const FAQPageClient = () => {
                   label={question}
                   onClick={() => setSearchQuery(question)}
                   sx={{
-                    backgroundColor: '#9c27b0',
+                    backgroundColor: '#52A4C1',
                     color: 'white',
                     fontWeight: 'bold',
                     cursor: 'pointer',
                     '&:hover': {
-                      backgroundColor: '#7b1fa2',
+                      backgroundColor: '#4A8FA8',
                     }
                   }}
                 />
@@ -496,17 +496,20 @@ const FAQPageClient = () => {
           {filteredCategories.length === 0 && (
             <Box sx={{ textAlign: 'center', py: 8 }}>
               <Typography variant="h5" sx={{ mb: 2, color: '#666' }}>
-                No questions found for "{searchQuery}"
+                No questions found.
               </Typography>
               <Typography variant="body1" sx={{ mb: 4, color: '#999' }}>
                 Try searching with different keywords or browse our categories above.
               </Typography>
               <Button 
                 variant="contained" 
-                onClick={() => setSearchQuery('')}
+                onClick={() => {
+                  setSearchQuery('');
+                  setExpandedCategory(false);
+                }}
                 sx={{ 
-                  backgroundColor: '#9c27b0',
-                  '&:hover': { backgroundColor: '#7b1fa2' }
+                  backgroundColor: '#52A4C1',
+                  '&:hover': { backgroundColor: '#4A8FA8' }
                 }}
               >
                 Clear Search
@@ -574,10 +577,10 @@ const FAQPageClient = () => {
                 size="large"
                 href="/support"
                 sx={{ 
-                  backgroundColor: '#9c27b0',
+                  backgroundColor: '#52A4C1',
                   px: 4,
                   py: 1.5,
-                  '&:hover': { backgroundColor: '#7b1fa2' }
+                  '&:hover': { backgroundColor: '#4A8FA8' }
                 }}
               >
                 Contact Support

@@ -14,10 +14,12 @@ import {
   Chip
 } from '@mui/material';
 import { Gavel, Security, CreditCard, CarRental, Event } from '@mui/icons-material';
+import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { ScaleInView, SlideUpInView } from '@/components/animations';
 import { PageSkeleton } from '@/components/PageSkeleton';
+import { TermServicesBg } from '@/assets/images';
 
 const TermsOfServicePage = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -125,13 +127,54 @@ const TermsOfServicePage = () => {
         sx={{ 
           pt: 8,
           minHeight: '50vh',
-          background: 'linear-gradient(135deg, #333 0%, #666 100%)',
+          position: 'relative',
           display: 'flex',
           alignItems: 'center',
-          color: 'white'
+          overflow: 'hidden',
+          // Fallback background
+          backgroundImage: `url(${TermServicesBg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
         }}
       >
-        <Container maxWidth="lg">
+        {/* Background Image */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 0
+          }}
+        >
+          <Image
+            src={TermServicesBg}
+            alt="Terms of Service Background"
+            fill
+            style={{
+              objectFit: 'cover',
+              objectPosition: 'center'
+            }}
+            priority
+          />
+        </Box>
+        
+        {/* Overlay for better text readability */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 100%)',
+            zIndex: 1
+          }}
+        />
+        
+        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2 }}>
           <Box sx={{ textAlign: 'center' }}>
             <SlideUpInView initialY={60} duration={0.8}>
               <Typography 
@@ -140,7 +183,9 @@ const TermsOfServicePage = () => {
                 sx={{ 
                   fontWeight: 'bold', 
                   mb: 3,
-                  fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' }
+                  fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
+                  color: 'white',
+                  textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
                 }}
               >
                 Terms of Service
@@ -154,7 +199,9 @@ const TermsOfServicePage = () => {
                   maxWidth: '800px',
                   mx: 'auto',
                   mb: 2,
-                  fontSize: { xs: '1.1rem', sm: '1.3rem', md: '1.5rem' }
+                  fontSize: { xs: '1.1rem', sm: '1.3rem', md: '1.5rem' },
+                  color: 'white',
+                  textShadow: '1px 1px 2px rgba(0,0,0,0.5)'
                 }}
               >
                 Please read these terms carefully before using our services

@@ -327,6 +327,11 @@ const Header = () => {
                     anchorEl={anchorEl}
                     open={Boolean(anchorEl)}
                     onClose={handleMenuClose}
+                    // Keep the rest of the page (including the navbar) from "jumping"
+                    // when the menu opens by disabling scroll lock and keeping
+                    // the menu mounted in the DOM.
+                    disableScrollLock
+                    keepMounted
                     anchorOrigin={{
                       vertical: 'bottom',
                       horizontal: 'right',

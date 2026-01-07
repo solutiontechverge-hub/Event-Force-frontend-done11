@@ -113,3 +113,11 @@ export { default as ToyotaCoasterEfficientSteering } from './toyota-coaster-effi
 export { default as ChineseBus49Default } from './car-chinesbus-49-sea.png';
 export { default as ChineseBus49YuTong } from './Used-Yu-Tong-Coach-Bus-Manual-Transmission-Diesel-Luxury-Bus.png';
 export { default as ChineseBus49KingLong } from './12m-King-Long-Bus-Xmq6125-Prices-Luxury-High-Quality-Bus-Used-King-Long-Bus-Price.png';
+
+// Page Images
+export { default as ManageBookingBg } from './manage-booking.png';
+export { default as PrivacyPolicyBg } from './privacy-policy.png';
+export { default as HelpCenterBg } from './help-center.png';
+export { default as FaqBg } from './faq.png';
+export { default as TermServicesBg } from './term-services.png';
+export { default as ContactUsBg } from './contact-us.png';

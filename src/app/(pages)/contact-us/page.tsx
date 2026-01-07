@@ -6,7 +6,7 @@ import Image from 'next/image'
 import Header from '@/components/Header'
 import ContactSection from '@/components/ContactSection'
 import Footer from '@/components/Footer'
-import AboutBg from '@/assets/images/about-bg.png'
+import { ContactUsBg } from '@/assets/images'
 import { ScaleInView, SlideSidewayInView, SlideUpInView } from '@/components/animations'
 import { PageSkeleton } from '@/components/PageSkeleton'
 
@@ -31,13 +31,14 @@ const ContactUsPage = () => {
       <Box 
         sx={{ 
           pt: 8,
-          minHeight: '70vh',
+          // Reduced hero height so the contact image section is smaller
+          minHeight: { xs: '45vh', md: '40vh' },
           position: 'relative',
           display: 'flex',
           alignItems: 'center',
           overflow: 'hidden',
           // Fallback background
-          backgroundImage: `url(${AboutBg})`,
+          backgroundImage: `url(${ContactUsBg})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat'
@@ -55,7 +56,7 @@ const ContactUsPage = () => {
           }}
         >
           <Image
-            src={AboutBg}
+            src={ContactUsBg}
             alt="Contact Us Background"
             fill
             style={{

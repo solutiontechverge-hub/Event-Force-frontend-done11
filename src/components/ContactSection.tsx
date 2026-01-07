@@ -11,6 +11,8 @@ import {
   Button,
   CircularProgress,
   IconButton,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import {
   MobileIcon,
@@ -19,6 +21,7 @@ import {
   WhatsAppIcon,
 } from './icons';
 import { ScaleInView, SlideSidewayInView, SlideUpInView } from '@/components/animations';
+import { sendContactEmail } from '@/services/emailService';
 
 const ContactSection = () => {
   const [formData, setFormData] = useState({
@@ -27,6 +30,11 @@ const ContactSection = () => {
     message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success' as 'success' | 'error' | 'info' | 'warning',
+  });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -40,16 +48,36 @@ const ContactSection = () => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    alert('Thank you for your message! We will get back to you soon.');
-    setFormData({ name: '', email: '', message: '' });
-    setIsSubmitting(false);
+    try {
+      await sendContactEmail(formData);
+      setSnackbar({
+        open: true,
+        message: 'Your details submitted successfully! A message will be provided to you soon.',
+        severity: 'success',
+      });
+      setFormData({ name: '', email: '', message: '' });
+    } catch (error: any) {
+      setSnackbar({
+        open: true,
+        message: error.message || 'Failed to send message. Please try again later.',
+        severity: 'error',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCloseSnackbar = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSnackbar(prev => ({ ...prev, open: false }));
   };
 
   return (
-    <Box sx={{ py: 10, px: 4, backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
+    <Box sx={{ py: 10, backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
+      {/* Match booking page layout by centering content in a container */}
+      <Container maxWidth="lg">
       <Grid container sx={{ position: 'relative', minHeight: { xs: 'auto', lg: '500px' }, width: '100%' }}>
 
           {/* Contact Us Card - Left side */}
@@ -556,6 +584,24 @@ const ContactSection = () => {
             </SlideUpInView>
           </Grid>
       </Grid>
+      </Container>
+
+      {/* Toast Notification */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbar.severity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

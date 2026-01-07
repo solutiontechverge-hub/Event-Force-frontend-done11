@@ -16,7 +16,7 @@ import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { ScaleInView, SlideUpInView } from '@/components/animations';
-import { HeroImages } from '@/assets/images';
+import { PrivacyPolicyBg } from '@/assets/images';
 
 const PrivacyPage = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -173,7 +173,7 @@ const PrivacyPage = () => {
             }}
           >
             <Image
-              src={HeroImages.src || HeroImages}
+              src={PrivacyPolicyBg.src || PrivacyPolicyBg}
               alt="Privacy Policy Hero Background"
               fill
               style={{
@@ -316,10 +316,10 @@ const PrivacyPage = () => {
                 size="large"
                 href="/support"
                 sx={{ 
-                  backgroundColor: '#9c27b0',
+                  backgroundColor: '#52A4C1',
                   px: 4,
                   py: 1.5,
-                  '&:hover': { backgroundColor: '#7b1fa2' }
+                  '&:hover': { backgroundColor: '#4A8FA8' }
                 }}
               >
                 Contact Support

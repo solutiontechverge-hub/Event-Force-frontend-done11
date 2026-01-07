@@ -22,7 +22,7 @@ import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { ScaleInView, SlideUpInView } from '@/components/animations';
-import { HeroImages } from '@/assets/images';
+import { HelpCenterBg } from '@/assets/images';
 
 const HelpCenterPageClient = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -60,7 +60,7 @@ const HelpCenterPageClient = () => {
     {
       title: 'Booking & Reservations',
       icon: <Book />,
-      color: '#1976d2',
+      color: '#52A4C1',
       articles: [
         {
           question: 'Can I modify my booking?',
@@ -79,7 +79,7 @@ const HelpCenterPageClient = () => {
     {
       title: 'Payment & Billing',
       icon: <Support />,
-      color: '#f57c00',
+      color: '#52A4C1',
       articles: [
         {
           question: 'What payment methods do you accept?',
@@ -218,7 +218,7 @@ const HelpCenterPageClient = () => {
             }}
           >
             <Image
-              src={HeroImages.src || HeroImages}
+              src={HelpCenterBg.src || HelpCenterBg}
               alt="Help Center Hero Background"
               fill
               style={{
@@ -431,14 +431,17 @@ const HelpCenterPageClient = () => {
           {filteredCategories.length === 0 && (
             <Box sx={{ textAlign: 'center', py: 8 }}>
               <Typography variant="h5" sx={{ mb: 2, color: '#666' }}>
-                No articles found for "{searchQuery}"
+                No articles found.
               </Typography>
               <Typography variant="body1" sx={{ mb: 4, color: '#999' }}>
                 Try searching with different keywords or browse our categories above.
               </Typography>
               <Button 
                 variant="contained" 
-                onClick={() => setSearchQuery('')}
+                onClick={() => {
+                  setSearchQuery('');
+                  setExpandedCategory(false);
+                }}
                 sx={{ 
                   backgroundColor: '#52A4C1',
                   '&:hover': { backgroundColor: '#4A8FA8' }

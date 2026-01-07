@@ -25,10 +25,12 @@ import {
   Delete,
   Settings
 } from '@mui/icons-material';
+import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { ScaleInView, SlideUpInView } from '@/components/animations';
 import { PageSkeleton } from '@/components/PageSkeleton';
+import { PrivacyPolicyBg } from '@/assets/images';
 
 const PrivacyPolicyPage = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -133,13 +135,54 @@ const PrivacyPolicyPage = () => {
         sx={{ 
           pt: 8,
           minHeight: '50vh',
-          background: 'linear-gradient(135deg, #4caf50 0%, #2e7d32 100%)',
+          position: 'relative',
           display: 'flex',
           alignItems: 'center',
-          color: 'white'
+          overflow: 'hidden',
+          // Fallback background
+          backgroundImage: `url(${PrivacyPolicyBg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
         }}
       >
-        <Container maxWidth="lg">
+        {/* Background Image */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 0
+          }}
+        >
+          <Image
+            src={PrivacyPolicyBg}
+            alt="Privacy Policy Background"
+            fill
+            style={{
+              objectFit: 'cover',
+              objectPosition: 'center'
+            }}
+            priority
+          />
+        </Box>
+        
+        {/* Overlay for better text readability */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 100%)',
+            zIndex: 1
+          }}
+        />
+        
+        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2 }}>
           <Box sx={{ textAlign: 'center' }}>
             <SlideUpInView initialY={60} duration={0.8}>
               <Typography 

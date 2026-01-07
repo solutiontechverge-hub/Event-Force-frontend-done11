@@ -16,7 +16,7 @@ import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { ScaleInView, SlideUpInView } from '@/components/animations';
-import { HeroImages } from '@/assets/images';
+import { TermServicesBg } from '@/assets/images';
 
 const TermsPage = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -181,7 +181,7 @@ const TermsPage = () => {
             }}
           >
             <Image
-              src={HeroImages.src || HeroImages}
+              src={TermServicesBg.src || TermServicesBg}
               alt="Terms of Service Hero Background"
               fill
               style={{
@@ -323,10 +323,10 @@ const TermsPage = () => {
                 size="large"
                 href="/support"
                 sx={{ 
-                  backgroundColor: '#f57c00',
+                  backgroundColor: '#52A4C1',
                   px: 4,
                   py: 1.5,
-                  '&:hover': { backgroundColor: '#ef6c00' }
+                  '&:hover': { backgroundColor: '#4A8FA8' }
                 }}
               >
                 Contact Support

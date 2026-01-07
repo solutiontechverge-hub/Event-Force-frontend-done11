@@ -187,14 +187,16 @@ const SupportPage = () => {
       description: 'Get in touch with our support team',
       icon: <ContactSupport />,
       href: '/contact-us',
-      color: '#52A4C1'
+      color: '#52A4C1',
+      type: 'link' as const,
     },
     {
       title: 'Live Chat',
       description: 'Chat with us in real-time',
       icon: <Support />,
       href: '#',
-      color: '#1976d2'
+      color: '#1976d2',
+      type: 'whatsapp' as const,
     }
   ];
 
@@ -373,14 +375,11 @@ const SupportPage = () => {
                       Quick Actions
                     </Typography>
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                      {quickActions.map((action, index) => (
-                        <Button
-                          key={index}
-                          component={Link}
-                          href={action.href}
-                          variant="outlined"
-                          startIcon={action.icon}
-                          sx={{
+                      {quickActions.map((action, index) => {
+                        const commonProps = {
+                          variant: 'outlined' as const,
+                          startIcon: action.icon,
+                          sx: {
                             justifyContent: 'flex-start',
                             textAlign: 'left',
                             p: 2,
@@ -389,20 +388,55 @@ const SupportPage = () => {
                             '&:hover': {
                               backgroundColor: action.color,
                               color: 'white',
-                              borderColor: action.color
-                            }
-                          }}
-                        >
-                          <Box>
-                            <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                              {action.title}
-                            </Typography>
-                            <Typography variant="caption" sx={{ opacity: 0.8 }}>
-                              {action.description}
-                            </Typography>
-                          </Box>
-                        </Button>
-                      ))}
+                              borderColor: action.color,
+                            },
+                          },
+                        };
+
+                        // For "Live Chat", open WhatsApp like on the home page
+                        if (action.type === 'whatsapp') {
+                          return (
+                            <Button
+                              key={index}
+                              {...commonProps}
+                              onClick={() => {
+                                const phoneNumber = '966594279012'; // +966 59 427 9012
+                                const message = 'Hello! I need support regarding Event Force services.';
+                                const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+                                window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+                              }}
+                            >
+                              <Box>
+                                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                                  {action.title}
+                                </Typography>
+                                <Typography variant="caption" sx={{ opacity: 0.8 }}>
+                                  {action.description}
+                                </Typography>
+                              </Box>
+                            </Button>
+                          );
+                        }
+
+                        // Default behavior: normal link button
+                        return (
+                          <Button
+                            key={index}
+                            {...commonProps}
+                            component={Link}
+                            href={action.href}
+                          >
+                            <Box>
+                              <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                                {action.title}
+                              </Typography>
+                              <Typography variant="caption" sx={{ opacity: 0.8 }}>
+                                {action.description}
+                              </Typography>
+                            </Box>
+                          </Button>
+                        );
+                      })}
                     </Box>
                   </Card>
                 </ScaleInView>
