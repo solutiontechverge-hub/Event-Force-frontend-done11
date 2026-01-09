@@ -6,9 +6,10 @@ import Image from 'next/image'
 import Header from '@/components/Header'
 import FleetPage from '@/components/FleetPage'
 import Footer from '@/components/Footer'
-import { FleetBg } from '@/assets/images'
+
 import { SlideUpInView } from '@/components/animations'
 import { PageSkeleton } from '@/components/PageSkeleton'
+import { FleetBg } from '../../../../public/images';
 
 const OurFleetPage = () => {
     const [isMounted, setIsMounted] = useState(false);

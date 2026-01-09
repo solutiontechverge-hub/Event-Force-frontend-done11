@@ -18,7 +18,7 @@ import {
   YouTube,
   WhatsApp,
 } from '@mui/icons-material';
-import { LogoEventForce } from '@/assets/images';
+import { LogoEventForce } from '../../public/images';
 import { ScaleInView, SlideSidewayInView, SlideUpInView } from '@/components/animations';
 
 const Footer = () => {

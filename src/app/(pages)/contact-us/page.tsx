@@ -6,9 +6,10 @@ import Image from 'next/image'
 import Header from '@/components/Header'
 import ContactSection from '@/components/ContactSection'
 import Footer from '@/components/Footer'
-import { ContactUsBg } from '@/assets/images'
+
 import { ScaleInView, SlideSidewayInView, SlideUpInView } from '@/components/animations'
 import { PageSkeleton } from '@/components/PageSkeleton'
+import { ContactUsBg } from '../../../../public/images';
 
 const ContactUsPage = () => {
   const [isMounted, setIsMounted] = useState(false);

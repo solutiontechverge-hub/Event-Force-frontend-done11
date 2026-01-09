@@ -30,7 +30,7 @@ import {
   Logout,
   Person,
 } from '@mui/icons-material';
-import { LogoEventForce } from '@/assets/images';
+import { LogoEventForce } from '../../public/images';
 import { useAuth } from '@/contexts/AuthContext';
 
 const Header = () => {

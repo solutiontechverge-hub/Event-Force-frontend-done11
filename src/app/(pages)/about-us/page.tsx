@@ -9,10 +9,10 @@ import MissionVision from '@/components/MissionVision'
 import BenefitsSection from '@/components/BenefitsSection'
 import DownloadProfile from '@/components/DownloadProfile'
 import TestimonialsSection from '@/components/TestimonialsSection'
-import AboutBg from '@/assets/images/about-bg.png'
-import { AboutTeam } from '@/assets/images'
+
 import { ScaleInView, SlideSidewayInView, SlideUpInView } from '@/components/animations'
 import { PageSkeleton } from '@/components/PageSkeleton'
+import { AboutBg, AboutTeam } from '../../../../public/images';
 
 const AboutUsPage = () => {
   const [isMounted, setIsMounted] = useState(false);

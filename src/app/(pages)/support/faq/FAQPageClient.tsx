@@ -32,7 +32,8 @@ import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { ScaleInView, SlideUpInView } from '@/components/animations';
-import { FaqBg } from '@/assets/images';
+import { FaqBg } from '../../../../../public/images';
+
 
 const FAQPageClient = () => {
   const [searchQuery, setSearchQuery] = useState('');

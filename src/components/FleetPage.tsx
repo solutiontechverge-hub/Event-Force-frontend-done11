@@ -26,9 +26,9 @@ import {
   CarHiace,
   CarMercedesS450,
   CarMercedesVClass,
-  CarToyotaCoaster,
-} from '@/assets/images';
+} from '../../public/images';
 import { ScaleInView, SlideSidewayInView, SlideUpInView } from '@/components/animations';
+import { CarToyotaCoaster } from '../../public/images';
 
 interface Car {
   name: string;

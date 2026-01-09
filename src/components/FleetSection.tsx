@@ -22,12 +22,12 @@ import {
   CarMercedesS450,
   CarFordTaurus,
   CarMercedesVClass,
-  CarToyotaCoaster,
-} from '@/assets/images';
+} from '../../public/images';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { ScaleInView, SlideSidewayInView, SlideUpInView } from '@/components/animations';
 import OptimizedImage from '@/components/OptimizedImage';
 import { THEME, IMAGE_CONFIG } from '@/constants/theme';
+import { CarToyotaCoaster } from '../../public/images';
 
 const FleetSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);

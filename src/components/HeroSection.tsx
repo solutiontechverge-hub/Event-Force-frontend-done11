@@ -13,11 +13,11 @@ import {
   keyframes,
 } from '@mui/material';
 import { WhatsApp as WhatsAppIcon, ArrowUpward as ArrowUpwardIcon } from '@mui/icons-material';
-import { HeroImages } from '@/assets/images';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { ScaleInView, SlideSidewayInView, SlideUpInView } from '@/components/animations';
 import OptimizedImage from '@/components/OptimizedImage';
 import { THEME, IMAGE_CONFIG } from '@/constants/theme';
+import { HeroImages } from '../../public/images';
 
 const HeroSection = () => {
   const heroRef = useRef<HTMLDivElement>(null);

@@ -85,7 +85,7 @@ import {
   ChineseBus49Default,
   ChineseBus49YuTong,
   ChineseBus49KingLong,
-} from '@/assets/images';
+} from '../../../../public/images';
 
 interface Car {
   name: string;

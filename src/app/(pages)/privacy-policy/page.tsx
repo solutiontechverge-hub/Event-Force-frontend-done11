@@ -30,7 +30,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { ScaleInView, SlideUpInView } from '@/components/animations';
 import { PageSkeleton } from '@/components/PageSkeleton';
-import { PrivacyPolicyBg } from '@/assets/images';
+import { PrivacyPolicyBg } from '../../../../public/images';
 
 const PrivacyPolicyPage = () => {
   const [isMounted, setIsMounted] = useState(false);

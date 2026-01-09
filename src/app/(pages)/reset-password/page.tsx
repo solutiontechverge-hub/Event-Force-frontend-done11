@@ -14,7 +14,7 @@ import {
   Skeleton,
 } from '@mui/material';
 import Image from 'next/image';
-import { AuthBg } from '@/assets/images';
+import { AuthBg } from '../../../../public/images';
 import { useMediaQuery as useCustomMediaQuery } from '@/hooks/useMediaQuery';
 
 const ResetPasswordPage = () => {

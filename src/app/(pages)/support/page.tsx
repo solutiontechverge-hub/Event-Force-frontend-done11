@@ -34,7 +34,7 @@ import Footer from '@/components/Footer';
 import OfflineFallback from '@/components/OfflineFallback';
 import { ScaleInView, SlideUpInView } from '@/components/animations';
 import { useOffline } from '@/hooks/useOffline';
-import { HeroImages } from '@/assets/images';
+import { HeroImages } from '../../../../public/images';
 
 const SupportPage = () => {
   const { isOffline } = useOffline();

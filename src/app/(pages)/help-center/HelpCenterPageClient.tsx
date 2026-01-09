@@ -21,7 +21,7 @@ import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { ScaleInView, SlideUpInView } from '@/components/animations';
-import { HelpCenterBg } from '@/assets/images';
+import { HelpCenterBg } from '../../../../public/images';
 
 const HelpCenterPageClient = () => {
   const [searchQuery, setSearchQuery] = useState('');

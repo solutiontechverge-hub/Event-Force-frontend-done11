@@ -5,7 +5,7 @@ import { Box, Grid, Skeleton, Card, CardContent } from '@mui/material';
 import Image from 'next/image';
 import AuthForm from '@/components/AuthForm';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import { AuthBg } from '@/assets/images';
+import { AuthBg } from '../../../../public/images';
 
 const LoginPage = () => {
   const [isMounted, setIsMounted] = useState(false);

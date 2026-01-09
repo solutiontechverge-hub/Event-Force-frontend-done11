@@ -13,7 +13,7 @@ import {
   ClientAliAhmad, 
   ClientHassanRaza, 
   ClientMariamKhan
-} from '@/assets/images';
+} from '../../public/images';
 import { ScaleInView, SlideSidewayInView, SlideUpInView } from '@/components/animations';
 
 const TestimonialsSection = () => {

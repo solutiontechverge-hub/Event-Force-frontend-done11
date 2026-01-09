@@ -19,7 +19,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { ScaleInView, SlideUpInView } from '@/components/animations';
 import { PageSkeleton } from '@/components/PageSkeleton';
-import { TermServicesBg } from '@/assets/images';
+import { TermServicesBg } from '../../../../public/images';
 
 const TermsOfServicePage = () => {
   const [isMounted, setIsMounted] = useState(false);

@@ -16,7 +16,7 @@ import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { ScaleInView, SlideUpInView } from '@/components/animations';
-import { TermServicesBg } from '@/assets/images';
+import { TermServicesBg } from '../../../../../public/images';
 
 const TermsPage = () => {
   const [isMounted, setIsMounted] = useState(false);

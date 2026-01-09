@@ -14,9 +14,10 @@ import {
 } from '@mui/material';
 import { Email } from '@mui/icons-material';
 import Image from 'next/image';
-import { AuthBg } from '@/assets/images';
+
 import { useMediaQuery as useCustomMediaQuery } from '@/hooks/useMediaQuery';
 import { useRouter } from 'next/navigation';
+import { AuthBg } from '../../../../public/images';
 
 const ForgotPasswordPage = () => {
   const router = useRouter();
