@@ -52,29 +52,29 @@ const FleetSection = () => {
     },
     {
       name: 'BMW 5 Series',
-      price: '150 SAR',
-      duration: 'Per day',
+      price: '150 SAR22',
+      duration: 'Per hour',
       image: CarBmw7Series,
       features: ['Executive Class', 'Leather Seats', 'Advanced Safety']
     },
     {
       name: 'Mercedes S-Class',
-      price: '400 SAR',
-      duration: 'Per day',
+      price: '150 SAR',
+      duration: 'Per hour',
       image: CarMercedesS450,
       features: ['Ultimate Luxury', 'Chauffeur Service', 'Premium Amenities']
     },
     {
       name: 'Mercedes V-Class',
-      price: '200 SAR',
-      duration: 'Per day',
+      price: '125 SAR',
+      duration: 'Per hour  ',
       image: CarMercedesVClass,
       features: ['Executive Comfort', 'Advanced Tech', 'Quiet Ride']
     },
     {
       name: 'Toyota Coaster',
-      price: '180 SAR',
-      duration: 'Per day',
+      price: '150 SAR',
+      duration: 'Per hour',
       image: CarToyotaCoaster,
       features: ['Off-Road Capable', 'Luxury SUV', 'All-Weather']
     }
