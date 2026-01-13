@@ -52,7 +52,7 @@ const FleetSection = () => {
     },
     {
       name: 'BMW 5 Series',
-      price: '150 SAR22',
+      price: '150 SAR',
       duration: 'Per hour',
       image: CarBmw7Series,
       features: ['Executive Class', 'Leather Seats', 'Advanced Safety']
