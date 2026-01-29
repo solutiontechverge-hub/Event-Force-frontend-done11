@@ -97,12 +97,26 @@ interface Car {
   branch: string;
 }
 
+interface ColorOption {
+  id: string;
+  name: string;
+  color: string;
+  image: {
+    src: string;
+    width: number;
+    height: number;
+    blurWidth: number;
+    blurHeight: number;
+    blurDataURL: string;
+  };
+}
+
 const fleet: Car[] = [
   {
     name: 'Ford Taurus',
     price: '125 SAR',
     duration: 'Per hour',
-    image: CarFordTaurus,
+    image: MeTrendAgateBlack01, // Default to black (#1A1A1A)
     class: 'Economy',
     year: '2024',
     branch: 'Riyadh'
@@ -193,13 +207,13 @@ const ManageBookingClient = () => {
     message: '',
     severity: 'success' as 'success' | 'error' | 'info' | 'warning',
   });
-  
+
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     countryCode: '+966',
     contactNumber: '',
-    selectedCar: '',
+    selectedCar: 'black',
     selectedColor: '',
     serviceType: '',
     pickupLocation: '',
@@ -215,7 +229,7 @@ const ManageBookingClient = () => {
     const timer = setTimeout(() => {
       setIsMounted(true);
     }, 500);
-    
+
     return () => clearTimeout(timer);
   }, []);
 
@@ -231,25 +245,12 @@ const ManageBookingClient = () => {
     if (!colorId) return null;
 
     const normalizedName = carName.toLowerCase();
-    
+
     if (normalizedName.includes('ford taurus')) {
-      // Return default image if 'default' is selected
-      if (colorId === 'default') {
-        const defaultCar = fleet.find(c => c.name.toLowerCase() === 'ford taurus');
-        return defaultCar?.image || CarFordTaurus;
-      }
-      
-      const colorMap: { [key: string]: any } = {
-        'crystal-solid-white': MeTrendCrystalSolidWhite10,
-        'white-platinum-tri-coat': MeTrendWhitePlatinumTriCoat01,
-        'hot-pepper-red': MeTrendHotPepperRed01,
-        'lustrous-grey': MeTrendLustrousGrey01,
-        'vapor-blue': MeTrendVaporBlue01,
-        'agate-black': MeTrendAgateBlack01,
-      };
-      return colorMap[colorId] || null;
+      // Ford Taurus: Always return black image (#1A1A1A) - no other colors
+      return MeTrendAgateBlack01;
     }
-    
+
     if (normalizedName.includes('gmc yukon') || normalizedName.includes('gmc')) {
       const colorMap: { [key: string]: any } = {
         'glacier-white-tricoat': Gmc1,
@@ -262,7 +263,7 @@ const ManageBookingClient = () => {
       };
       return colorMap[colorId] || null;
     }
-    
+
     if (normalizedName.includes('bmw 5 series') || normalizedName.includes('bmw 5')) {
       const colorMap: { [key: string]: any } = {
         'black': BmwBlack1,
@@ -276,7 +277,7 @@ const ManageBookingClient = () => {
       };
       return colorMap[colorId] || null;
     }
-    
+
     if (normalizedName.includes('mercedes s450') || normalizedName.includes('mercedes s class')) {
       const colorMap: { [key: string]: any } = {
         'black': MercedesS450Black,
@@ -284,7 +285,7 @@ const ManageBookingClient = () => {
       };
       return colorMap[colorId] || null;
     }
-    
+
     if (normalizedName.includes('bmw 7 series') || normalizedName.includes('bmw 7')) {
       const colorMap: { [key: string]: any } = {
         'black': Bmw7SeriesBlack1,
@@ -295,7 +296,7 @@ const ManageBookingClient = () => {
       };
       return colorMap[colorId] || null;
     }
-    
+
     if (normalizedName.includes('mercedes v class') || normalizedName.includes('mercedes v-class')) {
       const colorMap: { [key: string]: any } = {
         'black': MercedesVClassBlack,
@@ -305,7 +306,7 @@ const ManageBookingClient = () => {
       };
       return colorMap[colorId] || null;
     }
-    
+
     if (normalizedName.includes('toyota hiace') || normalizedName.includes('hiace')) {
       const colorMap: { [key: string]: any } = {
         'black': ToyotaHiaceBlack,
@@ -313,7 +314,7 @@ const ManageBookingClient = () => {
       };
       return colorMap[colorId] || null;
     }
-    
+
     if (normalizedName.includes('toyota coaster') || normalizedName.includes('coaster')) {
       const colorMap: { [key: string]: any } = {
         'default': ToyotaCoasterDefault,
@@ -325,7 +326,7 @@ const ManageBookingClient = () => {
       };
       return colorMap[colorId] || null;
     }
-    
+
     if (normalizedName.includes('chines bus 49') || normalizedName.includes('chinese bus 49') || normalizedName.includes('49 seater')) {
       const colorMap: { [key: string]: any } = {
         'default': ChineseBus49Default,
@@ -334,32 +335,21 @@ const ManageBookingClient = () => {
       };
       return colorMap[colorId] || null;
     }
-    
+
     return null;
   };
 
   // Function to get all color options for a car
   const getColorOptionsForCar = (carName: string) => {
     if (!carName) return [];
-    
+
     const normalizedName = carName.toLowerCase();
-    
+
+    // Ford Taurus: Default color is #1A1A1A (black), no color selection - return empty array
     if (normalizedName.includes('ford taurus')) {
-      // Get default image from fleet
-      const defaultCar = fleet.find(c => c.name.toLowerCase() === 'ford taurus');
-      const defaultImage = defaultCar?.image || CarFordTaurus;
-      
-      return [
-        { id: 'default', name: 'Default', color: '#52A4C1', image: defaultImage },
-        { id: 'crystal-solid-white', name: 'Crystal Solid White', color: '#FFFFFF', image: MeTrendCrystalSolidWhite10 },
-        { id: 'white-platinum-tri-coat', name: 'White Platinum Tri-Coat', color: '#E8E8E8', image: MeTrendWhitePlatinumTriCoat01 },
-        { id: 'hot-pepper-red', name: 'Hot Pepper Red', color: '#C41E3A', image: MeTrendHotPepperRed01 },
-        { id: 'lustrous-grey', name: 'Lustrous Grey', color: '#808080', image: MeTrendLustrousGrey01 },
-        { id: 'vapor-blue', name: 'Vapor Blue', color: '#4A90E2', image: MeTrendVaporBlue01 },
-        { id: 'agate-black', name: 'Agate Black', color: '#1A1A1A', image: MeTrendAgateBlack01 },
-      ];
+      return [];
     }
-    
+
     if (normalizedName.includes('gmc yukon') || normalizedName.includes('gmc')) {
       return [
         { id: 'glacier-white-tricoat', name: 'Glacier White Tricoat', color: '#FFFFFF', image: Gmc1 },
@@ -371,7 +361,7 @@ const ManageBookingClient = () => {
         { id: 'downpour-metallic', name: 'Downpour Metallic', color: '#4B5563', image: Gmc7 },
       ];
     }
-    
+
     if (normalizedName.includes('bmw 5 series') || normalizedName.includes('bmw 5')) {
       return [
         { id: 'black', name: 'Black', color: '#1A1A1A', image: BmwBlack1 },
@@ -384,14 +374,14 @@ const ManageBookingClient = () => {
         { id: 'color-8', name: 'Color Option 8', color: '#1E3A8A', image: Bmw8 },
       ];
     }
-    
+
     if (normalizedName.includes('mercedes s450') || normalizedName.includes('mercedes s class')) {
       return [
         { id: 'black', name: 'Black', color: '#1A1A1A', image: MercedesS450Black },
         { id: 'white', name: 'White', color: '#FFFFFF', image: MercedesS450White },
       ];
     }
-    
+
     if (normalizedName.includes('bmw 7 series') || normalizedName.includes('bmw 7')) {
       return [
         { id: 'black', name: 'Black', color: '#1A1A1A', image: Bmw7SeriesBlack1 },
@@ -401,7 +391,7 @@ const ManageBookingClient = () => {
         { id: 'brooklyn-grey-metallic', name: 'Brooklyn Grey Metallic', color: '#1A1F2E', image: Bmw7SeriesBrooklynGreyMetallic },
       ];
     }
-    
+
     if (normalizedName.includes('mercedes v class') || normalizedName.includes('mercedes v-class')) {
       return [
         { id: 'black', name: 'Black', color: '#1A1A1A', image: MercedesVClassBlack },
@@ -410,14 +400,14 @@ const ManageBookingClient = () => {
         { id: 'grey', name: 'Grey', color: '#6B7280', image: MercedesVClassGrey },
       ];
     }
-    
+
     if (normalizedName.includes('toyota hiace') || normalizedName.includes('hiace')) {
       return [
         { id: 'black', name: 'Black', color: '#1A1A1A', image: ToyotaHiaceBlack },
         { id: 'silver', name: 'Silver', color: '#C0C0C0', image: ToyotaHiaceSilver },
       ];
     }
-    
+
     if (normalizedName.includes('toyota coaster') || normalizedName.includes('coaster')) {
       return [
         { id: 'default', name: 'Default', color: '#52A4C1', image: ToyotaCoasterDefault },
@@ -428,7 +418,7 @@ const ManageBookingClient = () => {
         { id: 'yellow', name: 'Yellow', color: '#FFD700', image: ToyotaCoasterYellow },
       ];
     }
-    
+
     if (normalizedName.includes('chines bus 49') || normalizedName.includes('chinese bus 49') || normalizedName.includes('49 seater')) {
       return [
         { id: 'default', name: 'Default', color: '#253F58', image: ChineseBus49Default },
@@ -436,7 +426,7 @@ const ManageBookingClient = () => {
         { id: 'king-long', name: 'King Long', color: '#4D85B4', image: ChineseBus49KingLong },
       ];
     }
-    
+
     // Default: return empty array for cars without color options
     return [];
   };
@@ -445,7 +435,7 @@ const ManageBookingClient = () => {
   const selectedCar = useMemo(() => {
     if (carParam) {
       const carName = carParam.replace(/-/g, ' ');
-      return fleet.find(car => 
+      return fleet.find(car =>
         car.name.toLowerCase() === carName.toLowerCase()
       ) || null;
     }
@@ -466,14 +456,18 @@ const ManageBookingClient = () => {
       setFormData(prev => ({
         ...prev,
         selectedCar: selectedCar.name,
-        // Set color from URL if available
-        selectedColor: colorIdParam || prev.selectedColor,
+        // For Ford Taurus: always set to black (#1A1A1A), for others use URL color if available
+        selectedColor: selectedCar.name.toLowerCase().includes('ford taurus')
+          ? 'agate-black'
+          : (colorIdParam || prev.selectedColor),
       }));
     } else if (!formData.selectedCar && !selectedCar) {
       // Set first car as default if no car is selected
       setFormData(prev => ({
         ...prev,
         selectedCar: fleet[0].name,
+        // For Ford Taurus: always set to black (#1A1A1A)
+        selectedColor: fleet[0].name.toLowerCase().includes('ford taurus') ? 'agate-black' : prev.selectedColor,
       }));
     }
   }, [selectedCar, colorIdParam]);
@@ -495,7 +489,9 @@ const ManageBookingClient = () => {
       };
       // Reset selected color when car changes
       if (name === 'selectedCar') {
-        updated.selectedColor = '';
+        // For Ford Taurus: always set to black (#1A1A1A) as default
+        // For other vehicles: reset to empty
+        updated.selectedColor = value.toLowerCase().includes('ford taurus') ? 'agate-black' : '';
       }
       // Reset location fields when service type changes
       if (name === 'serviceType') {
@@ -519,7 +515,7 @@ const ManageBookingClient = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     try {
       await sendBookingEmail(formData);
       setSnackbar({
@@ -555,7 +551,7 @@ const ManageBookingClient = () => {
     if (displayCar) {
       // Construct vehicleId from car name - convert to lowercase and replace spaces with hyphens
       const vehicleId = displayCar.name.toLowerCase().replace(/\s+/g, '-');
-      
+
       // Build URL with current color selection if available
       const params = new URLSearchParams();
       if (colorIdParam) {
@@ -564,7 +560,7 @@ const ManageBookingClient = () => {
       if (colorIndexParam) {
         params.set('colorIndex', colorIndexParam);
       }
-      
+
       const queryString = params.toString();
       const url = `/our-fleet/${vehicleId}${queryString ? `?${queryString}` : ''}`;
       router.push(url);
@@ -575,10 +571,30 @@ const ManageBookingClient = () => {
   };
 
   // Get available colors for the selected car
-  const availableColors = useMemo(() => {
-    const carName = formData.selectedCar || selectedCar?.name || '';
-    return getColorOptionsForCar(carName);
-  }, [formData.selectedCar, selectedCar]);
+  // const availableColors = useMemo(() => {
+  //   const carName = formData.selectedCar || selectedCar?.name || '';
+  //   return getColorOptionsForCar(carName);
+  // }, [formData.selectedCar, selectedCar]);
+
+
+  const availableColors: ColorOption[] = [
+    {
+      "id": "black",
+      "name": "Black",
+      "color": "#1A1A1A",
+      "image": {
+        "src": "/_next/static/media/bmwblack1.2ddcfe47.png",
+        "width": 1344,
+        "height": 806,
+        "blurWidth": 8,
+        "blurHeight": 5,
+        "blurDataURL": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAFCAYAAAB4ka1VAAAAg0lEQVR42o1MPQqDMBg1zVehXdpIWodAJRjqIOgYQQ8QN3XxKp7Bgzh6EK8g6Alcnf0U3H3wePD+LOsqKKU2c5zw67r5m7EEAJ5HQAihvq8qY0xXVOWUZumqtV6UUg3Gt71g/zyvlVKOURzPQoiBc97jW73vz5cX8g9wD1A/aD2ONWIDgw8QaoRGAusAAAAASUVORK5CYII="
+      }
+    },
+
+
+  ]
+  console.log(availableColors);
 
   // Get the selected color image from formData
   const formSelectedColorImage = useMemo(() => {
@@ -595,15 +611,23 @@ const ManageBookingClient = () => {
     } else {
       car = selectedCar || fleet[0];
     }
-    
-    // Priority: formData.selectedColor > URL color > default car image
+
+    // For Ford Taurus: Always use black image (#1A1A1A) as default - force black always
+    if (car?.name.toLowerCase().includes('ford taurus')) {
+      return {
+        ...car,
+        image: MeTrendAgateBlack01, // Always black, no exceptions
+      };
+    }
+
+    // For other vehicles: Priority: formData.selectedColor > URL color > default car image
     let imageToUse = car?.image;
     if (formSelectedColorImage) {
       imageToUse = formSelectedColorImage;
     } else if (selectedColorImage) {
       imageToUse = selectedColorImage;
     }
-    
+
     return {
       ...car,
       image: imageToUse || car?.image,
@@ -817,7 +841,7 @@ const ManageBookingClient = () => {
 
     // Determine pricing key based on service type and locations
     let pricingKey = '';
-    
+
     if (serviceType === 'hourly') {
       pricingKey = 'hourly';
     } else if (serviceType === '8-hours') {
@@ -876,19 +900,23 @@ const ManageBookingClient = () => {
     }
 
     if (!pricingKey || !pricing[pricingKey]) return null;
-    
+
     const price = pricing[pricingKey][vehicleKey];
     return price !== null && price !== undefined ? price : null;
   }, [formData.selectedCar, formData.serviceType, formData.pickupLocation, formData.destination]);
+
+
+
+
 
   if (!isMounted) {
     return (
       <>
         <Header />
-        
+
         {/* Hero Section Skeleton */}
-        <Box 
-          sx={{ 
+        <Box
+          sx={{
             pt: 8,
             height: '35vh',
             minHeight: '300px',
@@ -901,17 +929,17 @@ const ManageBookingClient = () => {
         >
           <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2 }}>
             <Box sx={{ textAlign: 'center' }}>
-              <Skeleton 
-                variant="text" 
-                width="40%" 
-                height={60} 
-                sx={{ mx: 'auto', mb: 2, bgcolor: 'rgba(255,255,255,0.3)' }} 
+              <Skeleton
+                variant="text"
+                width="40%"
+                height={60}
+                sx={{ mx: 'auto', mb: 2, bgcolor: 'rgba(255,255,255,0.3)' }}
               />
-              <Skeleton 
-                variant="text" 
-                width="60%" 
-                height={40} 
-                sx={{ mx: 'auto', bgcolor: 'rgba(255,255,255,0.2)' }} 
+              <Skeleton
+                variant="text"
+                width="60%"
+                height={40}
+                sx={{ mx: 'auto', bgcolor: 'rgba(255,255,255,0.2)' }}
               />
             </Box>
           </Container>
@@ -938,31 +966,31 @@ const ManageBookingClient = () => {
                     {/* Form Fields Skeleton */}
                     <Skeleton variant="text" width="30%" height={20} animation="wave" sx={{ mb: 1 }} />
                     <Skeleton variant="rectangular" height={40} animation="wave" sx={{ borderRadius: '8px', mb: 3 }} />
-                    
+
                     <Skeleton variant="text" width="30%" height={20} animation="wave" sx={{ mb: 1 }} />
                     <Skeleton variant="rectangular" height={40} animation="wave" sx={{ borderRadius: '8px', mb: 3 }} />
-                    
+
                     <Skeleton variant="text" width="30%" height={20} animation="wave" sx={{ mb: 1 }} />
                     <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
                       <Skeleton variant="rectangular" width={120} height={40} animation="wave" sx={{ borderRadius: '8px' }} />
                       <Skeleton variant="rectangular" width="100%" height={40} animation="wave" sx={{ borderRadius: '8px' }} />
                     </Box>
-                    
+
                     <Skeleton variant="text" width="30%" height={20} animation="wave" sx={{ mb: 1 }} />
                     <Skeleton variant="rectangular" height={40} animation="wave" sx={{ borderRadius: '8px', mb: 3 }} />
-                    
+
                     <Skeleton variant="text" width="30%" height={20} animation="wave" sx={{ mb: 1 }} />
                     <Skeleton variant="rectangular" height={40} animation="wave" sx={{ borderRadius: '8px', mb: 3 }} />
-                    
+
                     <Skeleton variant="text" width="30%" height={20} animation="wave" sx={{ mb: 1 }} />
                     <Skeleton variant="rectangular" height={120} animation="wave" sx={{ borderRadius: '8px', mb: 3 }} />
-                    
+
                     <Skeleton variant="text" width="30%" height={20} animation="wave" sx={{ mb: 1 }} />
                     <Skeleton variant="rectangular" height={40} animation="wave" sx={{ borderRadius: '8px', mb: 3 }} />
-                    
+
                     <Skeleton variant="text" width="30%" height={20} animation="wave" sx={{ mb: 1 }} />
                     <Skeleton variant="rectangular" height={40} animation="wave" sx={{ borderRadius: '8px', mb: 4 }} />
-                    
+
                     {/* Buttons Skeleton */}
                     <Box sx={{ display: 'flex', gap: 2 }}>
                       <Skeleton variant="rectangular" width="50%" height={48} animation="wave" sx={{ borderRadius: '8px' }} />
@@ -982,10 +1010,10 @@ const ManageBookingClient = () => {
   return (
     <>
       <Header />
-      
+
       {/* Hero Section */}
-      <Box 
-        sx={{ 
+      <Box
+        sx={{
           pt: 8,
           height: '35vh',
           minHeight: '300px',
@@ -1023,7 +1051,7 @@ const ManageBookingClient = () => {
             />
           </Box>
         )}
-        
+
         {/* Overlay for better text readability */}
         <Box
           sx={{
@@ -1036,15 +1064,15 @@ const ManageBookingClient = () => {
             zIndex: 1
           }}
         />
-        
+
         <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2 }}>
           <Box sx={{ textAlign: 'center' }}>
             <SlideUpInView initialY={60} duration={0.8}>
-              <Typography 
-                variant="h2" 
-                component="h1" 
-                sx={{ 
-                  fontWeight: { xs: 700, sm: 700, md: 'bold' }, 
+              <Typography
+                variant="h2"
+                component="h1"
+                sx={{
+                  fontWeight: { xs: 700, sm: 700, md: 'bold' },
                   mb: { xs: 1.5, sm: 2, md: 2 },
                   color: 'white',
                   textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
@@ -1056,10 +1084,10 @@ const ManageBookingClient = () => {
               </Typography>
             </SlideUpInView>
             <SlideUpInView initialY={40} duration={0.9} delay={0.2}>
-              <Typography 
-                variant="h5" 
-                sx={{ 
-                  color: 'rgba(255,255,255,0.9)', 
+              <Typography
+                variant="h5"
+                sx={{
+                  color: 'rgba(255,255,255,0.9)',
                   lineHeight: { xs: 1.4, sm: 1.5, md: 1.6 },
                   textShadow: '1px 1px 2px rgba(0,0,0,0.5)',
                   fontSize: { xs: '0.875rem', sm: '1rem', md: '1.25rem', lg: '1.5rem' },
@@ -1358,8 +1386,8 @@ const ManageBookingClient = () => {
                       </FormControl>
                     </Box>
 
-                    {/* Select Color - Only show if car is selected and has color options */}
-                    {formData.selectedCar && availableColors.length > 0 && (
+                    {/* Select Color - Hidden for Ford Taurus (default black #1A1A1A), shown for other vehicles */}
+                    {/* {formData.selectedCar && availableColors.length > 0 && !formData.selectedCar.toLowerCase().includes('ford taurus') && (
                       <Box sx={{ mb: 3 }}>
                         <Typography
                           variant="body2"
@@ -1428,7 +1456,7 @@ const ManageBookingClient = () => {
                           </Select>
                         </FormControl>
                       </Box>
-                    )}
+                    )} */}
 
                     {/* Service Type */}
                     <Box sx={{ mb: 3 }}>
@@ -1488,6 +1516,11 @@ const ManageBookingClient = () => {
                           <MenuItem value="8-hours">8 Hours Package</MenuItem>
                           <MenuItem value="12-hours">12 Hours Package</MenuItem>
                           <MenuItem value="extra-hour">Extra Hour Rate</MenuItem>
+                          <MenuItem value="pickup">Pick up</MenuItem>
+                          <MenuItem value="dropoff">And drop off</MenuItem>
+                          <MenuItem value="by-hours">And by hours</MenuItem>
+                          <MenuItem value="package">Package</MenuItem>
+
                         </Select>
                       </FormControl>
                     </Box>
@@ -1541,13 +1574,21 @@ const ManageBookingClient = () => {
                             <MenuItem value="Jeddah">Jeddah</MenuItem>
                             <MenuItem value="Makkah">Makkah</MenuItem>
                             <MenuItem value="Madina">Madina</MenuItem>
+                            <MenuItem value="JED APT">JED APT</MenuItem>
+                            <MenuItem value="JED CITY">JED CITY</MenuItem>
+                            <MenuItem value="Makah City">Makah City</MenuItem>
+                            <MenuItem value="Madinah City">Madinah City</MenuItem>
+                            <MenuItem value="Madinah APT">Madinah APT</MenuItem>
+                            <MenuItem value="DAMMAM APT">DAMMAM APT</MenuItem>
+                            <MenuItem value="DAMMAM CITY">DAMMAM CITY</MenuItem>
+                            <MenuItem value="RYD APT">RYD APT</MenuItem>
                           </Select>
                         </FormControl>
                       </Box>
                     )}
 
                     {/* Destination - Show for inter-city routes or Jeddah Airport to Makkah */}
-                    {(formData.serviceType === 'inter-city' || (formData.serviceType === 'airport-pickup' && formData.pickupLocation === 'Jeddah')) && (
+                    {(formData.serviceType === 'inter-city' || (formData.serviceType === 'airport-pickup' && formData.pickupLocation === 'Jeddah' || formData.pickupLocation === 'Riyadh')) && (
                       <Box sx={{ mb: 3 }}>
                         <Typography
                           variant="body2"
@@ -1590,20 +1631,27 @@ const ManageBookingClient = () => {
                             <MenuItem value="" disabled>
                               Select Destination
                             </MenuItem>
-                            {formData.serviceType === 'airport-pickup' && formData.pickupLocation === 'Jeddah' && (
-                              <MenuItem value="Makkah">Makkah</MenuItem>
-                            )}
-                            {formData.serviceType === 'inter-city' && (
-                              [
-                                <MenuItem key="KAUST" value="KAUST">KAUST</MenuItem>,
-                                <MenuItem key="KAEC" value="KAEC">KAEC</MenuItem>,
-                                <MenuItem key="Yanbu" value="Yanbu">Yanbu</MenuItem>,
-                                <MenuItem key="Red Sea Umluj" value="Red Sea Umluj">Red Sea Umluj</MenuItem>,
-                                <MenuItem key="NEOM" value="NEOM">NEOM</MenuItem>,
-                                <MenuItem key="Makkah" value="Makkah">Makkah</MenuItem>,
-                                <MenuItem key="Medina" value="Medina">Medina</MenuItem>,
-                              ]
-                            )}
+                            {formData.serviceType === 'airport-pickup' && formData.pickupLocation === 'Jeddah' && [
+                              <MenuItem key="Makkah" value="Makkah">Makkah</MenuItem>,
+                              <MenuItem key="Jeddah" value="Jeddah">Jeddah</MenuItem>
+                            ]}
+                            {formData.serviceType === 'inter-city' || formData.pickupLocation === 'Riyadh' && [
+                              <MenuItem key="JED_APT" value="JED_APT">JED APT</MenuItem>,
+                              <MenuItem key="JED_CITY" value="JED_CITY">JED CITY</MenuItem>,
+                              <MenuItem key="Makkah_CITY" value="Makkah_CITY">Makah City</MenuItem>,
+                              <MenuItem key="Madina_CITY" value="Madina_CITY">Madinah City</MenuItem>,
+                              <MenuItem key="Madina_APT" value="Madina_APT">Madinah APT</MenuItem>,
+                              <MenuItem key="DAMMAM_APT" value="DAMMAM_APT">DAMMAM APT</MenuItem>,
+                              <MenuItem key="DAMMAM_CITY" value="DAMMAM_CITY">DAMMAM CITY</MenuItem>,
+                              <MenuItem key="RYD_APT" value="RYD_APT">RYD APT</MenuItem>,
+                              <MenuItem key="KAUST" value="KAUST">KAUST</MenuItem>,
+                              <MenuItem key="KAEC" value="KAEC">KAEC</MenuItem>,
+                              <MenuItem key="Yanbu" value="Yanbu">Yanbu</MenuItem>,
+                              <MenuItem key="Red_Sea_Umluj" value="Red_Sea_Umluj">Red Sea Umluj</MenuItem>,
+                              <MenuItem key="NEOM" value="NEOM">NEOM</MenuItem>,
+                              <MenuItem key="Makkah" value="Makkah">Makkah</MenuItem>,
+                              <MenuItem key="Medina" value="Medina">Medina</MenuItem>
+                            ]}
                           </Select>
                         </FormControl>
                       </Box>
@@ -1621,9 +1669,11 @@ const ManageBookingClient = () => {
                             fontSize: '0.875rem',
                           }}
                         >
-                          Estimated Price
+                          Pls confirm your booking so our reservations team can contact with you for further procedures
+                          Once we received the reservation or the booking we will confirm to the client with the rate and
+                          availability
                         </Typography>
-                        <Typography
+                        {/* <Typography
                           variant="h5"
                           sx={{
                             fontWeight: 'bold',
@@ -1642,12 +1692,12 @@ const ManageBookingClient = () => {
                           }}
                         >
                           *Excludes VAT 15%
-                        </Typography>
+                        </Typography> */}
                       </Box>
                     )}
 
                     {/* Upload Photo */}
-                    <Box sx={{ mb: 3 }}>
+                    {/* <Box sx={{ mb: 3 }}>
                       <Typography
                         variant="body2"
                         sx={{
@@ -1689,7 +1739,7 @@ const ManageBookingClient = () => {
                           </Box>
                         </label>
                       </Box>
-                    </Box>
+                    </Box> */}
 
                     {/* Pickup Date (Required) */}
                     <Box sx={{ mb: 3 }}>
@@ -1702,12 +1752,12 @@ const ManageBookingClient = () => {
                           fontSize: '0.875rem',
                         }}
                       >
-                        Pickup Date*
+                        Pickup Date & Time*
                       </Typography>
                       <TextField
                         fullWidth
                         name="pickupDate"
-                        type="date"
+                        type="datetime-local"
                         value={formData.pickupDate}
                         onChange={handleInputChange}
                         required
@@ -1739,12 +1789,12 @@ const ManageBookingClient = () => {
                           fontSize: '0.875rem',
                         }}
                       >
-                        Return Date
+                        Return Date & Time
                       </Typography>
                       <TextField
                         fullWidth
                         name="returnDate"
-                        type="date"
+                        type="datetime-local"
                         value={formData.returnDate}
                         onChange={handleInputChange}
                         size="small"
@@ -1812,7 +1862,7 @@ const ManageBookingClient = () => {
           </Grid>
         </Container>
       </Box>
-      
+
       {/* Toast Notification */}
       <Snackbar
         open={snackbar.open}
@@ -1829,7 +1879,7 @@ const ManageBookingClient = () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
-      
+
       <Footer />
     </>
   );

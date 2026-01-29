@@ -106,8 +106,8 @@ const Vehicle360Viewer: React.FC<Vehicle360ViewerProps> = ({
   const getCurrentImage = () => {
     if (currentColorImages.length > 0) {
       // If we have multiple images, use the calculated index
-      const imageIndex = currentColorImages.length > 1 
-        ? currentImageIndex % currentColorImages.length 
+      const imageIndex = currentColorImages.length > 1
+        ? currentImageIndex % currentColorImages.length
         : 0;
       return currentColorImages[imageIndex] || currentColorImages[0];
     }
@@ -226,71 +226,73 @@ const Vehicle360Viewer: React.FC<Vehicle360ViewerProps> = ({
             )}
           </Box>
 
-          {/* Color Options */}
-          <Box sx={{ mb: 2 }}>
-            <Typography
-              variant="body1"
-              sx={{
-                fontWeight: 'bold',
-                mb: 2,
-                color: '#1a1a1a',
-                textAlign: 'center',
-              }}
-            >
-              Select Color
-            </Typography>
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                gap: 1.5,
-                flexWrap: 'wrap',
-                alignItems: 'center',
-              }}
-            >
-              {colors.map((color, index) => (
-                <Box
-                  key={color.id}
-                  onClick={() => handleColorSelect(index)}
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                    transition: 'transform 0.2s',
-                    '&:hover': {
-                      transform: 'scale(1.1)',
-                    },
-                  }}
-                >
+          {/* Color Options - Hidden per requirements */}
+          {false && (
+            <Box sx={{ mb: 2 }}>
+              <Typography
+                variant="body1"
+                sx={{
+                  fontWeight: 'bold',
+                  mb: 2,
+                  color: '#1a1a1a',
+                  textAlign: 'center',
+                }}
+              >
+                Select Color
+              </Typography>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  gap: 1.5,
+                  flexWrap: 'wrap',
+                  alignItems: 'center',
+                }}
+              >
+                {colors.map((color, index) => (
                   <Box
+                    key={color.id}
+                    onClick={() => handleColorSelect(index)}
                     sx={{
-                      width: 48,
-                      height: 48,
-                      borderRadius: '8px',
-                      backgroundColor: color.color,
-                      border: selectedColor === index ? '3px solid #52A4C1' : '2px solid #E0E0E0',
-                      boxShadow: selectedColor === index 
-                        ? '0 4px 12px rgba(82, 164, 193, 0.4)' 
-                        : '0 2px 4px rgba(0,0,0,0.1)',
-                      mb: 0.5,
-                      transition: 'all 0.2s',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      cursor: 'pointer',
+                      transition: 'transform 0.2s',
+                      '&:hover': {
+                        transform: 'scale(1.1)',
+                      },
                     }}
-                  />
-                  {selectedColor === index && (
+                  >
                     <Box
                       sx={{
-                        width: '100%',
-                        height: 2,
-                        backgroundColor: '#52A4C1',
-                        borderRadius: 1,
+                        width: 48,
+                        height: 48,
+                        borderRadius: '8px',
+                        backgroundColor: color.color,
+                        border: selectedColor === index ? '3px solid #52A4C1' : '2px solid #E0E0E0',
+                        boxShadow: selectedColor === index
+                          ? '0 4px 12px rgba(82, 164, 193, 0.4)'
+                          : '0 2px 4px rgba(0,0,0,0.1)',
+                        mb: 0.5,
+                        transition: 'all 0.2s',
                       }}
                     />
-                  )}
-                </Box>
-              ))}
+                    {selectedColor === index && (
+                      <Box
+                        sx={{
+                          width: '100%',
+                          height: 2,
+                          backgroundColor: '#52A4C1',
+                          borderRadius: 1,
+                        }}
+                      />
+                    )}
+                  </Box>
+                ))}
+              </Box>
             </Box>
-          </Box>
+          )}
 
           {/* Current Color Name */}
           <Typography

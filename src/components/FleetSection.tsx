@@ -260,7 +260,7 @@ const FleetSection = () => {
                                 src={car.image.src || car.image}
                                 alt={car.name}
                                 fill
-                                objectFit="cover"
+                                objectFit="contain"
                                 objectPosition="center"
                                 loading="lazy"
                                 sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 25vw"

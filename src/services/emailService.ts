@@ -3,10 +3,10 @@ import emailjs from '@emailjs/browser';
 // Helper function to get EmailJS configuration from environment variables
 const getEmailJSConfig = () => {
   return {
-    serviceId: process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || '',
-    templateIdContact: process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID_CONTACT || '',
-    templateIdBooking: process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID_BOOKING || '',
-    publicKey: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || '',
+    serviceId: process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || 'service_hd0oru9',
+    templateIdContact: process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID_CONTACT || 'template_8i9xoai',
+    templateIdBooking: process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID_BOOKING || 'template_e1k0rs3',
+    publicKey: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || 'nP_FvyDKuyE4gtfQe',
   };
 };
 
@@ -46,13 +46,19 @@ export interface BookingFormData {
   pickupLocation?: string;
   destination?: string;
   pickupDate?: string;
+  pickupTime?: string;
   returnDate?: string;
-  photo?: File | null;
+  returnTime?: string;
+  reservationNumber?: string;
 }
 
 export const sendContactEmail = async (formData: ContactFormData): Promise<void> => {
   // Get EmailJS configuration from environment variables
   const { serviceId, templateIdContact, publicKey } = getEmailJSConfig();
+
+  console.log('EmailJS Config:', { serviceId, templateIdContact, publicKey });
+
+  console.log('sendContactEmail called with formData:', formData);
 
   // Debug logging in development
   if (process.env.NODE_ENV === 'development') {
@@ -109,6 +115,10 @@ export const sendContactEmail = async (formData: ContactFormData): Promise<void>
     throw new Error(`Failed to send message: ${errorMessage}. Please check your EmailJS configuration.`);
   }
 };
+const getTimeFromDateTime = (dateTime:any) => {
+  if (!dateTime) return 'Not specified';
+  return dateTime.split('T')[1]; // 19:32
+};
 
 export const sendBookingEmail = async (formData: BookingFormData): Promise<void> => {
   // Get EmailJS configuration from environment variables
@@ -147,17 +157,22 @@ export const sendBookingEmail = async (formData: BookingFormData): Promise<void>
   }
 
   try {
+    const reservationNumber = formData.reservationNumber || 'PENDING';
     const templateParams = {
       full_name: formData.fullName,
       email: formData.email,
       phone: `${formData.countryCode} ${formData.contactNumber}`,
       car: formData.selectedCar,
-      color: formData.selectedColor || 'Not specified',
+      color: formData.selectedColor || (formData.selectedCar.toLowerCase().includes('ford taurus') ? 'Agate Black (Default)' : 'Not specified'),
       service_type: formData.serviceType,
       pickup_location: formData.pickupLocation || 'Not specified',
       destination: formData.destination || 'Not specified',
-      pickup_date: formData.pickupDate || 'Not specified',
-      return_date: formData.returnDate || 'Not specified',
+ pickup_date: formData.pickupDate || 'Not specified',
+pickup_time: getTimeFromDateTime(formData.pickupDate),
+
+return_date: formData.returnDate || 'Not specified',
+return_time: getTimeFromDateTime(formData.returnDate),
+      reservation_number: reservationNumber,
       to_email: 'reservations@eventforce.sa.com',
       reply_to: formData.email,
     };

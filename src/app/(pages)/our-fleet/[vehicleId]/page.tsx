@@ -1065,8 +1065,8 @@ const VehicleDetailsPage = () => {
                     />
                   </Box>
 
-                  {/* Color Swatches */}
-                  {(selectedCar?.name === "Ford Taurus" ||
+                  {/* Color Swatches - Hidden per requirements */}
+                  {false && (selectedCar?.name === "Ford Taurus" ||
                     selectedCar?.name === "GMC Yukon" ||
                     selectedCar?.name?.includes("GMC") ||
                     selectedCar?.name === "BMW 5 Series" ||

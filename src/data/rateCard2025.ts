@@ -245,7 +245,7 @@ export const rateCard2025: RateCard = {
         { vehicleType: 'ford_taurus', rate: 750 },
         { vehicleType: 'yukon', rate: 1200 },
         { vehicleType: 'bmw_5', rate: 1200 },
-        { vehicleType: 'bmw_735_mercedes_s450', rate: 2500 }, // Using max value from range 2000/2500
+        { vehicleType: 'bmw_735_mercedes_s450', rate: 2000 }, // Range: 2000/2500, using min value
         { vehicleType: 'hiace_12_seat', rate: 850 },
         { vehicleType: 'coaster_23_seat', rate: 1200 },
         { vehicleType: 'bus_49_seat', rate: 1500 },
@@ -259,7 +259,7 @@ export const rateCard2025: RateCard = {
         { vehicleType: 'ford_taurus', rate: 1000 },
         { vehicleType: 'yukon', rate: 1500 },
         { vehicleType: 'bmw_5', rate: 1500 },
-        { vehicleType: 'bmw_735_mercedes_s450', rate: 3000 }, // Using max value from range 2400/3000
+        { vehicleType: 'bmw_735_mercedes_s450', rate: 2400 }, // Range: 2400/3000, using min value
         { vehicleType: 'hiace_12_seat', rate: 1000 },
         { vehicleType: 'coaster_23_seat', rate: 1500 },
         { vehicleType: 'bus_49_seat', rate: 2000 },
