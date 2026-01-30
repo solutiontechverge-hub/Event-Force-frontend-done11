@@ -98,6 +98,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <meta name="emotion-insertion-point" content="" />
+        <meta name="google-site-verification" content="SJCwkBWfbHB2rVkhSR9h1CxZg8mxVt0yCyKxXkJ1ExU" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#52A4C1" />
         <meta name="apple-mobile-web-app-capable" content="yes" />

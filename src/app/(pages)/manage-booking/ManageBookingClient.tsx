@@ -1179,7 +1179,7 @@ const ManageBookingClient = () => {
                         src={displayCar.image.src || displayCar.image}
                         alt={displayCar.name}
                         fill
-                        style={{ objectFit: 'cover' }}
+                        style={{ objectFit: 'contain' }}
                         priority
                       />
                     </Box>

@@ -3,17 +3,17 @@ import emailjs from '@emailjs/browser';
 // Helper function to get EmailJS configuration from environment variables
 const getEmailJSConfig = () => {
   return {
-    serviceId: process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || 'service_hd0oru9',
-    templateIdContact: process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID_CONTACT || 'template_8i9xoai',
-    templateIdBooking: process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID_BOOKING || 'template_e1k0rs3',
-    publicKey: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || 'nP_FvyDKuyE4gtfQe',
+    serviceId: 'service_72jtj46',
+    templateIdContact: 'template_h6syf6i',
+    templateIdBooking: 'template_m4d7mlk',
+    publicKey: '-mDuRKSIkk-3w_jOo',
   };
 };
 
 // Initialize EmailJS only if configured and in browser
 const initializeEmailJS = () => {
   if (typeof window === 'undefined') return;
-  
+
   const { publicKey } = getEmailJSConfig();
   if (publicKey && publicKey !== 'YOUR_PUBLIC_KEY_HERE') {
     try {
@@ -75,7 +75,7 @@ export const sendContactEmail = async (formData: ContactFormData): Promise<void>
     if (!serviceId) missingVars.push('NEXT_PUBLIC_EMAILJS_SERVICE_ID');
     if (!templateIdContact) missingVars.push('NEXT_PUBLIC_EMAILJS_TEMPLATE_ID_CONTACT');
     if (!publicKey || publicKey === 'YOUR_PUBLIC_KEY_HERE') missingVars.push('NEXT_PUBLIC_EMAILJS_PUBLIC_KEY');
-    
+
     throw new Error(
       `EmailJS is not configured. Missing or invalid: ${missingVars.join(', ')}. ` +
       `Please check your .env.local file and ensure all EmailJS environment variables are set. ` +
@@ -115,7 +115,7 @@ export const sendContactEmail = async (formData: ContactFormData): Promise<void>
     throw new Error(`Failed to send message: ${errorMessage}. Please check your EmailJS configuration.`);
   }
 };
-const getTimeFromDateTime = (dateTime:any) => {
+const getTimeFromDateTime = (dateTime: any) => {
   if (!dateTime) return 'Not specified';
   return dateTime.split('T')[1]; // 19:32
 };
@@ -139,7 +139,7 @@ export const sendBookingEmail = async (formData: BookingFormData): Promise<void>
     if (!serviceId) missingVars.push('NEXT_PUBLIC_EMAILJS_SERVICE_ID');
     if (!templateIdBooking) missingVars.push('NEXT_PUBLIC_EMAILJS_TEMPLATE_ID_BOOKING');
     if (!publicKey || publicKey === 'YOUR_PUBLIC_KEY_HERE') missingVars.push('NEXT_PUBLIC_EMAILJS_PUBLIC_KEY');
-    
+
     throw new Error(
       `EmailJS is not configured. Missing or invalid: ${missingVars.join(', ')}. ` +
       `Please check your .env.local file and ensure all EmailJS environment variables are set. ` +
@@ -167,11 +167,11 @@ export const sendBookingEmail = async (formData: BookingFormData): Promise<void>
       service_type: formData.serviceType,
       pickup_location: formData.pickupLocation || 'Not specified',
       destination: formData.destination || 'Not specified',
- pickup_date: formData.pickupDate || 'Not specified',
-pickup_time: getTimeFromDateTime(formData.pickupDate),
+      pickup_date: formData.pickupDate || 'Not specified',
+      pickup_time: getTimeFromDateTime(formData.pickupDate),
 
-return_date: formData.returnDate || 'Not specified',
-return_time: getTimeFromDateTime(formData.returnDate),
+      return_date: formData.returnDate || 'Not specified',
+      return_time: getTimeFromDateTime(formData.returnDate),
       reservation_number: reservationNumber,
       to_email: 'reservations@eventforce.sa.com',
       reply_to: formData.email,
