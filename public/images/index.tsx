@@ -1,12 +1,12 @@
 // Car Images
-export { default as CarBmw7Series } from './car-bmw-7-series.png';
+export { default as CarBmw7Series } from './car-bmw-5-series.png';
 export { default as CarChinesbus49Sea } from './car-chinesbus-49-sea.png';
 export { default as CarFordTaurus } from './car-ford-taurus.png';
 export { default as CarGmc } from './car-gmc.png';
 export { default as CarHiace } from './car-hiace.png';
 export { default as CarMercedesS450 } from './car-mercedes-s450.png';
 export { default as CarMercedesVClass } from './car-mercedes-v-class.png';
-export { default as CarMw5Series } from './car-mw-5-series.png';
+export { default as CarMw5Series } from './car-bmw-7-series.png';
 export { default as CarToyotaCoaster } from './car-toyota-coaster.png';
 
 // Client Images

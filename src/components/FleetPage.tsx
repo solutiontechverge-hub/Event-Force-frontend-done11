@@ -26,6 +26,7 @@ import {
   CarHiace,
   CarMercedesS450,
   CarMercedesVClass,
+  CarMw5Series,
 } from '../../public/images';
 import { ScaleInView, SlideSidewayInView, SlideUpInView } from '@/components/animations';
 import { CarToyotaCoaster } from '../../public/images';
@@ -59,20 +60,20 @@ const fleet: Car[] = [
     year: '2024',
     branch: 'Jeddah'
   },
-  {
-    name: 'GMC Yukon',
-    price: '150 SAR',
-    duration: 'Per hour',
-    image: CarGmc,
-    class: 'SUV',
-    year: '2025',
-    branch: 'Jeddah'
-  },
+  // {
+  //   name: 'GMC Yukon',
+  //   price: '150 SAR',
+  //   duration: 'Per hour',
+  //   image: CarGmc,
+  //   class: 'SUV',
+  //   year: '2025',
+  //   branch: 'Jeddah'
+  // },
   {
     name: 'BMW 5 Series',
     price: '150 SAR',
     duration: 'Per hour',
-    image: CarBmw7Series,
+    image: CarMw5Series,
     class: 'Luxury',
     year: '2025',
     branch: 'Riyadh'
