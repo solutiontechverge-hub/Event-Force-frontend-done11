@@ -31,7 +31,7 @@ const initializeEmailJS = () => {
     try {
       emailjs.init(publicKey);
     } catch (error) {
-      console.warn('EmailJS initialization failed:', error);
+      // EmailJS initialization failed
     }
   }
 };
@@ -68,18 +68,7 @@ export const sendContactEmail = async (formData: ContactFormData): Promise<void>
   // Get EmailJS configuration from environment variables
   const { serviceId, templateIdContact, publicKey } = getEmailJSConfig();
 
-  console.log('EmailJS Config:', { serviceId, templateIdContact, publicKey });
 
-  console.log('sendContactEmail called with formData:', formData);
-
-  // Debug logging in development
-  if (process.env.NODE_ENV === 'development') {
-    console.log('EmailJS Config Check:', {
-      serviceId: serviceId ? '✓ Set' : '✗ Missing',
-      templateIdContact: templateIdContact ? '✓ Set' : '✗ Missing',
-      publicKey: publicKey && publicKey !== 'YOUR_PUBLIC_KEY_HERE' ? '✓ Set' : '✗ Missing or Placeholder',
-    });
-  }
 
   // Check if EmailJS is configured
   if (!serviceId || !publicKey || !templateIdContact || publicKey === 'YOUR_PUBLIC_KEY_HERE') {
@@ -100,7 +89,7 @@ export const sendContactEmail = async (formData: ContactFormData): Promise<void>
     try {
       emailjs.init(publicKey);
     } catch (error) {
-      console.warn('EmailJS initialization warning:', error);
+      // EmailJS initialization warning
     }
   }
 
@@ -121,8 +110,8 @@ export const sendContactEmail = async (formData: ContactFormData): Promise<void>
       templateIdContact,
       templateParams
     );
+
   } catch (error: any) {
-    console.error('Error sending contact email:', error);
     const errorMessage = error?.text || error?.message || 'Unknown error occurred';
     throw new Error(`Failed to send message: ${errorMessage}. Please check your EmailJS configuration.`);
   }
@@ -135,15 +124,6 @@ const getTimeFromDateTime = (dateTime: any) => {
 export const sendBookingEmail = async (formData: BookingFormData): Promise<void> => {
   // Get EmailJS configuration from environment variables
   const { serviceId, templateIdBooking, publicKey } = getEmailJSConfig();
-
-  // Debug logging
-  console.log('EmailJS Config Check:', {
-    serviceId: serviceId ? '✓ Set' : '✗ Missing',
-    templateIdBooking: templateIdBooking ? '✓ Set' : '✗ Missing',
-    publicKey: publicKey && publicKey !== 'YOUR_PUBLIC_KEY_HERE' ? '✓ Set' : '✗ Missing or Placeholder',
-  });
-
-  console.log('Form Data:', formData);
 
   // Check if EmailJS is configured
   if (!serviceId || !publicKey || !templateIdBooking || publicKey === 'YOUR_PUBLIC_KEY_HERE') {
@@ -163,9 +143,7 @@ export const sendBookingEmail = async (formData: BookingFormData): Promise<void>
   if (typeof window !== 'undefined') {
     try {
       emailjs.init(publicKey);
-      console.log('EmailJS initialized successfully');
     } catch (error) {
-      console.error('EmailJS initialization failed:', error);
       throw new Error(`EmailJS initialization failed: ${error}`);
     }
   } else {
@@ -176,7 +154,7 @@ export const sendBookingEmail = async (formData: BookingFormData): Promise<void>
     const reservationNumber = formData.reservationNumber || 'PENDING';
     const templateParams = {
       full_name: formData.fullName,
-      email: formData.email,
+      email: 'reservations@eventforce.sa.com',
       phone: `${formData.countryCode} ${formData.contactNumber}`,
       car: formData.selectedCar,
 
@@ -218,32 +196,26 @@ export const sendBookingEmail = async (formData: BookingFormData): Promise<void>
     const errors: string[] = [];
 
     try {
-      console.log('Sending admin email...', { serviceId, templateIdBooking, to_email: templateParams.to_email });
       await emailjs.send(
         serviceId,
         templateIdBooking,
         templateParams
       );
       adminEmailSuccess = true;
-      console.log('Admin email sent successfully');
     } catch (adminError: any) {
-      console.error('Error sending admin email:', adminError);
       const adminErrorMessage = adminError?.text || adminError?.message || 'Unknown error occurred';
       errors.push(`Admin email failed: ${adminErrorMessage}`);
     }
 
     // Send user email (try even if admin email failed)
     try {
-      console.log('Sending user email...', { serviceId, templateIdBooking, to_email: templateParamsUser.to_email });
       await emailjs.send(
         serviceId,
         templateIdBooking,
         templateParamsUser
       );
       userEmailSuccess = true;
-      console.log('User email sent successfully');
     } catch (userError: any) {
-      console.error('Error sending user email:', userError);
       const userErrorMessage = userError?.text || userError?.message || 'Unknown error occurred';
       errors.push(`User email failed: ${userErrorMessage}`);
     }
@@ -253,17 +225,12 @@ export const sendBookingEmail = async (formData: BookingFormData): Promise<void>
       throw new Error(`Both emails failed. ${errors.join(' | ')}`);
     }
 
-    // If at least one email succeeded, log warning but don't fail
+    // If at least one email succeeded, continue without failing
     if (!adminEmailSuccess || !userEmailSuccess) {
-      console.warn('Partial email success:', {
-        adminEmailSuccess,
-        userEmailSuccess,
-        errors
-      });
+      // Partial email success
     }
 
   } catch (error: any) {
-    console.error('Error sending booking email:', error);
     const errorMessage = error?.text || error?.message || error?.toString() || 'Unknown error occurred';
     throw new Error(`Failed to submit booking: ${errorMessage}. Please check your EmailJS configuration.`);
   }
