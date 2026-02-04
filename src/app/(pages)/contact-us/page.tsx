@@ -115,7 +115,7 @@ const ContactUsPage = () => {
                   px: { xs: 2, sm: 0, md: 0 }
                 }}
               >
-                {t('contact.description')}7777
+                {t('contact.description')}
               </Typography>
             </SlideUpInView>
           </Box>

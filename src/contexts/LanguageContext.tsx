@@ -52,6 +52,7 @@ const translations: Record<Language, Record<string, string>> = {
     "header.logout": "Logout",
     "header.profile": "Profile",
     "header.account": "Account",
+    "header.signUp": "Sign Up",
 
     // Footer
     "footer.navigation": "Navigation",
@@ -167,6 +168,7 @@ const translations: Record<Language, Record<string, string>> = {
     "contact.description":
       "Have questions or need assistance? We're here to help! Reach out to us through any of the following channels.",
     "contact.contactUs": "Contact Us",
+    "contact.name": "Name",
     "contact.namePlaceholder": "Enter your name",
     "contact.emailPlaceholder": "Enter your email",
     "contact.messagePlaceholder": "Enter your message",
@@ -277,6 +279,7 @@ const translations: Record<Language, Record<string, string>> = {
     "header.logout": "تسجيل الخروج",
     "header.profile": "الملف الشخصي",
     "header.account": "الحساب",
+    "header.signUp": "اشتراك",
 
     // Footer
     "footer.navigation": "التنقل",

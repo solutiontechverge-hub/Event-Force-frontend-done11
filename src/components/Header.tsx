@@ -250,7 +250,7 @@ const Header = () => {
                 transition: "all 0.3s ease",
               }}
             >
-              Sign Up {t("header.signUp")}
+               {t("header.signUp")}
             </Button>
           )}
         </Box>
@@ -441,7 +441,7 @@ const Header = () => {
                     transition: "all 0.2s",
                   }}
                 >
-                  Sign Up
+                  {t("header.signUp")}
                 </Button>
               )}
             </Box>

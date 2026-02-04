@@ -78,6 +78,8 @@ const ContactSection = () => {
     setSnackbar((prev) => ({ ...prev, open: false }));
   };
 
+
+
   return (
     <Box sx={{ py: 10, backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
       {/* Match booking page layout by centering content in a container */}
@@ -406,7 +408,7 @@ const ContactSection = () => {
                           color: "#333333",
                         }}
                       >
-                        Message *
+                        {t("contact.message")} *
                       </Typography>
                       <TextField
                         fullWidth
@@ -525,7 +527,7 @@ const ContactSection = () => {
                               color: "#333333",
                             }}
                           >
-                            Your Name *
+                            {t("contact.name")} *
                           </Typography>
                           <TextField
                             fullWidth
@@ -533,7 +535,7 @@ const ContactSection = () => {
                             value={formData.name}
                             onChange={handleInputChange}
                             required
-                            placeholder="Enter your full name"
+                            placeholder={t("contact.namePlaceholder")}
                             sx={{
                               "& .MuiOutlinedInput-root": {
                                 backgroundColor: "#F5F5F5",
@@ -567,7 +569,7 @@ const ContactSection = () => {
                               fontSize: { xs: "0.875rem", sm: "1rem" },
                             }}
                           >
-                            Your Email *
+                            {t("contact.email")} *
                           </Typography>
                           <TextField
                             fullWidth
@@ -619,7 +621,7 @@ const ContactSection = () => {
                               color: "#333333",
                             }}
                           >
-                            Message *
+                            {t("contact.message")} *
                           </Typography>
                           <TextField
                             fullWidth
