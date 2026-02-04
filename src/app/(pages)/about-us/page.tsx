@@ -13,8 +13,10 @@ import TestimonialsSection from '@/components/TestimonialsSection'
 import { ScaleInView, SlideSidewayInView, SlideUpInView } from '@/components/animations'
 import { PageSkeleton } from '@/components/PageSkeleton'
 import { AboutBg, AboutTeam } from '../../../../public/images';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const AboutUsPage = () => {
+  const { t } = useLanguage();
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -117,7 +119,7 @@ const AboutUsPage = () => {
                     lineHeight: { xs: 1.1, sm: 1.2, md: 1.2 }
                   }}
                 >
-                  About Event Force
+                  {t('about.title')}
                 </Typography>
               </SlideUpInView>
               <SlideUpInView initialY={40} duration={0.9} delay={0.2}>
@@ -135,8 +137,7 @@ const AboutUsPage = () => {
                     opacity: 0.9
                   }}
                 >
-                  We are Saudi Arabia's premier transportation and event logistics company, 
-                  dedicated to providing exceptional service and luxury experiences.
+                  {t('about.subtitle')}
                 </Typography>
               </SlideUpInView>
             </Box>

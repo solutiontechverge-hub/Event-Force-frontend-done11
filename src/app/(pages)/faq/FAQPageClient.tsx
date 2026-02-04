@@ -32,8 +32,10 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { ScaleInView, SlideUpInView } from '@/components/animations';
 import { FaqBg } from '../../../../public/images';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const FAQPageClient = () => {
+  const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedCategory, setExpandedCategory] = useState<string | false>(false);
 
@@ -248,7 +250,7 @@ const FAQPageClient = () => {
                   textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
                 }}
               >
-                Frequently Asked Questions
+                {t('faq.title')}
               </Typography>
             </SlideUpInView>
             <SlideUpInView initialY={40} duration={0.9} delay={0.2}>
@@ -264,7 +266,7 @@ const FAQPageClient = () => {
                   textShadow: '1px 1px 2px rgba(0,0,0,0.5)'
                 }}
               >
-                Find quick answers to the most common questions about our services
+                {t('faq.subtitle')}
               </Typography>
             </SlideUpInView>
             
@@ -272,7 +274,7 @@ const FAQPageClient = () => {
             <SlideUpInView initialY={40} duration={1.0} delay={0.4}>
               <TextField
                 fullWidth
-                placeholder="Search FAQ..."
+                placeholder={t('faq.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 sx={{

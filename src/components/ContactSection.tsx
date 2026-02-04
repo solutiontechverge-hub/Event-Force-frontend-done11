@@ -21,8 +21,10 @@ import {
   SlideUpInView,
 } from "@/components/animations";
 import { sendContactEmail } from "@/services/emailService";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const ContactSection = () => {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -51,16 +53,14 @@ const ContactSection = () => {
       await sendContactEmail(formData);
       setSnackbar({
         open: true,
-        message:
-          "Your details submitted successfully! A message will be provided to you soon.",
+        message: t('contact.success'),
         severity: "success",
       });
       setFormData({ name: "", email: "", message: "" });
     } catch (error: any) {
       setSnackbar({
         open: true,
-        message:
-          error.message || "Failed to send message. Please try again later.",
+        message: error.message || t('contact.error'),
         severity: "error",
       });
     } finally {
@@ -127,7 +127,7 @@ const ContactSection = () => {
                       fontSize: { xs: "1.25rem", sm: "1.5rem", md: "1.75rem" },
                     }}
                   >
-                    Contact Us
+                    {t('contact.contactUs')}
                   </Typography>
 
                   <Box
@@ -210,7 +210,7 @@ const ContactSection = () => {
                         component="span"
                         sx={{ fontWeight: "bold", display: "block", mb: 0.5 }}
                       >
-                        Head Quarter:
+                        {t('contact.headquarters')}:
                       </Box>
                       8303 Al Ghamdi Center, 1st floor, Office #103, Oman
                       Street, Al Baghdadiyah Al Gharbiyah Dist., Jeddah 22234,
@@ -224,7 +224,7 @@ const ContactSection = () => {
                           mb: 0.5,
                         }}
                       >
-                        Branch:
+                        {t('contact.branch')}:
                       </Box>
                       White Space, King Abdullah Dt. Riyadh 12211, Saudi Arabia
                     </Typography>
@@ -291,7 +291,7 @@ const ContactSection = () => {
                       fontFamily: "Poppins, sans-serif",
                     }}
                   >
-                    Get in touch!
+                    {t('contact.getInTouch')}
                   </Typography>
 
                   <Box
@@ -307,7 +307,7 @@ const ContactSection = () => {
                           color: "#333333",
                         }}
                       >
-                        Your Name *
+                        {t('contact.name')} *
                       </Typography>
                       <TextField
                         fullWidth
@@ -315,7 +315,7 @@ const ContactSection = () => {
                         value={formData.name}
                         onChange={handleInputChange}
                         required
-                        placeholder="Enter your full name"
+                        placeholder={t('contact.namePlaceholder')}
                         sx={{
                           "& .MuiOutlinedInput-root": {
                             backgroundColor: "#F5F5F5",
@@ -349,7 +349,7 @@ const ContactSection = () => {
                           fontSize: { xs: "0.875rem", sm: "1rem" },
                         }}
                       >
-                        Your Email *
+                        {t('contact.email')} *
                       </Typography>
                       <TextField
                         fullWidth
@@ -358,7 +358,7 @@ const ContactSection = () => {
                         value={formData.email}
                         onChange={handleInputChange}
                         required
-                        placeholder="Enter your email address"
+                        placeholder={t('contact.emailPlaceholder')}
                         inputProps={{
                           inputMode: "email",
                           autoComplete: "email",
@@ -411,7 +411,7 @@ const ContactSection = () => {
                         value={formData.message}
                         onChange={handleInputChange}
                         required
-                        placeholder="Enter your message here"
+                        placeholder={t('contact.messagePlaceholder')}
                         sx={{
                           "& .MuiOutlinedInput-root": {
                             backgroundColor: "#F5F5F5",
@@ -462,10 +462,10 @@ const ContactSection = () => {
                           }}
                         >
                           <CircularProgress size={20} color="inherit" />
-                          <span>Sending Message...</span>
+                          <span>{t('common.loading')}</span>
                         </Box>
                       ) : (
-                        "Send Message"
+                        t('contact.sendMessage')
                       )}
                     </Button>
                   </Box>
@@ -487,17 +487,17 @@ const ContactSection = () => {
                           color: "#333333",
                         }}
                       >
-                        Love to hear from you
-                      </Typography>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          color: "#666666",
-                          mb: 4,
-                          fontFamily: "Poppins, sans-serif",
-                        }}
-                      >
-                        Get in touch!
+                    {t('contact.getInTouch')}
+                  </Typography>
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      color: "#666666",
+                      mb: 4,
+                      fontFamily: "Poppins, sans-serif",
+                    }}
+                  >
+                    {t('contact.description')}
                       </Typography>
 
                       <Box
@@ -621,7 +621,7 @@ const ContactSection = () => {
                             value={formData.message}
                             onChange={handleInputChange}
                             required
-                            placeholder="Enter your message here"
+                            placeholder={t('contact.messagePlaceholder')}
                             sx={{
                               "& .MuiOutlinedInput-root": {
                                 backgroundColor: "#F5F5F5",
@@ -675,7 +675,7 @@ const ContactSection = () => {
                               <span>Sending Message...</span>
                             </Box>
                           ) : (
-                            "Send Message"
+                            t('contact.sendMessage')
                           )}
                         </Button>
                       </Box>

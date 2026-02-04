@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -32,6 +32,8 @@ import {
 } from '@mui/icons-material';
 import { LogoEventForce } from '../../public/images';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
+import LanguageSelector from '@/components/LanguageSelector';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -40,6 +42,7 @@ const Header = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const pathname = usePathname();
   const { user, isAuthenticated, logout } = useAuth();
+  const { t, language } = useLanguage();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -50,12 +53,12 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navigation = [
-    { name: 'Home', href: '/' },
-    { name: 'About Us', href: '/about-us' },
-    { name: 'Our Fleet', href: '/our-fleet' },
-    { name: 'Contact Us', href: '/contact-us' },
-  ];
+  const navigation = useMemo(() => [
+    { name: t('nav.home'), href: '/' },
+    { name: t('nav.about'), href: '/about-us' },
+    { name: t('nav.fleet'), href: '/our-fleet' },
+    { name: t('nav.contact'), href: '/contact-us' },
+  ], [t, language]);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -146,7 +149,10 @@ const Header = () => {
             </ListItem>
           ))}
         </List>
-        <Box sx={{ mt: 2, pt: 2, borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+        <Box sx={{ mt: 2, pt: 2, borderTop: '1px solid rgba(255,255,255,0.1)', px: 3 }}>
+          <Box sx={{ mb: 2 }}>
+            <LanguageSelector />
+          </Box>
           {isAuthenticated ? (
             <Box>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, p: 2, backgroundColor: 'rgba(82, 164, 193, 0.1)', borderRadius: 2 }}>
@@ -183,7 +189,7 @@ const Header = () => {
                   transition: 'all 0.3s ease',
                 }}
               >
-                Logout
+                {t('header.logout')}
               </Button>
             </Box>
           ) : (
@@ -211,7 +217,7 @@ const Header = () => {
                 transition: 'all 0.3s ease',
               }}
             >
-              Sign Up
+              Sign Up {t('header.signUp')}
             </Button>
           )}
         </Box>
@@ -300,14 +306,16 @@ const Header = () => {
               ))}
             </Box>
 
-            {/* 3️⃣ Right — Sign Up / User (fixed) */}
+            {/* 3️⃣ Right — Language Selector, Sign Up / User (fixed) */}
             <Box
               sx={{
                 flex: '0 0 auto',
                 display: { xs: 'none', lg: 'flex' },
                 alignItems: 'center',
+                gap: 1,
               }}
             >
+              <LanguageSelector />
               {isAuthenticated ? (
                 <Box>
                   <IconButton
@@ -362,7 +370,7 @@ const Header = () => {
                     <Divider sx={{ backgroundColor: 'rgba(255,255,255,0.1)' }} />
                     <MenuItem onClick={handleLogout} sx={{ color: '#ff4444' }}>
                       <Logout sx={{ mr: 1 }} />
-                      Logout
+                      {t('header.logout')}
                     </MenuItem>
                   </Menu>
                 </Box>

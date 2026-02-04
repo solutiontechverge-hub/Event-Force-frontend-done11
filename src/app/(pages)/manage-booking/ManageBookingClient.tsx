@@ -32,6 +32,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { SlideUpInView } from '@/components/animations';
 import { sendBookingEmail } from '@/services/emailService';
+import { useLanguage } from '@/contexts/LanguageContext';
 import {
   CarBmw7Series,
   CarChinesbus49Sea,
@@ -134,7 +135,7 @@ const fleet: Car[] = [
     name: 'BMW 5 Series',
     price: '150 SAR',
     duration: 'Per day',
-    image: CarBmw7Series,
+    image: BmwBlack1,
     class: 'Luxury',
     year: '2025',
     branch: 'Riyadh'
@@ -198,6 +199,7 @@ const fleet: Car[] = [
 const ManageBookingClient = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { t, isRTL } = useLanguage();
   const [isMounted, setIsMounted] = useState(false);
   const [heroImageLoaded, setHeroImageLoaded] = useState(false);
   const [hoveredCarImage, setHoveredCarImage] = useState(false);
@@ -512,15 +514,43 @@ const ManageBookingClient = () => {
     }
   };
 
+  // Get minimum datetime (2 hours from now) for pickup date
+  const getMinDateTime = () => {
+    const now = new Date();
+    const minDate = new Date(now.getTime() + 2 * 60 * 60 * 1000); // Add 2 hours
+    const year = minDate.getFullYear();
+    const month = String(minDate.getMonth() + 1).padStart(2, '0');
+    const day = String(minDate.getDate()).padStart(2, '0');
+    const hours = String(minDate.getHours()).padStart(2, '0');
+    const minutes = String(minDate.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
+      // Validate pickup date is at least 2 hours in advance
+      if (formData.pickupDate) {
+        const pickupDateTime = new Date(formData.pickupDate);
+        const minDateTime = new Date(new Date().getTime() + 2 * 60 * 60 * 1000);
+
+        if (pickupDateTime < minDateTime) {
+          setSnackbar({
+            open: true,
+            message: t('booking.minTime'),
+            severity: 'error',
+          });
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
       await sendBookingEmail(formData);
       setSnackbar({
         open: true,
-        message: 'Your booking details submitted successfully! A message will be provided to you soon.',
+        message: t('booking.success'),
         severity: 'success',
       });
       // Optionally reset form after successful submission
@@ -528,7 +558,7 @@ const ManageBookingClient = () => {
     } catch (error: any) {
       setSnackbar({
         open: true,
-        message: error.message || 'Failed to submit booking. Please try again later.',
+        message: error.message || t('booking.error'),
         severity: 'error',
       });
     } finally {
@@ -1080,7 +1110,7 @@ const ManageBookingClient = () => {
                   lineHeight: { xs: 1.2, sm: 1.3, md: 1.3 }
                 }}
               >
-                Booking Form
+                {t('booking.title')}
               </Typography>
             </SlideUpInView>
             <SlideUpInView initialY={40} duration={0.9} delay={0.2}>
@@ -1097,7 +1127,7 @@ const ManageBookingClient = () => {
                   px: { xs: 2, sm: 0, md: 0 }
                 }}
               >
-                Complete your booking details to reserve your vehicle
+                {t('booking.subtitle')}
               </Typography>
             </SlideUpInView>
           </Box>
@@ -1195,7 +1225,7 @@ const ManageBookingClient = () => {
                   >
                     {calculatePrice !== null ? (
                       <>
-                        Price: {calculatePrice} SAR
+                        {t('booking.price')}: {calculatePrice} SAR
                         <Typography
                           variant="caption"
                           sx={{
@@ -1205,11 +1235,11 @@ const ManageBookingClient = () => {
                             mt: 0.5,
                           }}
                         >
-                          *Excludes VAT 15%
+                          {t('booking.excludesVAT')}
                         </Typography>
                       </>
                     ) : (
-                      `Rent: ${displayCar.price}/${displayCar.duration}`
+                      `${t('booking.rent')}: ${displayCar.price}/${displayCar.duration}`
                     )}
                   </Typography>
                 </CardContent>
@@ -1232,14 +1262,14 @@ const ManageBookingClient = () => {
                           fontSize: '0.875rem',
                         }}
                       >
-                        Full Name*
+                        {t('booking.fullName')}*
                       </Typography>
                       <TextField
                         fullWidth
                         name="fullName"
                         value={formData.fullName}
                         onChange={handleInputChange}
-                        placeholder="Enter your full name"
+                        placeholder={t('booking.fullNamePlaceholder')}
                         required
                         size="small"
                         sx={{
@@ -1262,7 +1292,7 @@ const ManageBookingClient = () => {
                           fontSize: '0.875rem',
                         }}
                       >
-                        Email Address*
+                        {t('booking.email')}*
                       </Typography>
                       <TextField
                         fullWidth
@@ -1270,7 +1300,7 @@ const ManageBookingClient = () => {
                         type="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        placeholder="Enter your email address here"
+                        placeholder={t('booking.emailPlaceholder')}
                         required
                         size="small"
                         sx={{
@@ -1293,7 +1323,7 @@ const ManageBookingClient = () => {
                           fontSize: '0.875rem',
                         }}
                       >
-                        Contact Number*
+                        {t('booking.phone')}*
                       </Typography>
                       <Box sx={{ display: 'flex', gap: 2 }}>
                         <TextField
@@ -1314,7 +1344,7 @@ const ManageBookingClient = () => {
                           name="contactNumber"
                           value={formData.contactNumber}
                           onChange={handleInputChange}
-                          placeholder="Enter your contact number"
+                          placeholder={t('booking.phonePlaceholder')}
                           required
                           size="small"
                           sx={{
@@ -1338,7 +1368,7 @@ const ManageBookingClient = () => {
                           fontSize: '0.875rem',
                         }}
                       >
-                        Select Car
+                        {t('booking.selectCar')}
                       </Typography>
                       <FormControl
                         fullWidth
@@ -1375,7 +1405,7 @@ const ManageBookingClient = () => {
                           }}
                         >
                           <MenuItem value="" disabled>
-                            Select car
+                            {t('booking.selectCarPlaceholder')}
                           </MenuItem>
                           {fleet.map((car) => (
                             <MenuItem key={car.name} value={car.name}>
@@ -1398,7 +1428,7 @@ const ManageBookingClient = () => {
                             fontSize: '0.875rem',
                           }}
                         >
-                          Select Color
+                          {t('booking.color')}
                         </Typography>
                         <FormControl
                           fullWidth
@@ -1435,7 +1465,7 @@ const ManageBookingClient = () => {
                             }}
                           >
                             <MenuItem value="" disabled>
-                              Select color
+                              {t('booking.color')}
                             </MenuItem>
                             {availableColors.map((color) => (
                               <MenuItem key={color.id} value={color.id}>
@@ -1469,7 +1499,7 @@ const ManageBookingClient = () => {
                           fontSize: '0.875rem',
                         }}
                       >
-                        Service Type*
+                        {t('booking.serviceType')}*
                       </Typography>
                       <FormControl
                         fullWidth
@@ -1507,19 +1537,15 @@ const ManageBookingClient = () => {
                           }}
                         >
                           <MenuItem value="" disabled>
-                            Select Service Type
+                            {t('booking.selectServiceType')}
                           </MenuItem>
-                          <MenuItem value="airport-pickup">Airport Pickup/Drop to City</MenuItem>
-                          <MenuItem value="downtown">Downtown to Inside City</MenuItem>
-                          <MenuItem value="inter-city">Inter-City Route</MenuItem>
-                          <MenuItem value="hourly">Hourly Rate</MenuItem>
-                          <MenuItem value="8-hours">8 Hours Package</MenuItem>
-                          <MenuItem value="12-hours">12 Hours Package</MenuItem>
-                          <MenuItem value="extra-hour">Extra Hour Rate</MenuItem>
-                          <MenuItem value="pickup">Pick up</MenuItem>
-                          <MenuItem value="dropoff">And drop off</MenuItem>
-                          <MenuItem value="by-hours">And by hours</MenuItem>
-                          <MenuItem value="package">Package</MenuItem>
+                          <MenuItem value="airport-pickup">{t('service.airport')}</MenuItem>
+                          <MenuItem value="downtown">{t('service.downtown')}</MenuItem>
+                          <MenuItem value="inter-city">{t('service.intercity')}</MenuItem>
+                          <MenuItem value="hourly">{t('service.hourly')}</MenuItem>
+                          <MenuItem value="8-hours">{t('service.8hours')}</MenuItem>
+                          <MenuItem value="12-hours">{t('service.12hours')}</MenuItem>
+
 
                         </Select>
                       </FormControl>
@@ -1537,7 +1563,7 @@ const ManageBookingClient = () => {
                             fontSize: '0.875rem',
                           }}
                         >
-                          Pickup Location*
+                          {t('booking.pickupLocation')}*
                         </Typography>
                         <FormControl
                           fullWidth
@@ -1567,7 +1593,7 @@ const ManageBookingClient = () => {
                             }}
                           >
                             <MenuItem value="" disabled>
-                              Select Pickup Location
+                              {t('booking.pickupLocationPlaceholder')}
                             </MenuItem>
                             <MenuItem value="Riyadh">Riyadh</MenuItem>
                             <MenuItem value="Dammam">Dammam</MenuItem>
@@ -1599,7 +1625,7 @@ const ManageBookingClient = () => {
                             fontSize: '0.875rem',
                           }}
                         >
-                          Destination*
+                          {t('booking.destination')}*
                         </Typography>
                         <FormControl
                           fullWidth
@@ -1629,7 +1655,7 @@ const ManageBookingClient = () => {
                             }}
                           >
                             <MenuItem value="" disabled>
-                              Select Destination
+                              {t('booking.destinationPlaceholder')}
                             </MenuItem>
                             {formData.serviceType === 'airport-pickup' && formData.pickupLocation === 'Jeddah' && [
                               <MenuItem key="Makkah" value="Makkah">Makkah</MenuItem>,
@@ -1752,7 +1778,7 @@ const ManageBookingClient = () => {
                           fontSize: '0.875rem',
                         }}
                       >
-                        Pickup Date & Time*
+                        {t('booking.pickupDate')}*
                       </Typography>
                       <TextField
                         fullWidth
@@ -1761,6 +1787,9 @@ const ManageBookingClient = () => {
                         value={formData.pickupDate}
                         onChange={handleInputChange}
                         required
+                        inputProps={{
+                          min: getMinDateTime(),
+                        }}
                         size="small"
                         InputProps={{
                           endAdornment: (
@@ -1776,9 +1805,20 @@ const ManageBookingClient = () => {
                           },
                         }}
                       />
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          mt: 0.5,
+                          color: '#666',
+                          fontSize: '0.75rem',
+                          display: 'block',
+                        }}
+                      >
+                        {t('booking.minTime')}
+                      </Typography>
                     </Box>
 
-                    {/* Return Date (Optional but recommended) */}
+                    {/* Flight # (Optional but recommended) */}
                     <Box sx={{ mb: 4 }}>
                       <Typography
                         variant="body2"
@@ -1789,22 +1829,16 @@ const ManageBookingClient = () => {
                           fontSize: '0.875rem',
                         }}
                       >
-                        Return Date & Time
+                        {t('booking.flightNumber')}
                       </Typography>
                       <TextField
                         fullWidth
                         name="returnDate"
-                        type="datetime-local"
+                        type="text"
                         value={formData.returnDate}
                         onChange={handleInputChange}
+                        placeholder={t('booking.flightNumberPlaceholder')}
                         size="small"
-                        InputProps={{
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <CalendarToday sx={{ color: '#666' }} />
-                            </InputAdornment>
-                          ),
-                        }}
                         sx={{
                           '& .MuiOutlinedInput-root': {
                             borderRadius: '8px',
@@ -1834,7 +1868,7 @@ const ManageBookingClient = () => {
                           },
                         }}
                       >
-                        Cancel
+                        {t('booking.cancel')}
                       </Button>
                       <Button
                         type="submit"

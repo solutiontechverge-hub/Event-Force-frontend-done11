@@ -22,8 +22,10 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { ScaleInView, SlideUpInView } from '@/components/animations';
 import { HelpCenterBg } from '../../../../public/images';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const HelpCenterPageClient = () => {
+  const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedCategory, setExpandedCategory] = useState<string | false>(false);
 
@@ -180,7 +182,7 @@ const HelpCenterPageClient = () => {
                   textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
                 }}
               >
-                Help Center
+                {t('help.title')}
               </Typography>
             </SlideUpInView>
             <SlideUpInView initialY={40} duration={0.9} delay={0.2}>
@@ -196,7 +198,7 @@ const HelpCenterPageClient = () => {
                   textShadow: '1px 1px 2px rgba(0,0,0,0.5)'
                 }}
               >
-                Find answers to your questions and get the support you need
+                {t('help.subtitle')}
               </Typography>
             </SlideUpInView>
             
@@ -204,7 +206,7 @@ const HelpCenterPageClient = () => {
             <SlideUpInView initialY={40} duration={1.0} delay={0.4}>
               <TextField
                 fullWidth
-                placeholder="Search for help articles..."
+                placeholder={t('help.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 sx={{

@@ -10,8 +10,10 @@ import Footer from '@/components/Footer'
 import { SlideUpInView } from '@/components/animations'
 import { PageSkeleton } from '@/components/PageSkeleton'
 import { FleetBg } from '../../../../public/images';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const OurFleetPage = () => {
+    const { t } = useLanguage();
     const [isMounted, setIsMounted] = useState(false);
     const [heroImageLoaded, setHeroImageLoaded] = useState(false);
 
@@ -97,7 +99,7 @@ const OurFleetPage = () => {
                                     fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' }
                                 }}
                             >
-                                Our Fleet
+                                {t('nav.fleet')}
                             </Typography>
                         </SlideUpInView>
                         <SlideUpInView initialY={40} duration={0.9} delay={0.2}>
@@ -112,8 +114,7 @@ const OurFleetPage = () => {
                                     mx: 'auto'
                                 }}
                             >
-                                Browse our extensive fleet of modern, reliable vehicles for every need. 
-                                Choose from Economy, SUVs, luxury cars, and buses available for daily or monthly rental.
+                                {t('fleet.description')}
                             </Typography>
                         </SlideUpInView>
                     </Box>

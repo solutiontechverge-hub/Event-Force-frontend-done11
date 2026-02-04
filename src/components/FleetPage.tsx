@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, memo, useMemo, useCallback } from 'react';
+import React, { useState, memo, useMemo, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useLanguage } from '@/contexts/LanguageContext';
 import {
   Box,
   Typography,
@@ -136,25 +137,35 @@ const fleet: Car[] = [
 
 const FleetPage = memo(() => {
   const router = useRouter();
+  const { t } = useLanguage();
   const [selectedBranch, setSelectedBranch] = useState('all');
   const [selectedClass, setSelectedClass] = useState('all');
   const [selectedYear, setSelectedYear] = useState('all');
   const [hoveredImageIndex, setHoveredImageIndex] = useState<number | null>(null);
 
+  // Reset class filter when Jeddah is selected to show all vehicles
+  useEffect(() => {
+    if (selectedBranch === 'Jeddah' && selectedClass !== 'all') {
+      setSelectedClass('all');
+    }
+  }, [selectedBranch, selectedClass]);
+
   const filteredFleet = useMemo(() => {
+    // If Jeddah branch is selected, show ALL vehicles from ALL branches (like when no branch is selected)
+    if (selectedBranch === 'Jeddah') {
+      console.log('Jeddah selected - showing all vehicles from all branches');
+      return fleet; // Return all vehicles regardless of branch
+    }
+
+    // If year is 2024 or 2025, show all vehicles regardless of branch or class
+    if (selectedYear === '2024' || selectedYear === '2025') {
+      return fleet.filter(car => car.year === selectedYear);
+    }
+
+    // Default filtering: apply branch and class filters
     return fleet.filter(car => {
-      // If year is 2024 or 2025, show all vehicles regardless of branch or class
-      if (selectedYear === '2024' || selectedYear === '2025') {
-        return car.year === selectedYear;
-      }
-
-      // Check class filter
       const classMatch = selectedClass === 'all' || car.class === selectedClass;
-
-      // If no branch is selected (all), show all branches matching the class
-      // Otherwise, filter by branch and class
       const branchMatch = selectedBranch === 'all' || car.branch === selectedBranch;
-
       return branchMatch && classMatch;
     });
   }, [selectedBranch, selectedClass, selectedYear]);
@@ -190,7 +201,7 @@ const FleetPage = memo(() => {
         {/* Filters */}
         <Box sx={{ mb: 6 }}>
           <Grid container spacing={3} justifyContent="center">
-            <Grid size={{ xs: 12, sm: 4 }}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <FormControl fullWidth>
                 <InputLabel>Branch</InputLabel>
                 <Select
@@ -206,18 +217,18 @@ const FleetPage = memo(() => {
                     },
                   }}
                 >
-                  <MenuItem value="all">Select Branch</MenuItem>
+                  <MenuItem value="all">{t('fleet.selectBranch')}</MenuItem>
                   <MenuItem value="Riyadh">Riyadh</MenuItem>
                   <MenuItem value="Jeddah">Jeddah</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
-            <Grid size={{ xs: 12, sm: 4 }}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <FormControl fullWidth>
-                <InputLabel>Fleet Class</InputLabel>
+                <InputLabel>{t('fleet.fleetClass')}</InputLabel>
                 <Select
                   value={selectedClass}
-                  label="Fleet Class"
+                  label={t('fleet.fleetClass')}
                   onChange={(e) => setSelectedClass(e.target.value)}
                   MenuProps={{
                     disableScrollLock: true,
@@ -228,16 +239,16 @@ const FleetPage = memo(() => {
                     },
                   }}
                 >
-                  <MenuItem value="all">All</MenuItem>
-                  <MenuItem value="Economy">Economy</MenuItem>
-                  <MenuItem value="SUV">SUV</MenuItem>
-                  <MenuItem value="Luxury">Luxury</MenuItem>
-                  <MenuItem value="Van">Van</MenuItem>
-                  <MenuItem value="Bus">Bus</MenuItem>
+                  <MenuItem value="all">{t('common.all')}</MenuItem>
+                  <MenuItem value="Economy">{t('fleet.economy')}</MenuItem>
+                  <MenuItem value="SUV">{t('fleet.suv')}</MenuItem>
+                  <MenuItem value="Luxury">{t('fleet.luxury')}</MenuItem>
+                  <MenuItem value="Van">{t('fleet.van')}</MenuItem>
+                  <MenuItem value="Bus">{t('fleet.bus')}</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
-            <Grid size={{ xs: 12, sm: 4 }}>
+            {/* <Grid size={{ xs: 12, sm: 4 }}>
               <FormControl fullWidth>
                 <InputLabel>Model Year</InputLabel>
                 <Select
@@ -258,7 +269,7 @@ const FleetPage = memo(() => {
                   <MenuItem value="2024">2024</MenuItem>
                 </Select>
               </FormControl>
-            </Grid>
+            </Grid> */}
           </Grid>
         </Box>
 
@@ -370,7 +381,7 @@ const FleetPage = memo(() => {
                           fontWeight: '500',
                         }}
                       >
-                        Rent: {car.price} / {car.duration}
+                        {t('fleet.rent')}: {car.price} / {car.duration}
                       </Typography>
                     </Box>
 
@@ -395,7 +406,7 @@ const FleetPage = memo(() => {
                           },
                         }}
                       >
-                        View Details
+                        {t('fleet.viewDetails')}
                       </Button>
                       <Button
                         variant="contained"
@@ -414,7 +425,7 @@ const FleetPage = memo(() => {
                           },
                         }}
                       >
-                        Book Now
+                        {t('fleet.bookNow')}
                       </Button>
                     </Box>
                   </CardContent>
@@ -427,7 +438,7 @@ const FleetPage = memo(() => {
         {filteredFleet.length === 0 && (
           <Box sx={{ textAlign: 'center', py: 8 }}>
             <Typography variant="h6" color="text.secondary">
-              No vehicles found matching your criteria.
+              {t('fleet.noVehicles')}
             </Typography>
           </Box>
         )}

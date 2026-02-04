@@ -10,8 +10,10 @@ import Footer from '@/components/Footer'
 import { ScaleInView, SlideSidewayInView, SlideUpInView } from '@/components/animations'
 import { PageSkeleton } from '@/components/PageSkeleton'
 import { ContactUsBg } from '../../../../public/images';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const ContactUsPage = () => {
+  const { t } = useLanguage();
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -96,7 +98,7 @@ const ContactUsPage = () => {
                   lineHeight: { xs: 1.2, sm: 1.3, md: 1.3 }
                 }}
               >
-                Contact Us
+                {t('contact.title')} 
               </Typography>
             </SlideUpInView>
             <SlideUpInView initialY={40} duration={0.9} delay={0.2}>
@@ -113,7 +115,7 @@ const ContactUsPage = () => {
                   px: { xs: 2, sm: 0, md: 0 }
                 }}
               >
-                Get in touch with our team for any questions or to book your next transportation service.
+                {t('contact.description')}7777
               </Typography>
             </SlideUpInView>
           </Box>

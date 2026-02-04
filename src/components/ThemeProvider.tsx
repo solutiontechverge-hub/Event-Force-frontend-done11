@@ -35,6 +35,7 @@ const theme = createTheme({
 
 export default function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
+  const [direction, setDirection] = useState<'ltr' | 'rtl'>('ltr');
 
   useEffect(() => {
     setMounted(true);
@@ -46,11 +47,28 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
     if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
       loadingScreen.classList.add('hidden');
     }
+
+    // Listen for direction changes from LanguageContext
+    const updateDirection = () => {
+      const dir = document.documentElement.dir || 'ltr';
+      setDirection(dir as 'ltr' | 'rtl');
+    };
+    
+    updateDirection();
+    const observer = new MutationObserver(updateDirection);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['dir'] });
+    
+    return () => observer.disconnect();
   }, []);
+
+  const themeWithDirection = createTheme({
+    ...theme,
+    direction,
+  });
 
   return (
     <EmotionRegistry>
-      <MuiThemeProvider theme={theme}>
+      <MuiThemeProvider theme={themeWithDirection}>
         <CssBaseline />
         <div style={{ visibility: mounted ? 'visible' : 'hidden' }}>
           {children}

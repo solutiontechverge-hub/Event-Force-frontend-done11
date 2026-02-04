@@ -18,10 +18,13 @@ import { ScaleInView, SlideSidewayInView, SlideUpInView } from '@/components/ani
 import OptimizedImage from '@/components/OptimizedImage';
 import { THEME, IMAGE_CONFIG } from '@/constants/theme';
 import { HeroImages } from '../../public/images';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const HeroSection = () => {
   const heroRef = useRef<HTMLDivElement>(null);
   const isMobile = useMediaQuery('(max-width:900px)');
+  const { t, language } = useLanguage();
+
 
   useEffect(() => {
     let ticking = false;
@@ -281,10 +284,10 @@ const HeroSection = () => {
                }}
              >
                <Box component="span" display="block">
-                 Premium Transportation
+                 {t('hero.title')}
                </Box>
                <Box component="span" display="block" sx={{ color: 'white' }}>
-                 & Event Logistics
+                 {t('hero.title2')}
                </Box>
              </Typography>
            </SlideUpInView>
@@ -306,8 +309,7 @@ const HeroSection = () => {
                  px: { xs: 2, sm: 0, md: 0 },
                }}
              >
-               From luxury VIP vehicles to large-scale event logistics, we provide seamless, 
-               reliable, and premium transportation solutions that elevate every occasion.
+               {t('hero.subtitle')}
              </Typography>
            </SlideUpInView>
 
@@ -344,7 +346,7 @@ const HeroSection = () => {
                  transition: 'all 0.3s',
                }}
              >
-               Book Now
+               {t('hero.bookNow')}
              </Button>
              <Button
                component={Link}
@@ -373,7 +375,7 @@ const HeroSection = () => {
                  transition: 'all 0.3s',
                }}
              >
-               Learn More
+               {t('hero.learnMore')}
                <ArrowUpwardIcon sx={{ fontSize: '16px', transform: 'rotate(45deg)' }} />
              </Button>
              </Box>

@@ -218,3 +218,32 @@ img:not([src]) {
   cursor: -webkit-grabbing !important;
   cursor: grabbing !important;
 }
+
+/* RTL Support for Arabic */
+html[dir="rtl"] {
+  direction: rtl;
+}
+
+html[dir="rtl"] body {
+  direction: rtl;
+  text-align: right;
+}
+
+/* RTL adjustments for common elements */
+html[dir="rtl"] .MuiTypography-root {
+  text-align: right;
+}
+
+html[dir="rtl"] .MuiButton-root {
+  direction: rtl;
+}
+
+/* Ensure proper font for Arabic */
+html[dir="rtl"] {
+  font-family: 'Arial', 'Tahoma', 'Helvetica', sans-serif;
+}
+
+/* RTL spacing adjustments */
+html[dir="rtl"] .MuiBox-root {
+  direction: rtl;
+}

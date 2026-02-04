@@ -15,11 +15,13 @@ import {
   ClientMariamKhan
 } from '../../public/images';
 import { ScaleInView, SlideSidewayInView, SlideUpInView } from '@/components/animations';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const TestimonialsSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [visible, setVisible] = useState(false);
   const isMobile = useMediaQuery('(max-width:900px)');
+  const { t } = useLanguage();
 
   const testimonials = [
     {
@@ -96,7 +98,7 @@ const TestimonialsSection = () => {
                     textAlign: 'center',
                   }}
                 >
-                  What Our Clients Say About Us
+                  {t('testimonials.title')}
                 </Typography>
               </SlideUpInView>
             </Box>

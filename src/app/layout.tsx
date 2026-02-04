@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import ThemeProvider from '@/components/ThemeProvider';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { LanguageProvider } from '@/contexts/LanguageContext';
 import SEOHead from '@/components/SEOHead';
 import PerformanceMonitor from '@/components/PerformanceMonitor';
 import { SEO } from '@/constants/theme';
@@ -95,7 +96,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" dir="ltr">
       <head>
         <meta name="emotion-insertion-point" content="" />
         <meta name="google-site-verification" content="SJCwkBWfbHB2rVkhSR9h1CxZg8mxVt0yCyKxXkJ1ExU" />
@@ -127,10 +128,12 @@ export default function RootLayout({
         </div>
         
         <ThemeProvider>
-          <AuthProvider>
-            {children}
-            <PerformanceMonitor />
-          </AuthProvider>
+          <LanguageProvider>
+            <AuthProvider>
+              {children}
+              <PerformanceMonitor />
+            </AuthProvider>
+          </LanguageProvider>
         </ThemeProvider>
         
         {/* Script to hide loading screen once styles are ready */}

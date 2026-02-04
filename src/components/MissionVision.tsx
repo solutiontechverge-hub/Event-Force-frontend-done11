@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { ScaleInView, SlideSidewayInView, SlideUpInView } from '@/components/animations';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const MissionVision = () => {
   const missionRef = useRef<HTMLDivElement>(null);
@@ -18,6 +19,7 @@ const MissionVision = () => {
   const [missionVisible, setMissionVisible] = React.useState(false);
   const [visionVisible, setVisionVisible] = React.useState(false);
   const isMobile = useMediaQuery('(max-width:900px)');
+  const { t } = useLanguage();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -79,7 +81,7 @@ const MissionVision = () => {
                       fontSize: { xs: '1.75rem', sm: '2rem', md: '2.25rem' },
                     }}
                   >
-                    Our Mission
+                    {t('mission.title')}
                   </Typography>
                 </SlideUpInView>
                 <SlideUpInView initialY={30} duration={0.9} delay={0.4}>
@@ -93,7 +95,7 @@ const MissionVision = () => {
                       fontSize: '16px',
                     }}
                   >
-                    To deliver seamless, high-quality transportation and logistical solutions that elevate events and experiences across Saudi Arabia, with a focus on professionalism, precision, and customer satisfaction.
+                    {t('mission.text')}
                   </Typography>
                 </SlideUpInView>
               </Box>
@@ -129,7 +131,7 @@ const MissionVision = () => {
                       fontSize: { xs: '1.75rem', sm: '2rem', md: '2.25rem' },
                     }}
                   >
-                    Our Vision
+                    {t('vision.title')}
                   </Typography>
                 </SlideUpInView>
                 <SlideUpInView initialY={30} duration={0.9} delay={0.6}>
@@ -143,7 +145,7 @@ const MissionVision = () => {
                       fontSize: '16px',
                     }}
                   >
-                    To become the leading name in event logistics and VIP transportation in the Kingdom, known for our reliability, excellence in service, and commitment to supporting Saudi Arabia's growing entertainment and hospitality sectors.
+                    {t('vision.text')}
                   </Typography>
                 </SlideUpInView>
               </Box>

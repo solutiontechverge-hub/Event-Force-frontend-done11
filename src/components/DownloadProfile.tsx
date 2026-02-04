@@ -13,10 +13,12 @@ import {
 } from '@mui/material';
 import { Download as DownloadIcon } from '@mui/icons-material';
 import { ScaleInView, SlideSidewayInView, SlideUpInView } from '@/components/animations';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const DownloadProfile = () => {
   const [visible, setVisible] = useState(false);
   const isMobile = useMediaQuery('(max-width:900px)');
+  const { t } = useLanguage();
 
   React.useEffect(() => {
     const timer = setTimeout(() => setVisible(true), 100);
@@ -98,7 +100,7 @@ Downloaded on: ${new Date().toLocaleDateString()}`;
                   textAlign: { xs: 'center', sm: 'left' },
                 }}
               >
-                Visit Event Force Profile
+                {t('download.title')}
               </Typography>
             </SlideSidewayInView>
             <SlideSidewayInView initialX={30} duration={0.8} delay={0.2}>
@@ -127,7 +129,7 @@ Downloaded on: ${new Date().toLocaleDateString()}`;
                   transition: 'all 0.3s',
                 }}
               >
-                Download
+                {t('download.button')}
               </Button>
             </SlideSidewayInView>
           </Box>
