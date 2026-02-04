@@ -2,25 +2,25 @@ import emailjs from '@emailjs/browser';
 
 // Helper function to get EmailJS configuration from environment variables
 // clint 
-// const getEmailJSConfig = () => {
-//   return {
-//     serviceId: 'service_72jtj46',
-//     templateIdContact: 'template_h6syf6i',
-//     templateIdBooking: 'template_m4d7mlk',
-//     publicKey: '-mDuRKSIkk-3w_jOo',
-//   };
-// };
-
-
-
 const getEmailJSConfig = () => {
   return {
-    serviceId: 'service_u4he2zl',
-    templateIdContact: 'template_8i9xoai',
-    templateIdBooking: 'template_e1k0rs3',
-    publicKey: 'nP_FvyDKuyE4gtfQe',
+    serviceId: 'service_72jtj46',
+    templateIdContact: 'template_h6syf6i',
+    templateIdBooking: 'template_m4d7mlk',
+    publicKey: '-mDuRKSIkk-3w_jOo',
   };
 };
+
+
+
+// const getEmailJSConfig = () => {
+//   return {
+//     serviceId: 'service_u4he2zl',
+//     templateIdContact: 'template_8i9xoai',
+//     templateIdBooking: 'template_e1k0rs3',
+//     publicKey: 'nP_FvyDKuyE4gtfQe',
+//   };
+// };
 
 // Initialize EmailJS only if configured and in browser
 const initializeEmailJS = () => {
@@ -195,7 +195,7 @@ export const sendBookingEmail = async (formData: BookingFormData): Promise<void>
 
     const templateParamsUser = {
       full_name: formData.fullName,
-      email: 'abdullahmazhar40@gmail.com',
+      email: formData.email,
       phone: `${formData.countryCode} ${formData.contactNumber}`,
       car: formData.selectedCar,
 
@@ -208,8 +208,8 @@ export const sendBookingEmail = async (formData: BookingFormData): Promise<void>
       flight_no: formData.returnDate || 'Not specified',
 
       reservation_number: reservationNumber,
-      to_email: 'abdullahmazhar40@gmail.com',
-      reply_to: 'abdullahmazhar40@gmail.com',
+      to_email: 'reservations@eventforce.sa.com',
+      reply_to: 'reservations@eventforce.sa.com',
     };
 
     // Send admin email
