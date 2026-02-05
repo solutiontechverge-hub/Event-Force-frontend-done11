@@ -388,8 +388,8 @@ const HeroSection = () => {
         color="success"
         aria-label="Contact us on WhatsApp - Opens in new window"
         onClick={() => {
-          // WhatsApp redirect with the exact number from footer: +966 59 427 9012
-          const phoneNumber = '966594279012'; // +966 59 427 9012 from footer
+          // WhatsApp redirect with the exact number from footer: +966125786869
+          const phoneNumber = '966125786869'; // +966125786869 from footer
           const message = 'Hello! I would like to know more about Event Force services.';
           const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
           window.open(whatsappUrl, '_blank', 'noopener,noreferrer');

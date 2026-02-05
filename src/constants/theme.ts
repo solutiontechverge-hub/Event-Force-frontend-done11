@@ -170,7 +170,8 @@ export const SEO = {
     instagram: 'eventforce_sa',
   },
   contact: {
-    phone: '+966 59 427 9012',
+    phone: '+966125786869',
+    landline: '0549454525',
     email: 'Reservations@eventforce.sa.com',
     address: 'Saudi Arabia',
   }

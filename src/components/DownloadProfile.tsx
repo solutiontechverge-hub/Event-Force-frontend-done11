@@ -36,7 +36,7 @@ Company Profile:
 - Real-time GPS tracking and in-car amenities
 
 Contact Information:
-Phone: +966 59 427 9012
+Phone: +966125786869 (WhatsApp) | 0549454525 (Landline)
 Email: Reservations@eventforce.sa.com
 Headquarters: 8303 Al Ghamdi Center, 1st floor, Office #103, Oman Street,
 Al Baghdadiyah Al Gharbiyah Dist., Jeddah 22234,

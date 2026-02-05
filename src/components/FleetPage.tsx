@@ -81,7 +81,7 @@ const fleet: Car[] = [
   },
   {
     name: 'Mercedes S450',
-    price: '400 SAR',
+    price: '300 SAR',
     duration: 'Per hour',
     image: CarMercedesS450,
     class: 'Luxury',
@@ -99,7 +99,7 @@ const fleet: Car[] = [
   },
   {
     name: 'Mercedes V Class',
-    price: '125 SAR',
+    price: '300 SAR',
     duration: 'Per hour',
     image: CarMercedesVClass,
     class: 'Van',

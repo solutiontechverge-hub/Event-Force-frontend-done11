@@ -231,7 +231,7 @@ export const rateCard2025: RateCard = {
         { vehicleType: 'ford_taurus', rate: 125 },
         { vehicleType: 'yukon', rate: 150 },
         { vehicleType: 'bmw_5', rate: 150 },
-        { vehicleType: 'bmw_735_mercedes_s450', rate: 400 },
+        { vehicleType: 'bmw_735_mercedes_s450', rate: 300 },
         { vehicleType: 'hiace_12_seat', rate: null }, // NA
         { vehicleType: 'coaster_23_seat', rate: null }, // NA
         { vehicleType: 'bus_49_seat', rate: null }, // NA

@@ -142,7 +142,7 @@ const fleet: Car[] = [
   },
   {
     name: 'Mercedes S450',
-    price: '400 SAR',
+    price: '300 SAR',
     duration: 'Per day',
     image: CarMercedesS450,
     class: 'Luxury',
@@ -160,7 +160,7 @@ const fleet: Car[] = [
   },
   {
     name: 'Mercedes V Class',
-    price: '100 SAR',
+    price: '300 SAR',
     duration: 'Per day',
     image: CarMercedesVClass,
     class: 'Van',
@@ -550,7 +550,7 @@ const ManageBookingClient = () => {
       await sendBookingEmail(formData);
       setSnackbar({
         open: true,
-        message: t('booking.success'),
+        message: `${t('booking.success')} Please check your spam folder as well after confirming booking.`,
         severity: 'success',
       });
       // Optionally reset form after successful submission

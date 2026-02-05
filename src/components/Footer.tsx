@@ -207,20 +207,27 @@ const Footer = () => {
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <MuiLink
-                  href="https://wa.me/966594279012"
+                  href="https://wa.me/966125786869"
                   target="_blank"
                   rel="noopener noreferrer"
                   sx={{
                     color: 'grey.400',
                     textDecoration: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 0.5,
                     '&:hover': {
                       color: '#25D366',
                     },
                     transition: 'color 0.3s',
                   }}
                 >
-                  <Typography variant="body2">+966 59 427 9012</Typography>
+                  <WhatsApp sx={{ fontSize: '1rem' }} />
+                  <Typography variant="body2">Event Force Tel: +966125786869</Typography>
                 </MuiLink>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="body2">0549454525 (Landline)</Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Typography variant="body2">Reservations@eventforce.sa.com</Typography>

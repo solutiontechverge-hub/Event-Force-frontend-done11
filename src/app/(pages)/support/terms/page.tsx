@@ -83,7 +83,7 @@ const TermsPage = () => {
     },
     {
       title: '14. Contact Information',
-      content: 'For questions about these terms or our services, please contact us at:\n\nEmail: legal@eventforce.sa.com\nPhone: +966 59 427 9012\nAddress: Riyadh, Saudi Arabia'
+      content: 'For questions about these terms or our services, please contact us at:\n\nEmail: legal@eventforce.sa.com\nPhone: +966125786869 (WhatsApp) | 0549454525 (Landline)\nAddress: Riyadh, Saudi Arabia'
     }
   ];
 

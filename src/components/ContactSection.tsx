@@ -141,6 +141,43 @@ const ContactSection = () => {
                   >
                     <IconButton
                       size="small"
+                      component="a"
+                      href="https://wa.me/966125786869"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      sx={{ color: "#52A4C1", mr: { xs: 1.5, sm: 2 } }}
+                    >
+                      <WhatsAppIcon />
+                    </IconButton>
+                    <Typography
+                      variant="body1"
+                      component="a"
+                      href="https://wa.me/966125786869"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      sx={{
+                        fontSize: { xs: "0.875rem", sm: "1rem" },
+                        fontFamily: "Poppins, sans-serif",
+                        lineHeight: 1.6,
+                        textDecoration: "none",
+                        color: "inherit",
+                        "&:hover": {
+                          color: "#25D366",
+                        },
+                      }}
+                    >
+                      Event Force Tel: +966125786869
+                    </Typography>
+                  </Box>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      mb: { xs: 1.5, sm: 2 },
+                    }}
+                  >
+                    <IconButton
+                      size="small"
                       sx={{ color: "#52A4C1", mr: { xs: 1.5, sm: 2 } }}
                     >
                       <MobileIcon />
@@ -153,7 +190,7 @@ const ContactSection = () => {
                         lineHeight: 1.6,
                       }}
                     >
-                      +966 59 427 9012
+                      0549454525 (Landline)
                     </Typography>
                   </Box>
 
