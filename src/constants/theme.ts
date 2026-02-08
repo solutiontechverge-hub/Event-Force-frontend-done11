@@ -171,7 +171,7 @@ export const SEO = {
   },
   contact: {
     phone: '+966125786869',
-    landline: '0549454525',
+    landline: '+966125786869',
     email: 'Reservations@eventforce.sa.com',
     address: 'Saudi Arabia',
   }

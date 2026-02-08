@@ -124,6 +124,7 @@ const fleet: Car[] = [
     name: "BMW 5 Series",
     price: "150 SAR",
     duration: "Per day",
+    // image: CarBmw7Series,
     image: CarBmw7Series,
     class: "Luxury",
     year: "2025",
@@ -175,7 +176,7 @@ const fleet: Car[] = [
     branch: "Jeddah",
   },
   {
-    name: "Chines Bus 49 Sea",
+    name: "Coach 49 Seats",
     price: "2000 SAR",
     duration: "12 hours",
     image: CarChinesbus49Sea,
@@ -617,9 +618,9 @@ const VehicleDetailsPage = () => {
     }
 
     if (
-      selectedCar?.name === "Chinese Bus 49 Seater" ||
-      selectedCar?.name?.includes("Chinese Bus 49") ||
-      selectedCar?.name?.includes("Chines Bus 49 Sea") ||
+      selectedCar?.name === "Coach 49 Seats" ||
+      selectedCar?.name?.includes("Coach 49 Seats") ||
+      selectedCar?.name?.includes("Coach 49 Seats") ||
       selectedCar?.name?.includes("49 Seater")
     ) {
       colors = [
@@ -1101,9 +1102,9 @@ const VehicleDetailsPage = () => {
                     selectedCar?.name === "Toyota Coaster" ||
                     selectedCar?.name?.includes("Toyota Coaster") ||
                     selectedCar?.name?.includes("Coaster") ||
-                    selectedCar?.name === "Chinese Bus 49 Seater" ||
-                    selectedCar?.name?.includes("Chinese Bus 49") ||
-                    selectedCar?.name?.includes("Chines Bus 49 Sea") ||
+                    selectedCar?.name === "Coach 49 Seats" ||
+                    selectedCar?.name?.includes("Coach 49 Seats") ||
+                    selectedCar?.name?.includes("Coach 49 Seats") ||
                     selectedCar?.name?.includes("49 Seater")) &&
                     colorOptions.length > 1 && (
                       <Box>
@@ -5365,9 +5366,9 @@ const VehicleDetailsPage = () => {
             )}
 
           {/* Chinese Bus 49 Seater Specifications Section */}
-          {(selectedCar?.name === "Chinese Bus 49 Seater" ||
-            selectedCar?.name?.includes("Chinese Bus 49") ||
-            selectedCar?.name?.includes("Chines Bus 49 Sea") ||
+          {(selectedCar?.name === "Coach 49 Seats" ||
+            selectedCar?.name?.includes("Coach 49 Seats") ||
+            selectedCar?.name?.includes("Coach 49 Seats") ||
             selectedCar?.name?.includes("49 Seater")) && (
               <Box sx={{ mt: 6 }}>
                 <Typography

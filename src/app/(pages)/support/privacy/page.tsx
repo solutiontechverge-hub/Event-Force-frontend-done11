@@ -75,7 +75,7 @@ const PrivacyPage = () => {
     },
     {
       title: '12. Contact Us',
-      content: 'If you have any questions about this Privacy Policy or our data practices, please contact us:\n\n• Email: privacy@eventforce.sa.com\n• Phone: +966125786869 (WhatsApp) | 0549454525 (Landline)\n• Address: Riyadh, Saudi Arabia\n• Data Protection Officer: dpo@eventforce.sa.com\n\nWe will respond to your inquiry within 30 days.'
+      content: 'If you have any questions about this Privacy Policy or our data practices, please contact us:\n\n• Email: privacy@eventforce.sa.com\n• Phone: +9660549454525 (WhatsApp) | +966125786869 (Landline)\n• Address: Riyadh, Saudi Arabia\n• Data Protection Officer: dpo@eventforce.sa.com\n\nWe will respond to your inquiry within 30 days.'
     }
   ];
 

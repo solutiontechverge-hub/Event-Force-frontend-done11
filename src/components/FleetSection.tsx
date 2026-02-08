@@ -22,6 +22,7 @@ import {
   CarMercedesS450,
   CarFordTaurus,
   CarMercedesVClass,
+  CarMw5Series,
 } from "../../public/images";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import {
@@ -42,6 +43,14 @@ const FleetSection = () => {
   );
   const isMobile = useMediaQuery("(max-width:900px)");
   const { t, language } = useLanguage();
+  
+  const nonPremiumCars = [
+    "Ford Taurus",
+    "Coach 49 Seats",
+    "Toyota Coaster",
+    "Toyota Hiace",
+  ];
+
 
   const fleet = [
     {
@@ -62,12 +71,12 @@ const FleetSection = () => {
       name: "BMW 5 Series",
       price: "150 SAR",
       duration: "Per hour",
-      image: CarBmw7Series,
+      image: CarMw5Series,
       features: ["Executive Class", "Leather Seats", "Advanced Safety"],
     },
     {
       name: "Mercedes S-Class",
-      price: "300 SAR",
+      price: "400 SAR",
       duration: "Per hour",
       image: CarMercedesS450,
       features: ["Ultimate Luxury", "Chauffeur Service", "Premium Amenities"],
@@ -300,6 +309,7 @@ const FleetSection = () => {
                               }}
                             />
                           </Box>
+                             {!nonPremiumCars.includes(car.name) && (
                           <Chip
                             label="Premium"
                             size="small"
@@ -322,6 +332,7 @@ const FleetSection = () => {
                               },
                             }}
                           />
+                             )}
                         </Box>
                       </CardMedia>
 

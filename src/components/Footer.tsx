@@ -223,11 +223,11 @@ const Footer = () => {
                   }}
                 >
                   <WhatsApp sx={{ fontSize: '1rem' }} />
-                  <Typography variant="body2">Event Force Tel: +966125786869</Typography>
+                  <Typography variant="body2">Event Force Tel: +9660549454525</Typography>
                 </MuiLink>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Typography variant="body2">0549454525 (Landline)</Typography>
+                <Typography variant="body2">+966125786869 (Landline)</Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Typography variant="body2">Reservations@eventforce.sa.com</Typography>

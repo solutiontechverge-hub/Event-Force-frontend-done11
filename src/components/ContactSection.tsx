@@ -166,7 +166,7 @@ const ContactSection = () => {
                         },
                       }}
                     >
-                      Event Force Tel: +966125786869
+                      Event Force Tel: +9660549454525
                     </Typography>
                   </Box>
                   <Box
@@ -216,7 +216,7 @@ const ContactSection = () => {
                         wordBreak: "break-word",
                       }}
                     >
-                      Reservations@eventforce.sa.com
+                      info@eventforce.sa.com
                     </Typography>
                   </Box>
 
