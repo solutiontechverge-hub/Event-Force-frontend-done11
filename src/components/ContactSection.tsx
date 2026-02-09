@@ -190,7 +190,7 @@ const ContactSection = () => {
                         lineHeight: 1.6,
                       }}
                     >
-                      0549454525 (Landline)
+                      +966125786869 
                     </Typography>
                   </Box>
 

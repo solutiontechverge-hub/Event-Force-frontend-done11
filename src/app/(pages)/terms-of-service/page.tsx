@@ -365,7 +365,7 @@ const TermsOfServicePage = () => {
                   Email: legal@eventforce.sa.com
                 </Typography>
                 <Typography variant="body1" sx={{ color: '#333', fontWeight: 'bold' }}>
-                  Phone: +9660549454525 (WhatsApp) | +966125786869 (Landline)
+                  Phone: +9660549454525 (WhatsApp) | +966125786869 
                 </Typography>
               </Box>
             </SlideUpInView>
