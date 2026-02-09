@@ -4,7 +4,7 @@ import emailjs from '@emailjs/browser';
 // clint 
 const getEmailJSConfig = () => {
   return {
-    serviceId: 'service_72jtj46',
+    serviceId: 'service_p81vwl5',
     templateIdContact: 'template_h6syf6i',
     templateIdBooking: 'template_m4d7mlk',
     publicKey: '-mDuRKSIkk-3w_jOo',
