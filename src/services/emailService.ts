@@ -5,13 +5,11 @@ import emailjs from '@emailjs/browser';
 const getEmailJSConfig = () => {
   return {
     serviceId: 'service_p81vwl5',
-    templateIdContact: 'template_h6syf6i',
+    templateIdContact: 'template_x36w5vj',
     templateIdBooking: 'template_m4d7mlk',
     publicKey: '-mDuRKSIkk-3w_jOo',
   };
 };
-
-
 
 // const getEmailJSConfig = () => {
 //   return {
