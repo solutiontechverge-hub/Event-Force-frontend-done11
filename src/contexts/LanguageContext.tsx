@@ -54,6 +54,7 @@ const translations: Record<Language, Record<string, string>> = {
     "header.account": "Account",
     "header.signUp": "Sign Up",
 
+
     // Footer
     "footer.navigation": "Navigation",
     "footer.services": "Services",
@@ -164,6 +165,7 @@ const translations: Record<Language, Record<string, string>> = {
     "testimonials.title": "What Our Clients Say About Us",
 
     // Contact Section
+        "contact.title": "Contact Us",
     "contact.getInTouch": "Get In Touch",
     "contact.description":
       "Have questions or need assistance? We're here to help! Reach out to us through any of the following channels.",
@@ -173,6 +175,7 @@ const translations: Record<Language, Record<string, string>> = {
     "contact.emailPlaceholder": "Enter your email",
     "contact.messagePlaceholder": "Enter your message",
     "contact.sendMessage": "Send Message",
+     "contact.message": "Message",
     "contact.success":
       "Your details submitted successfully! A message will be provided to you soon.",
     "contact.error": "Failed to send message. Please try again later.",
@@ -210,6 +213,7 @@ const translations: Record<Language, Record<string, string>> = {
     "help.safety": "Safety & Security",
 
     // About Us
+      "about.title": "About Us",
     "about.subtitle":
       "Your trusted partner for premium transportation and event logistics",
 
@@ -280,6 +284,7 @@ const translations: Record<Language, Record<string, string>> = {
     "header.profile": "الملف الشخصي",
     "header.account": "الحساب",
     "header.signUp": "اشتراك",
+
 
     // Footer
     "footer.navigation": "التنقل",

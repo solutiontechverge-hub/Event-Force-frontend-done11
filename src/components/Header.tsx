@@ -251,6 +251,7 @@ const Header = () => {
               }}
             >
                {t("header.signUp")}
+
             </Button>
           )}
         </Box>

@@ -8,6 +8,7 @@ export { default as CarMercedesS450 } from './car-mercedes-s450.png';
 export { default as CarMercedesVClass } from './car-mercedes-v-class.png';
 export { default as CarMw5Series } from './car-bmw-7-series.png';
 export { default as CarToyotaCoaster } from './car-toyota-coaster.png';
+export { default as Telephone } from './telephone.png';
 
 // Client Images
 export { default as ClientAliAhmad } from './client-ali-ahmad.png';

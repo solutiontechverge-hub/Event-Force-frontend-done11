@@ -13,3 +13,4 @@ export { default as MobileIcon } from './MobileIcon';
 export { default as EmailIcon } from './EmailIcon';
 export { default as LocationIcon } from './LocationIcon';
 export { default as WhatsAppIcon } from './WhatsAppIcon';
+export { default as TelephoneIcon } from './TelephoneIcon';

@@ -22,6 +22,9 @@ import {
 } from "@/components/animations";
 import { sendContactEmail } from "@/services/emailService";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { Telephone } from "../../public/images";
+import Image from "next/image";
+import TelephoneIcon from "./icons/TelephoneIcon";
 
 const ContactSection = () => {
   const { t, language } = useLanguage();
@@ -78,8 +81,6 @@ const ContactSection = () => {
     setSnackbar((prev) => ({ ...prev, open: false }));
   };
 
-
-
   return (
     <Box sx={{ py: 10, backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
       {/* Match booking page layout by centering content in a container */}
@@ -131,6 +132,18 @@ const ContactSection = () => {
                   >
                     {t("contact.contactUs")}
                   </Typography>
+                   <Typography
+                    variant="body2"
+                    // component="h2"
+                    sx={{
+                      // fontWeight: "bold",
+                      mb: { xs: 3, sm: 4 },
+                      fontFamily: "Poppins, sans-serif",
+                      fontSize: { xs: "1rem", sm: "1.25rem", md: "1.5rem" },
+                    }}
+                  >
+                     Event Force
+                  </Typography>
 
                   <Box
                     sx={{
@@ -141,16 +154,16 @@ const ContactSection = () => {
                   >
                     <IconButton
                       size="small"
-                      component="a"
-                      href="https://wa.me/966125786869"
-                      target="_blank"
                       rel="noopener noreferrer"
                       sx={{ color: "#52A4C1", mr: { xs: 1.5, sm: 2 } }}
                     >
-                      <WhatsAppIcon />
+                      {/* <WhatsAppIcon /> */}
+                      <TelephoneIcon />
                     </IconButton>
+
                     <Typography
                       variant="body1"
+                      display={"flex"}
                       component="a"
                       href="https://wa.me/966125786869"
                       target="_blank"
@@ -160,15 +173,12 @@ const ContactSection = () => {
                         fontFamily: "Poppins, sans-serif",
                         lineHeight: 1.6,
                         textDecoration: "none",
-                        color: "inherit",
-                        "&:hover": {
-                          color: "#25D366",
-                        },
                       }}
                     >
-                      Event Force Tel: +9660549454525
+                     +966125786869
                     </Typography>
                   </Box>
+                  {/* </Box> */}
                   <Box
                     sx={{
                       display: "flex",
@@ -183,14 +193,21 @@ const ContactSection = () => {
                       <MobileIcon />
                     </IconButton>
                     <Typography
+                      component="a"
+                      target="_blank"
                       variant="body1"
+                      href="https://wa.me/966549454525"
                       sx={{
                         fontSize: { xs: "0.875rem", sm: "1rem" },
                         fontFamily: "Poppins, sans-serif",
                         lineHeight: 1.6,
+                        color: "inherit",
+                        "&:hover": {
+                          color: "#25D366",
+                        },
                       }}
                     >
-                      +966125786869 
+                      +966549454525
                     </Typography>
                   </Box>
 
@@ -216,7 +233,9 @@ const ContactSection = () => {
                         wordBreak: "break-word",
                       }}
                     >
-                      info@eventforce.sa.com
+                      <a href="mailto:info@yourdomain.com">
+                        info@eventforce.sa.com
+                      </a>
                     </Typography>
                   </Box>
 
