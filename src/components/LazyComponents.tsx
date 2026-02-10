@@ -1,63 +1,83 @@
-'use client';
+"use client";
 
-import dynamic from 'next/dynamic';
-import { Suspense } from 'react';
-import { FleetGridSkeleton, HeroSkeleton, PageContentSkeleton } from './LoadingSkeleton';
+import dynamic from "next/dynamic";
+import { Suspense } from "react";
+// import { PageContentSkeleton } from "@/components/PageSkeleton";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { PageContentSkeleton } from "./LoadingSkeleton";
 
-// Lazy load heavy components
-export const LazyFleetSection = dynamic(() => import('./FleetSection'), {
-  loading: () => <FleetGridSkeleton count={4} />,
+/* ======================
+   LAZY IMPORTS
+====================== */
+
+const FleetSection = dynamic(() => import("./FleetSection"), {
   ssr: false,
 });
 
-export const LazyFleetPage = dynamic(() => import('./FleetPage'), {
-  loading: () => <PageContentSkeleton />,
+const TestimonialsSection = dynamic(() => import("./TestimonialsSection"), {
   ssr: false,
 });
 
-export const LazyTestimonialsSection = dynamic(() => import('./TestimonialsSection'), {
-  loading: () => <PageContentSkeleton />,
+const BenefitsSection = dynamic(() => import("./BenefitsSection"), {
   ssr: false,
 });
 
-export const LazyBenefitsSection = dynamic(() => import('./BenefitsSection'), {
-  loading: () => <PageContentSkeleton />,
+const ContactSection = dynamic(() => import("./ContactSection"), {
   ssr: false,
 });
 
-export const LazyContactSection = dynamic(() => import('./ContactSection'), {
-  loading: () => <PageContentSkeleton />,
-  ssr: false,
-});
+/* ======================
+   SUSPENSE WRAPPERS
+====================== */
 
-// Wrapper components with Suspense
-export const SuspenseFleetSection = () => (
-  <Suspense fallback={<FleetGridSkeleton count={4} />}>
-    <LazyFleetSection />
-  </Suspense>
-);
+export function SuspenseFleetSection() {
+  const { language } = useLanguage();
 
-export const SuspenseFleetPage = () => (
-  <Suspense fallback={<PageContentSkeleton />}>
-    <LazyFleetPage />
-  </Suspense>
-);
+  return (
+    <Suspense
+      key={`fleet-${language}`} // ✅ UNIQUE
+      fallback={<PageContentSkeleton />}
+    >
+      <FleetSection />
+    </Suspense>
+  );
+}
 
-export const SuspenseTestimonialsSection = () => (
-  <Suspense fallback={<PageContentSkeleton />}>
-    <LazyTestimonialsSection />
-  </Suspense>
-);
+export function SuspenseTestimonialsSection() {
+  const { language } = useLanguage();
 
-export const SuspenseBenefitsSection = () => (
-  <Suspense fallback={<PageContentSkeleton />}>
-    <LazyBenefitsSection />
-  </Suspense>
-);
+  return (
+    <Suspense
+      key={`testimonials-${language}`} // ✅ UNIQUE
+      fallback={<PageContentSkeleton />}
+    >
+      <TestimonialsSection />
+    </Suspense>
+  );
+}
 
-export const SuspenseContactSection = () => (
-  <Suspense fallback={<PageContentSkeleton />}>
-    <LazyContactSection />
-  </Suspense>
-);
+export function SuspenseBenefitsSection() {
+  const { language } = useLanguage();
 
+  return (
+    <Suspense
+      key={`benefits-${language}`} // ✅ UNIQUE
+      fallback={<PageContentSkeleton />}
+    >
+      <BenefitsSection />
+    </Suspense>
+  );
+}
+
+export function SuspenseContactSection() {
+  const { language } = useLanguage();
+
+  return (
+    <Suspense
+      key={`contact-${language}`} // ✅ UNIQUE
+      fallback={<PageContentSkeleton />}
+    >
+      <ContactSection />
+    </Suspense>
+  );
+}

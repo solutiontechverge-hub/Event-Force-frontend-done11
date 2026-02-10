@@ -1,43 +1,20 @@
+// types/auth.ts
+
+/* =========================
+   USER TYPE
+========================= */
+
 export interface User {
   id: string;
   email: string;
-  name?: string;
-  role: 'CUSTOMER' | 'STAFF' | 'ADMIN';
-  isVerified: boolean;
-  createdAt: string;
-  updatedAt: string;
+  name: string;
+  role: "ADMIN" | "STAFF" | "CUSTOMER";
+  phone?: string;
 }
 
-export interface AuthResponse {
-  user: User;
-  accessToken: string;
-  refreshToken: string;
-}
-
-export interface LoginCredentials {
-  email: string;
-  password: string;
-  rememberMe?: boolean;
-}
-
-export interface RegisterCredentials {
-  email: string;
-  password: string;
-  name?: string;
-}
-
-export interface RefreshTokenData {
-  refreshToken: string;
-}
-
-export interface ForgotPasswordData {
-  email: string;
-}
-
-export interface ResetPasswordData {
-  token: string;
-  newPassword: string;
-}
+/* =========================
+   AUTH STATE
+========================= */
 
 export interface AuthState {
   user: User | null;
@@ -46,12 +23,46 @@ export interface AuthState {
   error: string | null;
 }
 
-export interface AuthContextType extends AuthState {
+/* =========================
+   AUTH CREDENTIALS
+========================= */
+
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface RegisterCredentials {
+  email: string;
+  password: string;
+  name?: string;
+}
+
+/* =========================
+   AUTH CONTEXT TYPE
+========================= */
+
+export interface AuthContextType {
+  /* STATE */
+  user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  error: string | null;
+
+  /* ACTIONS */
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (credentials: RegisterCredentials) => Promise<void>;
   logout: () => Promise<void>;
-  refreshToken: () => Promise<void>;
-  forgotPassword: (email: string) => Promise<void>;
-  resetPassword: (token: string, newPassword: string) => Promise<void>;
+
+  /**
+   * Update user data locally (profile edit)
+   * Syncs with context + localStorage
+   */
+  updateUser: (data: Partial<User>) => void;
+
+  /* OPTIONAL / FUTURE */
+  refreshToken?: () => Promise<void>;
+  forgotPassword?: (email: string) => Promise<void>;
+  resetPassword?: (token: string, newPassword: string) => Promise<void>;
   clearError: () => void;
 }

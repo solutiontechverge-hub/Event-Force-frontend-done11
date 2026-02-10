@@ -34,6 +34,15 @@ import {
 import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 
+import { useAuth } from "@/contexts/AuthContext";
+const searchParams =
+  typeof window !== "undefined"
+    ? new URLSearchParams(window.location.search)
+    : null;
+
+const redirectPath = searchParams?.get("redirect") || "/";
+
+
 /* 🔹 Styled phone input */
 const PhoneTextField = React.forwardRef<HTMLInputElement, any>(
   function PhoneTextField(props, ref) {
@@ -47,7 +56,7 @@ const PhoneTextField = React.forwardRef<HTMLInputElement, any>(
         sx={{ mb: 2 }}
       />
     );
-  }
+  },
 );
 
 const AuthForm = memo(() => {
@@ -55,13 +64,15 @@ const AuthForm = memo(() => {
   const pathname = usePathname();
   const isMobile = useMediaQuery("(max-width:900px)");
 
+  const { login, register } = useAuth(); // ✅ ONLY ADDITION
+
   /* 🔁 Mode derived from URL */
   const mode =
     pathname === "/signup"
       ? "signup"
       : pathname === "/forgot-password"
-      ? "forgot"
-      : "signin";
+        ? "forgot"
+        : "signin";
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -100,18 +111,29 @@ const AuthForm = memo(() => {
           const res = await createUserWithEmailAndPassword(
             auth,
             formData.email,
-            formData.password
+            formData.password,
           );
 
-          await setDoc(doc(db, "users", res.user.uid), {
-            uid: res.user.uid,
-            name: formData.fullName,
+          const userData = {
+            id: res.user.uid,
             email: formData.email,
+            name: formData.fullName,
+            role: "CUSTOMER",
+          };
+
+          await setDoc(doc(db, "users", res.user.uid), {
+            ...userData,
             phone: formData.phone,
             createdAt: new Date(),
           });
 
-          router.push("/dashboard");
+          await register({
+            email: userData.email,
+            password: formData.password,
+            name: userData.name,
+          });
+
+          router.push(redirectPath);
         }
 
         /* 🔑 SIGN IN */
@@ -119,9 +141,15 @@ const AuthForm = memo(() => {
           await signInWithEmailAndPassword(
             auth,
             formData.email,
-            formData.password
+            formData.password,
           );
-          router.push("/dashboard");
+
+          await login({
+            email: formData.email,
+            password: formData.password,
+          }); // ✅ CONTEXT SYNC
+
+          router.push(redirectPath);
         }
 
         /* 🔁 FORGOT PASSWORD */
@@ -135,7 +163,7 @@ const AuthForm = memo(() => {
         setLoading(false);
       }
     },
-    [formData, mode, router]
+    [formData, mode, router, login, register],
   );
 
   /* 🔐 GOOGLE LOGIN */
@@ -145,15 +173,20 @@ const AuthForm = memo(() => {
 
     try {
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
-      router.push("/dashboard");
+      const res = await signInWithPopup(auth, provider);
+
+      await login({
+        email: res.user.email || "",
+        password: "google-auth",
+      }); // ✅ CONTEXT SYNC
+
+      router.push(redirectPath);
     } catch (err: any) {
       setError(err.message || "Google login failed");
     } finally {
       setLoading(false);
     }
   };
-
   return (
     <Card
       sx={{
@@ -171,15 +204,15 @@ const AuthForm = memo(() => {
               {mode === "signup"
                 ? "Create Account"
                 : mode === "forgot"
-                ? "Forgot Password"
-                : "Admin Sign In"}
+                  ? "Forgot Password"
+                  : "Admin Sign In"}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               {mode === "signup"
                 ? "Sign up for Event Force"
                 : mode === "forgot"
-                ? "We’ll email you reset instructions"
-                : "Welcome back! Login to access admin dashboard"}
+                  ? "We’ll email you reset instructions"
+                  : "Welcome back! Login to access admin dashboard"}
             </Typography>
           </Box>
         </SlideUpInView>
@@ -200,8 +233,16 @@ const AuthForm = memo(() => {
 
         {mode !== "forgot" && <Divider sx={{ mb: 2 }} />}
 
-        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-        {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+        {success && (
+          <Alert severity="success" sx={{ mb: 2 }}>
+            {success}
+          </Alert>
+        )}
 
         {/* FORM */}
         <Box component="form" onSubmit={handleSubmit}>
@@ -276,7 +317,12 @@ const AuthForm = memo(() => {
             </Box>
           )}
 
-          <Button fullWidth variant="contained" type="submit" disabled={loading}>
+          <Button
+            fullWidth
+            variant="contained"
+            type="submit"
+            disabled={loading}
+          >
             {loading ? <CircularProgress size={20} /> : "Continue"}
           </Button>
 

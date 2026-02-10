@@ -62,7 +62,7 @@ const DashboardAuthForm: React.FC<DashboardAuthFormProps> = memo(({ mode, onSoci
           rememberMe: formData.rememberMe,
         };
         await login(credentials);
-        router.push('/dashboard');
+        router.push('/');
       } else {
         const credentials = {
           email: formData.email,
@@ -70,7 +70,7 @@ const DashboardAuthForm: React.FC<DashboardAuthFormProps> = memo(({ mode, onSoci
           name: formData.fullName,
         };
         await register(credentials);
-        router.push('/dashboard');
+        router.push('/');
       }
     } catch (error: any) {
       setAuthError(error.message || 'Authentication failed');

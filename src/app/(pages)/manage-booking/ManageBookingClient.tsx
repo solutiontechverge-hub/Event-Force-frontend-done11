@@ -19,6 +19,10 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
+
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase";
+
 import { CalendarToday, ArrowDropDown, ArrowBack } from "@mui/icons-material";
 import Image from "next/image";
 import Header from "@/components/Header";
@@ -744,45 +748,75 @@ const ManageBookingClient = () => {
     return `${year}-${month}-${day}T${hours}:${minutes}`;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    try {
-      // Validate pickup date is at least 2 hours in advance
-      if (formData.pickupDate) {
-        const pickupDateTime = new Date(formData.pickupDate);
-        const minDateTime = new Date(new Date().getTime() + 2 * 60 * 60 * 1000);
+  if (!auth.currentUser) {
+    setSnackbar({
+      open: true,
+      message: "Please login to confirm booking",
+      severity: "error",
+    });
+    return;
+  }
 
-        if (pickupDateTime < minDateTime) {
-          setSnackbar({
-            open: true,
-            message: t("booking.minTime"),
-            severity: "error",
-          });
-          setIsSubmitting(false);
-          return;
-        }
+  setIsSubmitting(true);
+
+  try {
+    // ⏱ Validate pickup time (2 hours rule)
+    if (formData.pickupDate) {
+      const pickupDateTime = new Date(formData.pickupDate);
+      const minDateTime = new Date(Date.now() + 2 * 60 * 60 * 1000);
+
+      if (pickupDateTime < minDateTime) {
+        setSnackbar({
+          open: true,
+          message: t("booking.minTime"),
+          severity: "error",
+        });
+        setIsSubmitting(false);
+        return;
       }
-
-      await sendBookingEmail(formData);
-      setSnackbar({
-        open: true,
-        message: `${t("booking.success")} Please check your spam folder as well after confirming booking.`,
-        severity: "success",
-      });
-      // Optionally reset form after successful submission
-      // setFormData({ ... });
-    } catch (error: any) {
-      setSnackbar({
-        open: true,
-        message: error.message || t("booking.error"),
-        severity: "error",
-      });
-    } finally {
-      setIsSubmitting(false);
     }
-  };
+
+    // 🔥 SAVE BOOKING TO FIRESTORE
+    await addDoc(collection(db, "bookings"), {
+      userId: auth.currentUser.uid, // REQUIRED FOR RULES
+      fullName: formData.fullName,
+      email: formData.email,
+      phone: `${formData.countryCode}${formData.contactNumber}`,
+      car: displayCar.name,
+      serviceType: formData.serviceType,
+      pickupLocation: formData.pickupLocation,
+      destination: formData.destination,
+      pickupDate: formData.pickupDate,
+      flightNumber: formData.returnDate || "",
+      estimatedPrice: calculatePrice ?? null,
+      createdAt: serverTimestamp(),
+    });
+
+    // 📧 SEND EMAIL (KEEP YOUR EXISTING FLOW)
+    await sendBookingEmail(formData);
+
+    setSnackbar({
+      open: true,
+      message:
+        `${t("booking.success")} Please check spam folder as well.`,
+      severity: "success",
+    });
+
+  } catch (error: any) {
+    console.error(error);
+    setSnackbar({
+      open: true,
+      message: error.message || t("booking.error"),
+      severity: "error",
+    });
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
 
   const handleCloseSnackbar = (
     event?: React.SyntheticEvent | Event,

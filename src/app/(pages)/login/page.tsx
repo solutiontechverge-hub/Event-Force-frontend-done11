@@ -47,6 +47,7 @@ const LoginPage = () => {
       </Box>
     );
   }
+console.log("🔥 LOGIN using AuthContext");
 
   return (
     <ProtectedRoute requireAuth={false} redirectTo="/home">

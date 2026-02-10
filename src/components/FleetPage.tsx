@@ -1,8 +1,16 @@
 "use client";
 
-import React, { useState, memo, useMemo, useCallback, useEffect } from "react";
+import React, {
+  useState,
+  memo,
+  useMemo,
+  useCallback,
+  useEffect,
+  use,
+} from "react";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   Box,
   Typography,
@@ -45,6 +53,7 @@ interface Car {
   year: string;
   branches: string[];
 }
+
 
 const fleet: Car[] = [
   {
@@ -141,6 +150,7 @@ const fleet: Car[] = [
 
 const FleetPage = memo(() => {
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
   const { t } = useLanguage();
   const [selectedBranch, setSelectedBranch] = useState("all");
   const [selectedClass, setSelectedClass] = useState("all");
@@ -206,6 +216,8 @@ const FleetPage = memo(() => {
     [filteredFleet, router],
   );
 
+  // const router = useRouter();
+
   const nonPremiumCars = [
     "Ford Taurus",
     "Coach 49 Seats",
@@ -214,6 +226,8 @@ const FleetPage = memo(() => {
   ];
 
   return (
+
+    
     <Box sx={{ py: 8, backgroundColor: "white" }}>
       <Container maxWidth="lg">
         {/* Filters */}
@@ -449,7 +463,13 @@ const FleetPage = memo(() => {
                       <Button
                         variant="contained"
                         fullWidth
-                        onClick={() => handleBookCar(index)}
+                        onClick={() => {
+                          if (!isAuthenticated) {
+                            router.push("/signup?redirect=/booking");
+                          } else {
+                            router.push("/booking");
+                          }
+                        }}
                         sx={{
                           backgroundColor: "#52A4C1",
                           color: "white",

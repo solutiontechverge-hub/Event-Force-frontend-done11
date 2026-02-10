@@ -1,63 +1,45 @@
-'use client';
+"use client";
 
-import React, { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
-import { Box, CircularProgress, Typography } from '@mui/material';
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
+import { Box, CircularProgress } from "@mui/material";
 
-interface ProtectedRouteProps {
+interface Props {
   children: React.ReactNode;
-  requireAuth?: boolean;
-  redirectTo?: string;
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
-  children,
-  requireAuth = true,
-  redirectTo = '/signin',
-}) => {
+export default function ProtectedRoute({ children }: Props) {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading) {
-      if (requireAuth && !isAuthenticated) {
-        router.push(redirectTo);
-      } else if (!requireAuth && isAuthenticated) {
-        router.push('/home');
-      }
+    if (!isLoading && !isAuthenticated) {
+      router.replace("/signin");
     }
-  }, [isAuthenticated, isLoading, requireAuth, redirectTo, router]);
+  }, [isAuthenticated, isLoading, router]);
 
+  // ⏳ Wait until auth state is resolved
   if (isLoading) {
     return (
       <Box
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '100vh',
-          gap: 2,
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
-        <CircularProgress size={40} />
-        <Typography variant="body2" color="text.secondary">
-          Loading...
-        </Typography>
+        <CircularProgress />
       </Box>
     );
   }
 
-  if (requireAuth && !isAuthenticated) {
-    return null; // Will redirect
+  // ❌ Not logged in
+  if (!isAuthenticated) {
+    return null;
   }
 
-  if (!requireAuth && isAuthenticated) {
-    return null; // Will redirect
-  }
-
+  // ✅ Logged in
   return <>{children}</>;
-};
-
-export default ProtectedRoute;
+}

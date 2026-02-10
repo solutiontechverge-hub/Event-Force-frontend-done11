@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   AppBar,
   Toolbar,
@@ -36,6 +36,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import LanguageSelector from "@/components/LanguageSelector";
 
 const Header = () => {
+  const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -43,6 +44,12 @@ const Header = () => {
   const pathname = usePathname();
   const { user, isAuthenticated, logout } = useAuth();
   const { t, language } = useLanguage();
+  useEffect(() => {
+    console.log("HEADER AUTH STATE →", {
+      isAuthenticated,
+      user,
+    });
+  }, [user, isAuthenticated]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -75,14 +82,19 @@ const Header = () => {
     setAnchorEl(null);
   };
 
+  // const handleLogout = async () => {
+  //   try {
+  //     await logout();
+  //     handleMenuClose();
+  //   } catch (error) {
+  //     console.error("Logout failed:", error);
+  //   }
+  // };
   const handleLogout = async () => {
-    try {
-      await logout();
-      handleMenuClose();
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
+    await logout(); // must clear user in context
+    setAnchorEl(null);
   };
+  console.log("🔥 HEADER using AuthContext");
 
   const drawer = (
     <Box sx={{ width: "100%", height: "100%", backgroundColor: "#000000" }}>
@@ -250,8 +262,7 @@ const Header = () => {
                 transition: "all 0.3s ease",
               }}
             >
-               {t("header.signUp")}
-
+              {t("header.signUp")}
             </Button>
           )}
         </Box>
@@ -364,10 +375,16 @@ const Header = () => {
                       },
                     }}
                   >
-                    <Avatar sx={{ bgcolor: "#52A4C1", width: 32, height: 32 }}>
+                    {/* <Avatar sx={{ bgcolor: "#52A4C1", width: 32, height: 32 }}>
                       {user?.name ? (
                         user.name.charAt(0).toUpperCase()
                       ) : (
+                        <AccountCircle />
+                      )}
+                    </Avatar> */}
+
+                    <Avatar sx={{ bgcolor: "#52A4C1", width: 32, height: 32 }}>
+                      {user?.name?.charAt(0)?.toUpperCase() ?? (
                         <AccountCircle />
                       )}
                     </Avatar>
@@ -410,6 +427,18 @@ const Header = () => {
                           {user?.email}
                         </Typography>
                       </Box>
+                    </MenuItem>
+                    <Divider
+                      sx={{ backgroundColor: "rgba(255,255,255,0.1)" }}
+                    />
+                    <MenuItem
+                      onClick={() => {
+                        handleMenuClose();
+                        router.push("/profile");
+                      }}
+                    >
+                      <Person sx={{ mr: 1 }} />
+                      Profile
                     </MenuItem>
                     <Divider
                       sx={{ backgroundColor: "rgba(255,255,255,0.1)" }}
