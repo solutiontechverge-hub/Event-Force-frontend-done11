@@ -16,9 +16,12 @@
     "@mui/icons-material": "^7.3.6",
     "@mui/material": "^7.3.7",
     "@react-google-maps/api": "^2.20.8",
+    "firebase": "^12.9.0",
+    "libphonenumber-js": "^1.12.36",
     "next": "16.1.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-phone-number-input": "^3.4.14",
     "swiper": "^12.1.0"
   },
   "devDependencies": {

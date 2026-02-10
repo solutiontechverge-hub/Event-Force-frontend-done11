@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { useState, memo, useCallback } from 'react';
+import React, { useState, memo, useCallback } from "react";
 import {
   Box,
   Card,
@@ -8,458 +8,303 @@ import {
   TextField,
   Button,
   Typography,
-  Link,
   Divider,
   IconButton,
   InputAdornment,
-  FormControlLabel,
-  Checkbox,
   Alert,
   CircularProgress,
-} from '@mui/material';
-import { Visibility, VisibilityOff, Google, Apple } from '@mui/icons-material';
-import { useMediaQuery } from '../hooks/useMediaQuery';
-import { ScaleInView, SlideSidewayInView, SlideUpInView } from './animations';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
+  Link,
+} from "@mui/material";
+import { Visibility, VisibilityOff, Google } from "@mui/icons-material";
+import { useMediaQuery } from "../hooks/useMediaQuery";
+import { SlideSidewayInView, SlideUpInView } from "./animations";
+import { useRouter, usePathname } from "next/navigation";
 
-interface AuthFormProps {
-  mode: 'signup' | 'signin';
-  onSocialLogin?: (provider: string) => void;
-}
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
+import { isValidPhoneNumber } from "libphonenumber-js";
 
-const AuthForm: React.FC<AuthFormProps> = memo(({ mode, onSocialLogin }) => {
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+  sendPasswordResetEmail,
+} from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase";
+
+/* 🔹 Styled phone input */
+const PhoneTextField = React.forwardRef<HTMLInputElement, any>(
+  function PhoneTextField(props, ref) {
+    return (
+      <TextField
+        {...props}
+        inputRef={ref}
+        fullWidth
+        label="Phone Number"
+        required
+        sx={{ mb: 2 }}
+      />
+    );
+  }
+);
+
+const AuthForm = memo(() => {
   const router = useRouter();
-  const { login, register, error, isLoading, clearError } = useAuth();
-  const [formData, setFormData] = useState({ 
-    fullName: '', 
-    email: '', 
-    password: '', 
-    rememberMe: false 
+  const pathname = usePathname();
+  const isMobile = useMediaQuery("(max-width:900px)");
+
+  /* 🔁 Mode derived from URL */
+  const mode =
+    pathname === "/signup"
+      ? "signup"
+      : pathname === "/forgot-password"
+      ? "forgot"
+      : "signin";
+
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    phone: "",
   });
+
   const [showPassword, setShowPassword] = useState(false);
-  const [localError, setLocalError] = useState('');
-  const [localLoading, setLocalLoading] = useState(false);
-  const isMobile = useMediaQuery('(max-width:900px)');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    setFormData(prev => ({ 
-      ...prev, 
-      [name]: type === 'checkbox' ? checked : value 
-    }));
-  }, []);
+  const isValidEmail = (email: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
-    clearError();
-    setLocalError('');
-    
-    try {
-      if (mode === 'signin') {
-        const credentials = {
-          email: formData.email,
-          password: formData.password,
-          rememberMe: formData.rememberMe,
-        };
-        await login(credentials);
-        router.push('/dashboard');
-      } else {
-        const credentials = {
-          email: formData.email,
-          password: formData.password,
-          name: formData.fullName,
-        };
-        await register(credentials);
-        router.push('/dashboard');
+  /* 🔐 SUBMIT */
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      setError("");
+      setSuccess("");
+      setLoading(true);
+
+      try {
+        if (!isValidEmail(formData.email)) {
+          throw new Error("Please enter a valid email address");
+        }
+
+        /* 🔑 SIGN UP */
+        if (mode === "signup") {
+          if (!formData.phone || !isValidPhoneNumber(formData.phone)) {
+            throw new Error("Please enter a valid phone number");
+          }
+
+          const res = await createUserWithEmailAndPassword(
+            auth,
+            formData.email,
+            formData.password
+          );
+
+          await setDoc(doc(db, "users", res.user.uid), {
+            uid: res.user.uid,
+            name: formData.fullName,
+            email: formData.email,
+            phone: formData.phone,
+            createdAt: new Date(),
+          });
+
+          router.push("/dashboard");
+        }
+
+        /* 🔑 SIGN IN */
+        if (mode === "signin") {
+          await signInWithEmailAndPassword(
+            auth,
+            formData.email,
+            formData.password
+          );
+          router.push("/dashboard");
+        }
+
+        /* 🔁 FORGOT PASSWORD */
+        if (mode === "forgot") {
+          await sendPasswordResetEmail(auth, formData.email);
+          setSuccess("Password reset email sent. Check your inbox.");
+        }
+      } catch (err: any) {
+        setError(err.message || "Something went wrong");
+      } finally {
+        setLoading(false);
       }
-    } catch (error: any) {
-      setLocalError(error.message || 'Authentication failed');
-    }
-  }, [formData, mode, login, register, clearError, router]);
+    },
+    [formData, mode, router]
+  );
 
-  const handleSocialLogin = useCallback((provider: string) => {
-    onSocialLogin?.(provider);
-  }, [onSocialLogin]);
+  /* 🔐 GOOGLE LOGIN */
+  const handleGoogleLogin = async () => {
+    setError("");
+    setLoading(true);
+
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+      router.push("/dashboard");
+    } catch (err: any) {
+      setError(err.message || "Google login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Card
       sx={{
-        width: '100%',
-        maxWidth: { xs: '100%', sm: 400 },
-        boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+        width: "100%",
+        maxWidth: 400,
+        boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
         borderRadius: 3,
-        mx: { xs: 1, sm: 0 },
       }}
     >
-      <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
-        {/* Title */}
+      <CardContent sx={{ p: 4 }}>
+        {/* TITLE */}
         <SlideUpInView initialY={30} duration={0.6}>
-          <Box sx={{ textAlign: 'center', mb: { xs: 2, sm: 3 } }}>
-            <Typography
-              variant={isMobile ? 'h6' : 'h5'}
-              sx={{ fontWeight: 'bold', color: '#333', mb: 0.5 }}
-            >
-              {mode === 'signup' ? 'Create Account' : 'Admin Sign In'}
+          <Box textAlign="center" mb={3}>
+            <Typography variant={isMobile ? "h6" : "h5"} fontWeight="bold">
+              {mode === "signup"
+                ? "Create Account"
+                : mode === "forgot"
+                ? "Forgot Password"
+                : "Admin Sign In"}
             </Typography>
-            <Typography
-              variant="body2"
-              sx={{ color: '#666', fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
-            >
-              {mode === 'signin' ? 'Welcome Back! Login to access admin dashboard' : 'Sign up for Event Force'}
+            <Typography variant="body2" color="text.secondary">
+              {mode === "signup"
+                ? "Sign up for Event Force"
+                : mode === "forgot"
+                ? "We’ll email you reset instructions"
+                : "Welcome back! Login to access admin dashboard"}
             </Typography>
           </Box>
         </SlideUpInView>
 
-        {/* Social Login - Only for Signup */}
-        {mode === 'signup' && (
-          <SlideSidewayInView initialX={-30} duration={0.7} delay={0.2}>
-            <>
-              <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                gap: 1,
-                mb: 1.5,
-              }}
+        {/* GOOGLE */}
+        {mode !== "forgot" && (
+          <SlideSidewayInView initialX={-30} duration={0.7}>
+            <Button
+              fullWidth
+              startIcon={<Google />}
+              onClick={handleGoogleLogin}
+              sx={{ mb: 2 }}
             >
-              <Button
-                fullWidth
-                variant="contained"
-                startIcon={<Google />}
-                onClick={() => handleSocialLogin('Google')}
-                sx={{
-                  backgroundColor: '#D7D7D9',
-                  color: '#333',
-                  py: { xs: 0.8, sm: 1 },
-                  borderRadius: '8px',
-                  textTransform: 'none',
-                  fontSize: { xs: '0.75rem', sm: '0.875rem' },
-                  '&:hover': { 
-                    backgroundColor: '#C7C7C9' 
-                  },
-                }}
-              >
-                Google
-              </Button>
-              <Button
-                fullWidth
-                variant="contained"
-                startIcon={<Apple />}
-                onClick={() => handleSocialLogin('Apple')}
-                sx={{
-                  backgroundColor: '#D7D7D9',
-                  color: '#333',
-                  py: { xs: 0.8, sm: 1 },
-                  borderRadius: '8px',
-                  textTransform: 'none',
-                  fontSize: { xs: '0.75rem', sm: '0.875rem' },
-                  '&:hover': { 
-                    backgroundColor: '#C7C7C9' 
-                  },
-                }}
-              >
-                Apple
-              </Button>
-            </Box>
-
-            {/* Divider */}
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <Divider sx={{ flex: 1 }} />
-              <Typography sx={{ px: 2, color: '#666', fontSize: '0.75rem' }}>
-                or continue with
-              </Typography>
-              <Divider sx={{ flex: 1 }} />
-            </Box>
-            </>
+              Google
+            </Button>
           </SlideSidewayInView>
         )}
 
-        {/* Error Alert */}
-        {(error || localError) && (
-          <SlideUpInView initialY={20} duration={0.6} delay={0.3}>
-            <Alert 
-              severity="error" 
-              sx={{ mb: 2, fontSize: '0.875rem' }}
-              onClose={() => {
-                clearError();
-                setLocalError('');
-              }}
-            >
-              {error || localError}
-            </Alert>
-          </SlideUpInView>
-        )}
+        {mode !== "forgot" && <Divider sx={{ mb: 2 }} />}
 
-        {/* Form */}
-        <SlideUpInView initialY={40} duration={0.8} delay={0.4}>
-          <Box component="form" onSubmit={handleSubmit}>
-          {mode === 'signup' && (
-            <>
-              {/* Full Name Label */}
-              <Typography
-                variant="body2"
-                sx={{
-                  color: '#333',
-                  fontWeight: 'bold',
-                  mb: 0.5,
-                  fontSize: '0.75rem',
-                }}
-              >
-                Full Name*
-              </Typography>
-              
-              {/* Full Name Field */}
-              <TextField
-                fullWidth
-                name="fullName"
-                value={formData.fullName}
-                onChange={handleInputChange}
-                placeholder="Enter your full name"
-                required
-                size="small"
-                sx={{ 
-                  mb: 1.5, 
-                  '& .MuiOutlinedInput-root': { 
-                    borderRadius: '8px' 
-                  } 
-                }}
-              />
-            </>
+        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+        {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
+
+        {/* FORM */}
+        <Box component="form" onSubmit={handleSubmit}>
+          {mode === "signup" && (
+            <TextField
+              fullWidth
+              label="Full Name"
+              value={formData.fullName}
+              onChange={(e) =>
+                setFormData({ ...formData, fullName: e.target.value })
+              }
+              required
+              sx={{ mb: 1.5 }}
+            />
           )}
 
-          {/* Email Label */}
-          <Typography
-            variant="body2"
-            sx={{
-              color: '#333',
-              fontWeight: 'bold',
-              mb: 0.5,
-              fontSize: '0.75rem',
-            }}
-          >
-            Email Address*
-          </Typography>
-          
-          {/* Email Field */}
           <TextField
             fullWidth
-            name="email"
-            type="email"
+            label="Email Address"
             value={formData.email}
-            onChange={handleInputChange}
-            placeholder="Enter your email address"
+            onChange={(e) =>
+              setFormData({ ...formData, email: e.target.value })
+            }
             required
-            size="small"
-            sx={{ 
-              mb: 1.5, 
-              '& .MuiOutlinedInput-root': { 
-                borderRadius: '8px' 
-              } 
-            }}
+            sx={{ mb: 1.5 }}
           />
 
-          {/* Password Label */}
-          <Typography
-            variant="body2"
-            sx={{
-              color: '#333',
-              fontWeight: 'bold',
-              mb: 0.5,
-              fontSize: '0.75rem',
-            }}
-          >
-            Password*
-          </Typography>
-          
-          {/* Password Field */}
-          <TextField
-            fullWidth
-            name="password"
-            type={showPassword ? 'text' : 'password'}
-            value={formData.password}
-            onChange={handleInputChange}
-            placeholder="Enter your password"
-            required
-            size="small"
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton 
-                    onClick={() => setShowPassword(!showPassword)} 
-                    edge="end"
-                    size="small"
-                  >
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-            sx={{ 
-              mb: 1, 
-              '& .MuiOutlinedInput-root': { 
-                borderRadius: '8px' 
-              } 
-            }}
-          />
+          {mode === "signup" && (
+            <PhoneInput
+              international
+              defaultCountry="SA"
+              value={formData.phone}
+              onChange={(value) =>
+                setFormData({ ...formData, phone: value || "" })
+              }
+              inputComponent={PhoneTextField}
+            />
+          )}
 
-          {/* Remember Me and Forgot Password - Only for Sign In */}
-          {mode === 'signin' && (
-            <Box sx={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center', 
-              mb: 1.5 
-            }}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    name="rememberMe"
-                    checked={formData.rememberMe}
-                    onChange={handleInputChange}
-                    sx={{
-                      color: '#1976d2',
-                      '&.Mui-checked': {
-                        color: '#1976d2',
-                      },
-                    }}
-                  />
-                }
-                label={
-                  <Typography sx={{ 
-                    fontSize: '0.75rem', 
-                    color: '#666' 
-                  }}>
-                    Remember me
-                  </Typography>
-                }
-              />
+          {mode !== "forgot" && (
+            <TextField
+              fullWidth
+              label="Password"
+              type={showPassword ? "text" : "password"}
+              value={formData.password}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
+              required
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={() => setShowPassword(!showPassword)}>
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+              sx={{ mb: 2 }}
+            />
+          )}
+
+          {mode === "signin" && (
+            <Box textAlign="right" mb={2}>
               <Link
                 component="button"
-                onClick={() => router.push('/forgot-password')}
-                sx={{
-                  color: '#52A4C1',
-                  textDecoration: 'none',
-                  fontSize: '0.75rem',
-                  fontWeight: 'bold',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  '&:hover': {
-                    textDecoration: 'underline',
-                  },
-                }}
+                onClick={() => router.push("/forgot-password")}
+                sx={{ fontSize: "0.75rem", fontWeight: "bold" }}
               >
-                Forgot Password?
+                Forgot password?
               </Link>
             </Box>
           )}
 
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            disabled={isLoading || localLoading}
-            sx={{
-              backgroundColor: '#52A4C1',
-              color: 'white',
-              py: 1,
-              mb: 1.5,
-              borderRadius: '8px',
-              textTransform: 'none',
-              fontWeight: 'bold',
-              fontSize: '0.875rem',
-              '&:hover': { 
-                backgroundColor: '#4a94b1' 
-              },
-              '&:disabled': {
-                backgroundColor: '#ccc',
-                color: '#666',
-              },
-            }}
-          >
-            {isLoading || localLoading ? (
-              <CircularProgress size={20} color="inherit" />
-            ) : (
-              mode === 'signup' ? 'Signup' : 'Login'
-            )}
+          <Button fullWidth variant="contained" type="submit" disabled={loading}>
+            {loading ? <CircularProgress size={20} /> : "Continue"}
           </Button>
 
-          {/* Links */}
-          <Box sx={{ textAlign: 'center', mb: 1.5 }}>
-            <Typography sx={{ color: '#666', fontSize: '0.75rem' }}>
-              {mode === 'signup' ? (
-                <>
-                  Already have an account?{' '}
-                  <Link 
-                    component="button"
-                    onClick={() => router.push('/signin')}
-                    sx={{ 
-                      color: '#52A4C1', 
-                      fontWeight: 'bold',
-                      textDecoration: 'none',
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      '&:hover': {
-                        textDecoration: 'underline',
-                      },
-                    }}
-                  >
-                    Sign in
-                  </Link>
-                </>
-              ) : (
-                <>
-                  Don't have an account?{' '}
-                  <Link 
-                    component="button"
-                    onClick={() => router.push('/signup')}
-                    sx={{ 
-                      color: '#52A4C1', 
-                      fontWeight: 'bold',
-                      textDecoration: 'none',
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      '&:hover': {
-                        textDecoration: 'underline',
-                      },
-                    }}
-                  >
-                    Create account
-                  </Link>
-                </>
-              )}
-            </Typography>
-            {mode === 'signin' && (
-              <Typography sx={{ color: '#666', fontSize: '0.75rem', mt: 0.5 }}>
-                Join Event Force and start your journey
+          {/* FOOTER LINKS */}
+          <Box textAlign="center" mt={2}>
+            {mode === "signin" && (
+              <Typography fontSize="0.75rem">
+                Don’t have an account?{" "}
+                <Link component="button" onClick={() => router.push("/signup")}>
+                  Create account
+                </Link>
+              </Typography>
+            )}
+
+            {(mode === "signup" || mode === "forgot") && (
+              <Typography fontSize="0.75rem">
+                Already have an account?{" "}
+                <Link component="button" onClick={() => router.push("/signin")}>
+                  Sign in
+                </Link>
               </Typography>
             )}
           </Box>
-
-          {/* Demo Credentials for Admin */}
-          {mode === 'signin' && (
-            <Box sx={{ mt: 2, p: 2, bgcolor: '#f5f5f5', borderRadius: 1 }}>
-              <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 'bold', mb: 1 }}>
-                Demo Credentials:
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
-                Admin: admin@eventforce.com / admin123
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
-                Staff: staff@eventforce.com / staff123
-              </Typography>
-            </Box>
-          )}
-          </Box>
-        </SlideUpInView>
+        </Box>
       </CardContent>
     </Card>
   );
 });
 
-AuthForm.displayName = 'AuthForm';
-
+AuthForm.displayName = "AuthForm";
 export default AuthForm;

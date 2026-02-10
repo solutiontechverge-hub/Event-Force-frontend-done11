@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box,
-  Grid,
   Card,
   CardContent,
   TextField,
@@ -11,9 +10,13 @@ import {
   Typography,
   InputAdornment,
   Skeleton,
+  Alert,
 } from '@mui/material';
 import { Email } from '@mui/icons-material';
 import Image from 'next/image';
+
+import { sendPasswordResetEmail } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 
 import { useMediaQuery as useCustomMediaQuery } from '@/hooks/useMediaQuery';
 import { useRouter } from 'next/navigation';
@@ -21,218 +24,215 @@ import { AuthBg } from '../../../../public/images';
 
 const ForgotPasswordPage = () => {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [isMounted, setIsMounted] = useState(false);
   const isMobile = useCustomMediaQuery('(max-width:900px)');
 
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsMounted(true);
-    }, 500);
-    
+    const timer = setTimeout(() => setIsMounted(true), 500);
     return () => clearTimeout(timer);
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const isValidEmail = (email: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  /* 📧 EMAIL RESET */
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Send OTP to:', email);
-    // Handle forgot password logic here
+    setError('');
+    setSuccess('');
+    setLoading(true);
+
+    try {
+      if (!isValidEmail(email)) {
+        throw new Error('Please enter a valid email address');
+      }
+
+      await sendPasswordResetEmail(auth, email);
+      setSuccess('Password reset email sent. Please check your inbox.');
+    } catch (err: any) {
+      setError(err.message || 'Failed to send reset email');
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!isMounted) {
     return (
-      <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-        <Grid container sx={{ minHeight: { xs: 'auto', md: '100vh' } }}>
-          <Grid size={{ xs: 0, lg: 7 }} sx={{ display: { xs: 'none', md: 'flex' }, position: 'relative', overflow: 'hidden', backgroundColor: '#000' }}>
-            <Skeleton variant="rectangular" width="100%" height="100%" animation="wave" />
-          </Grid>
-          <Grid size={{ xs: 12, lg: 5 }} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', p: { xs: 2, sm: 3, md: 4 }, backgroundColor: '#f8f9fa' }}>
-            <Card sx={{ width: '100%', maxWidth: 400, borderRadius: '12px' }}>
-              <CardContent sx={{ p: 4 }}>
-                <Skeleton variant="text" width="60%" height={40} animation="wave" sx={{ mb: 2, mx: 'auto' }} />
-                <Skeleton variant="text" width="80%" height={20} animation="wave" sx={{ mb: 3, mx: 'auto' }} />
-                <Skeleton variant="text" width="40%" height={20} animation="wave" sx={{ mb: 1 }} />
-                <Skeleton variant="rectangular" height={40} animation="wave" sx={{ borderRadius: '8px', mb: 3 }} />
-                <Skeleton variant="rectangular" height={48} animation="wave" sx={{ borderRadius: '8px', mb: 2 }} />
-                <Skeleton variant="text" width="70%" height={20} animation="wave" sx={{ mx: 'auto' }} />
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
+      <Box sx={{ minHeight: '100vh' }}>
+        <Skeleton width="100%" height="100vh" />
       </Box>
     );
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Grid container sx={{ minHeight: { xs: 'auto', md: '100vh' } }}>
-        {/* Left Side - Background Image */}
-        <Grid
-          size={{ xs: 0, lg: 7 }}
+    <Box sx={{ minHeight: '100vh', display: 'flex' }}>
+      {/* LEFT IMAGE */}
+      <Box
+        sx={{
+          display: { xs: 'none', lg: 'block' },
+          width: '58%',
+          position: 'relative',
+        }}
+      >
+        <Image
+          src={AuthBg}
+          alt="Background"
+          fill
+          style={{ objectFit: 'cover' }}
+          priority
+        />
+        <Box
           sx={{
-            display: { xs: 'none', md: 'flex' },
-            position: 'relative',
-            overflow: 'hidden',
+            position: 'absolute',
+            inset: 0,
+            backgroundColor: 'rgba(0,0,0,0.45)',
           }}
-        >
-            <Image
-              src={AuthBg}
-              alt="Luxury Cars Background"
-              fill
-              style={{
-                objectFit: 'cover',
-                objectPosition: 'center',
-              }}
-              priority
-            />
-            <Box
-              sx={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: 'rgba(0,0,0,0.43)',
-              }}
-            />
-          </Grid>
+        />
+      </Box>
 
-        {/* Right Side - Forgot Password Form */}
-        <Grid
-          size={{ xs: 12, lg: 5 }}
+      {/* RIGHT FORM */}
+      <Box
+        sx={{
+          width: { xs: '100%', lg: '42%' },
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#f8f9fa',
+          p: { xs: 2, sm: 3, md: 4 },
+        }}
+      >
+        <Card
           sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            p: { xs: 2, sm: 3, md: 4 },
-            backgroundColor: '#f8f9fa',
-            minHeight: { xs: '100vh', md: 'auto' },
+            width: '100%',
+            maxWidth: 400,
+            boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+            borderRadius: 3,
           }}
         >
-            <Card
-              sx={{
-                width: '100%',
-                maxWidth: { xs: '100%', sm: 400 },
-                boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
-                borderRadius: 3,
-                mx: { xs: 1, sm: 0 },
-              }}
+          <CardContent sx={{ p: 4 }}>
+            <Typography
+              variant={isMobile ? 'h6' : 'h5'}
+              fontWeight="bold"
+              textAlign="center"
+              mb={1}
             >
-              <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
-                <Box sx={{ textAlign: 'center', mb: { xs: 2, sm: 3 } }}>
-                  <Typography
-                    variant={isMobile ? 'h6' : 'h5'}
-                    sx={{
-                      fontWeight: 'bold',
-                      color: '#333',
-                      mb: 0.5,
-                    }}
-                  >
-                    Forgot Password?
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      color: '#666',
-                      fontSize: { xs: '0.75rem', sm: '0.875rem' },
-                    }}
-                  >
-                    No worries, we'll send you reset instructions.
-                  </Typography>
-                </Box>
+              Forgot Password?
+            </Typography>
 
-                <Box component="form" onSubmit={handleSubmit}>
-                  {/* Email Label */}
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      color: '#333',
-                      fontWeight: 'bold',
-                      mb: 0.5,
-                      fontSize: '0.75rem',
-                    }}
-                  >
-                    Email Address*
-                  </Typography>
-                  
-                  {/* Email Field */}
-                  <TextField
-                    fullWidth
-                    name="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email address here"
-                    required
-                    size="small"
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <Email sx={{ color: '#666' }} />
-                        </InputAdornment>
-                      ),
-                    }}
-                    sx={{ 
-                      mb: 2,
-                      '& .MuiOutlinedInput-root': {
-                        borderRadius: '8px',
-                      },
-                    }}
-                  />
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              textAlign="center"
+              mb={3}
+            >
+              No worries, we’ll send you reset instructions.
+            </Typography>
 
-                  {/* Send OTP Button */}
+            {error && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {error}
+              </Alert>
+            )}
+
+            {success && (
+              <Alert severity="success" sx={{ mb: 2 }}>
+                {success}
+              </Alert>
+            )}
+
+            <Box component="form" onSubmit={handleSubmit}>
+              {/* Email Label */}
+              <Typography
+                variant="body2"
+                sx={{
+                  color: '#333',
+                  fontWeight: 'bold',
+                  mb: 0.5,
+                  fontSize: '0.75rem',
+                }}
+              >
+                Email Address*
+              </Typography>
+
+              {/* Email Field */}
+              <TextField
+                fullWidth
+                name="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email address here"
+                required
+                size="small"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Email sx={{ color: '#666' }} />
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{
+                  mb: 2,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '8px',
+                  },
+                }}
+              />
+
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                disabled={loading}
+                sx={{
+                  backgroundColor: '#52A4C1',
+                  color: 'white',
+                  py: 1,
+                  mb: 2,
+                  borderRadius: '8px',
+                  textTransform: 'none',
+                  fontWeight: 'bold',
+                  fontSize: '0.875rem',
+                  '&:hover': {
+                    backgroundColor: '#4a94b1',
+                  },
+                }}
+              >
+                {loading ? 'Sending…' : 'Send Reset Email'}
+              </Button>
+
+              {/* Back to Sign In */}
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography sx={{ color: '#666', fontSize: '0.75rem' }}>
+                  Remember your password?{' '}
                   <Button
-                    type="submit"
-                    fullWidth
-                    variant="contained"
+                    onClick={() => router.push('/signin')}
                     sx={{
-                      backgroundColor: '#52A4C1',
-                      color: 'white',
-                      py: 1,
-                      mb: 2,
-                      borderRadius: '8px',
-                      textTransform: 'none',
+                      color: '#52A4C1',
                       fontWeight: 'bold',
-                      fontSize: '0.875rem',
+                      textTransform: 'none',
+                      p: 0,
+                      minWidth: 'auto',
+                      background: 'none',
                       '&:hover': {
-                        backgroundColor: '#4a94b1',
+                        textDecoration: 'underline',
+                        backgroundColor: 'transparent',
                       },
                     }}
                   >
-                    Sent OTP
+                    Sign in
                   </Button>
-
-                  {/* Back to Sign In */}
-                  <Box sx={{ textAlign: 'center' }}>
-                    <Typography sx={{ color: '#666', fontSize: '0.75rem' }}>
-                      Remember your password?{' '}
-                      <Button
-                        onClick={() => router.push('/signin')}
-                        sx={{
-                          color: '#52A4C1',
-                          textDecoration: 'none',
-                          fontWeight: 'bold',
-                          textTransform: 'none',
-                          p: 0,
-                          minWidth: 'auto',
-                          background: 'none',
-                          border: 'none',
-                          cursor: 'pointer',
-                          '&:hover': {
-                            textDecoration: 'underline',
-                            backgroundColor: 'transparent',
-                          },
-                        }}
-                      >
-                        Sign in
-                      </Button>
-                    </Typography>
-                  </Box>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
+                </Typography>
+              </Box>
+            </Box>
+          </CardContent>
+        </Card>
+      </Box>
     </Box>
   );
 };
