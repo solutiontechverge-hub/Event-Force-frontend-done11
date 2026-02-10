@@ -1,10 +1,11 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Box, Grid, Skeleton, Card, CardContent } from '@mui/material';
-import Image from 'next/image';
-import AuthForm from '@/components/AuthForm';
-import { AuthBg } from '../../../../public/images';
+import { useState, useEffect } from "react";
+import { Box, Grid, Skeleton, Card, CardContent } from "@mui/material";
+import Image from "next/image";
+import AuthForm from "@/components/AuthForm";
+import { AuthBg } from "../../../../public/images";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 const SignInPage = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -19,15 +20,17 @@ const SignInPage = () => {
 
   if (!isMounted) {
     return (
-      <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-        <Grid container sx={{ minHeight: { xs: 'auto', md: '100vh' } }}>
+      <Box
+        sx={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
+      >
+        <Grid container sx={{ minHeight: { xs: "auto", md: "100vh" } }}>
           <Grid
             size={{ xs: 0, lg: 7 }}
             sx={{
-              display: { xs: 'none', md: 'flex' },
-              position: 'relative',
-              overflow: 'hidden',
-              backgroundColor: '#000',
+              display: { xs: "none", md: "flex" },
+              position: "relative",
+              overflow: "hidden",
+              backgroundColor: "#000",
             }}
           >
             <Skeleton variant="rectangular" width="100%" height="100%" />
@@ -36,16 +39,16 @@ const SignInPage = () => {
           <Grid
             size={{ xs: 12, lg: 5 }}
             sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
               p: { xs: 2, sm: 3, md: 4 },
-              backgroundColor: '#f8f9fa',
+              backgroundColor: "#f8f9fa",
             }}
           >
-            <Card sx={{ width: '100%', maxWidth: 500, borderRadius: '12px' }}>
+            <Card sx={{ width: "100%", maxWidth: 500, borderRadius: "12px" }}>
               <CardContent sx={{ p: 4 }}>
-                <Skeleton width="40%" height={40} sx={{ mb: 3, mx: 'auto' }} />
+                <Skeleton width="40%" height={40} sx={{ mb: 3, mx: "auto" }} />
                 <Skeleton height={40} sx={{ mb: 3 }} />
                 <Skeleton height={40} sx={{ mb: 3 }} />
                 <Skeleton height={48} />
@@ -58,49 +61,53 @@ const SignInPage = () => {
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Grid container sx={{ minHeight: { xs: 'auto', md: '100vh' } }}>
-        {/* Left Side */}
-        <Grid
-          size={{ xs: 0, lg: 7 }}
-          sx={{
-            display: { xs: 'none', md: 'flex' },
-            position: 'relative',
-            overflow: 'hidden',
-          }}
-        >
-          <Image
-            src={AuthBg}
-            alt="Luxury Cars Background"
-            fill
-            style={{ objectFit: 'cover' }}
-            priority
-          />
-          <Box
+    <ProtectedRoute requireAuth={false} redirectTo="/home">
+      <Box
+        sx={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
+      >
+        <Grid container sx={{ minHeight: { xs: "auto", md: "100vh" } }}>
+          {/* Left Side */}
+          <Grid
+            size={{ xs: 0, lg: 7 }}
             sx={{
-              position: 'absolute',
-              inset: 0,
-              backgroundColor: 'rgba(0,0,0,0.43)',
+              display: { xs: "none", md: "flex" },
+              position: "relative",
+              overflow: "hidden",
             }}
-          />
-        </Grid>
+          >
+            <Image
+              src={AuthBg}
+              alt="Luxury Cars Background"
+              fill
+              style={{ objectFit: "cover" }}
+              priority
+            />
+            <Box
+              sx={{
+                position: "absolute",
+                inset: 0,
+                backgroundColor: "rgba(0,0,0,0.43)",
+              }}
+            />
+          </Grid>
 
-        {/* Right Side */}
-        <Grid
-          size={{ xs: 12, lg: 5 }}
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            p: { xs: 2, sm: 3, md: 4 },
-            backgroundColor: '#f8f9fa',
-            minHeight: { xs: '100vh', md: 'auto' },
-          }}
-        >
-          <AuthForm />
+          {/* Right Side */}
+          <Grid
+            size={{ xs: 12, lg: 5 }}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              p: { xs: 2, sm: 3, md: 4 },
+              backgroundColor: "#f8f9fa",
+              minHeight: { xs: "100vh", md: "auto" },
+            }}
+          >
+            <AuthForm />
+          </Grid>
         </Grid>
-      </Grid>
-    </Box>
+      </Box>
+    </ProtectedRoute>
   );
 };
 

@@ -318,13 +318,22 @@ const AuthForm = memo(() => {
           )}
 
           <Button
-            fullWidth
-            variant="contained"
-            type="submit"
-            disabled={loading}
-          >
-            {loading ? <CircularProgress size={20} /> : "Continue"}
-          </Button>
+  fullWidth
+  variant="contained"
+  type="submit"
+  disabled={loading}
+>
+  {loading ? (
+    <CircularProgress size={20} />
+  ) : mode === "signup" ? (
+    "Sign Up"
+  ) : mode === "forgot" ? (
+    "Send Reset Link"
+  ) : (
+    "Sign In"
+  )}
+</Button>
+
 
           {/* FOOTER LINKS */}
           <Box textAlign="center" mt={2}>

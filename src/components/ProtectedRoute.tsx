@@ -1,45 +1,38 @@
 "use client";
 
-import { useEffect } from "react";
+import { ReactNode, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { Box, CircularProgress } from "@mui/material";
 
-interface Props {
-  children: React.ReactNode;
-}
+type ProtectedRouteProps = {
+  children: ReactNode;
+  requireAuth?: boolean; // true = protected page
+  redirectTo?: string;
+};
 
-export default function ProtectedRoute({ children }: Props) {
+export default function ProtectedRoute({
+  children,
+  requireAuth = true,
+  redirectTo = "/signin",
+}: ProtectedRouteProps) {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      router.replace("/signin");
+    if (isLoading) return;
+
+    // 🔒 Protected pages (profile, manage-booking)
+    if (requireAuth && !isAuthenticated) {
+      router.replace(redirectTo);
     }
-  }, [isAuthenticated, isLoading, router]);
 
-  // ⏳ Wait until auth state is resolved
-  if (isLoading) {
-    return (
-      <Box
-        sx={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
+    // 🔓 Auth pages (signin/signup)
+    if (!requireAuth && isAuthenticated) {
+      router.replace("/home");
+    }
+  }, [isAuthenticated, isLoading, requireAuth, redirectTo, router]);
 
-  // ❌ Not logged in
-  if (!isAuthenticated) {
-    return null;
-  }
+  if (isLoading) return null;
 
-  // ✅ Logged in
   return <>{children}</>;
 }

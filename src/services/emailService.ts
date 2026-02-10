@@ -48,8 +48,8 @@ export interface ContactFormData {
 export interface BookingFormData {
   fullName: string;
   email: string;
-  countryCode: string;
-  contactNumber: string;
+  phone: string;
+  // : string;
   selectedCar: string;
   selectedColor?: string;
   serviceType: string;
@@ -152,8 +152,8 @@ export const sendBookingEmail = async (formData: BookingFormData): Promise<void>
     const reservationNumber = formData.reservationNumber || 'PENDING';
     const templateParams = {
       full_name: formData.fullName,
-      email: 'reservations@eventforce.sa.com',
-      phone: `${formData.countryCode} ${formData.contactNumber}`,
+      email: formData.email,
+      phone: `${formData.phone} ${formData.phone}`,
       car: formData.selectedCar,
 
       service_type: formData.serviceType,
@@ -172,7 +172,7 @@ export const sendBookingEmail = async (formData: BookingFormData): Promise<void>
     const templateParamsUser = {
       full_name: formData.fullName,
       email: formData.email,
-      phone: `${formData.countryCode} ${formData.contactNumber}`,
+      phone: `${formData.phone} ${formData.phone}`,
       car: formData.selectedCar,
 
       service_type: formData.serviceType,

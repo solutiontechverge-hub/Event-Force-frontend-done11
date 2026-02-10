@@ -22,6 +22,7 @@ import {
 
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
+import "react-phone-number-input/style.css";
 
 import { CalendarToday, ArrowDropDown, ArrowBack } from "@mui/icons-material";
 import Image from "next/image";
@@ -79,6 +80,9 @@ import {
   ChineseBus49KingLong,
 } from "../../../../public/images";
 import PickupDropoffMap from "./PickupDropoffMap";
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
+import { isValidPhoneNumber } from "libphonenumber-js";
 
 interface Car {
   name: string;
@@ -102,6 +106,20 @@ interface ColorOption {
     blurHeight: number;
     blurDataURL: string;
   };
+}
+export interface BookingFormData {
+  fullName: string;
+  email: string;
+  phone: string; // ✅ single international phone
+  selectedCar: string;
+  selectedColor: string;
+  serviceType: string;
+  pickupLocation: string;
+  destination: string;
+  tripType: string;
+  photo: File | null;
+  pickupDate: string;
+  returnDate: string;
 }
 
 const fleet: Car[] = [
@@ -189,6 +207,10 @@ const fleet: Car[] = [
 ];
 
 const ManageBookingClient = () => {
+  const isValidEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
   const searchParams = useSearchParams();
   const router = useRouter();
   const { t, isRTL } = useLanguage();
@@ -202,11 +224,40 @@ const ManageBookingClient = () => {
     severity: "success" as "success" | "error" | "info" | "warning",
   });
 
+  const PhoneTextField = React.forwardRef<HTMLInputElement, any>(
+    function PhoneTextField(props, ref) {
+      return (
+        <TextField
+          {...props}
+          inputRef={ref}
+          fullWidth
+          label="Phone Number"
+          required
+          sx={{ mb: 2 }}
+        />
+      );
+    },
+  );
+
+  const getMinDateTime = () => {
+    const now = new Date();
+
+    // ⏱ force 2 hours ahead
+    now.setHours(now.getHours() + 2);
+
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
-    countryCode: "+966",
-    contactNumber: "",
+    phone: "", // ← ONLY phone
     selectedCar: "black",
     selectedColor: "",
     serviceType: "",
@@ -217,6 +268,15 @@ const ManageBookingClient = () => {
     pickupDate: "",
     returnDate: "",
   });
+
+  useEffect(() => {
+    if (!formData.pickupDate) {
+      setFormData((prev) => ({
+        ...prev,
+        pickupDate: getMinDateTime(),
+      }));
+    }
+  }, []);
 
   useEffect(() => {
     // Delay to show skeleton - ensures it's visible on initial load
@@ -411,57 +471,6 @@ const ManageBookingClient = () => {
         },
       ];
     }
-
-    // if (
-    //   normalizedName.includes("bmw 5 series") ||
-    //   normalizedName.includes("bmw 5")
-    // ) {
-    //   return [
-    //     { id: "black", name: "Black", color: "#1A1A1A", image: BmwBlack1 },
-    //     {
-    //       id: "color-2",
-    //       name: "Color Option 2",
-    //       color: "#4A5568",
-    //       image: Bmw2,
-    //     },
-    //     {
-    //       id: "color-3",
-    //       name: "Color Option 3",
-    //       color: "#9CA3AF",
-    //       image: Bmw3,
-    //     },
-    //     {
-    //       id: "color-4",
-    //       name: "Color Option 4",
-    //       color: "#4B5563",
-    //       image: Bmw4,
-    //     },
-    //     {
-    //       id: "color-5",
-    //       name: "Color Option 5",
-    //       color: "#1E40AF",
-    //       image: Bmw5,
-    //     },
-    //     {
-    //       id: "color-6",
-    //       name: "Color Option 6",
-    //       color: "#92400E",
-    //       image: Bmw6,
-    //     },
-    //     {
-    //       id: "color-7",
-    //       name: "Color Option 7",
-    //       color: "#065F46",
-    //       image: Bmw7,
-    //     },
-    //     {
-    //       id: "color-8",
-    //       name: "Color Option 8",
-    //       color: "#1E3A8A",
-    //       image: Bmw8,
-    //     },
-    //   ];
-    // }
 
     if (
       normalizedName.includes("mercedes s450") ||
@@ -737,86 +746,115 @@ const ManageBookingClient = () => {
   };
 
   // Get minimum datetime (2 hours from now) for pickup date
-  const getMinDateTime = () => {
+  const getDynamicMinDateTime = () => {
     const now = new Date();
-    const minDate = new Date(now.getTime() + 2 * 60 * 60 * 1000); // Add 2 hours
-    const year = minDate.getFullYear();
-    const month = String(minDate.getMonth() + 1).padStart(2, "0");
-    const day = String(minDate.getDate()).padStart(2, "0");
-    const hours = String(minDate.getHours()).padStart(2, "0");
-    const minutes = String(minDate.getMinutes()).padStart(2, "0");
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-  };
+    const twoHoursLater = new Date(now.getTime() + 2 * 60 * 60 * 1000);
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-
-  if (!auth.currentUser) {
-    setSnackbar({
-      open: true,
-      message: "Please login to confirm booking",
-      severity: "error",
-    });
-    return;
-  }
-
-  setIsSubmitting(true);
-
-  try {
-    // ⏱ Validate pickup time (2 hours rule)
-    if (formData.pickupDate) {
-      const pickupDateTime = new Date(formData.pickupDate);
-      const minDateTime = new Date(Date.now() + 2 * 60 * 60 * 1000);
-
-      if (pickupDateTime < minDateTime) {
-        setSnackbar({
-          open: true,
-          message: t("booking.minTime"),
-          severity: "error",
-        });
-        setIsSubmitting(false);
-        return;
-      }
+    if (!formData.pickupDate) {
+      return twoHoursLater.toISOString().slice(0, 16);
     }
 
-    // 🔥 SAVE BOOKING TO FIRESTORE
-    await addDoc(collection(db, "bookings"), {
-      userId: auth.currentUser.uid, // REQUIRED FOR RULES
-      fullName: formData.fullName,
-      email: formData.email,
-      phone: `${formData.countryCode}${formData.contactNumber}`,
-      car: displayCar.name,
-      serviceType: formData.serviceType,
-      pickupLocation: formData.pickupLocation,
-      destination: formData.destination,
-      pickupDate: formData.pickupDate,
-      flightNumber: formData.returnDate || "",
-      estimatedPrice: calculatePrice ?? null,
-      createdAt: serverTimestamp(),
-    });
+    const selectedDate = new Date(formData.pickupDate);
 
-    // 📧 SEND EMAIL (KEEP YOUR EXISTING FLOW)
-    await sendBookingEmail(formData);
+    // If user selected TODAY → enforce +2 hours
+    if (selectedDate.toDateString() === now.toDateString()) {
+      return twoHoursLater.toISOString().slice(0, 16);
+    }
 
-    setSnackbar({
-      open: true,
-      message:
-        `${t("booking.success")} Please check spam folder as well.`,
-      severity: "success",
-    });
+    // If FUTURE date → allow full day
+    return new Date(selectedDate.setHours(0, 0, 0, 0))
+      .toISOString()
+      .slice(0, 16);
+  };
 
-  } catch (error: any) {
-    console.error(error);
-    setSnackbar({
-      open: true,
-      message: error.message || t("booking.error"),
-      severity: "error",
-    });
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
+    if (!auth.currentUser) {
+      setSnackbar({
+        open: true,
+        message: "Please login to confirm booking",
+        severity: "error",
+      });
+      return;
+    }
+
+    /* ✅ EMAIL VALIDATION */
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setSnackbar({
+        open: true,
+        message: "Please enter a valid email address",
+        severity: "error",
+      });
+      return;
+    }
+
+    /* ✅ PHONE VALIDATION (country code + number) */
+    const fullPhone = `${formData.phone}`;
+    if (!isValidPhoneNumber(fullPhone)) {
+      setSnackbar({
+        open: true,
+        message: "Please enter a valid phone number",
+        severity: "error",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      /* ⏱ 2 HOURS TIME RULE (KEEP AS-IS) */
+      if (formData.pickupDate) {
+        const pickupDateTime = new Date(formData.pickupDate);
+        const minDateTime = new Date(Date.now() + 2 * 60 * 60 * 1000);
+
+        if (pickupDateTime < minDateTime) {
+          setSnackbar({
+            open: true,
+            message: t("booking.minTime"),
+            severity: "error",
+          });
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
+      /* 🔥 SAVE BOOKING */
+      await addDoc(collection(db, "bookings"), {
+        userId: auth.currentUser.uid,
+        fullName: formData.fullName,
+        email: formData.email,
+        phone: fullPhone, // ✅ validated phone
+        car: displayCar.name,
+        serviceType: formData.serviceType,
+        pickupLocation: formData.pickupLocation,
+        destination: formData.destination,
+        pickupDate: formData.pickupDate,
+        flightNumber: formData.returnDate || "",
+        estimatedPrice: calculatePrice ?? null,
+        createdAt: serverTimestamp(),
+      });
+
+      /* 📧 EMAIL */
+      await sendBookingEmail(formData);
+
+      setSnackbar({
+        open: true,
+        message: `${t("booking.success")} Please check spam folder as well.`,
+        severity: "success",
+      });
+    } catch (error: any) {
+      console.error(error);
+      setSnackbar({
+        open: true,
+        message: error.message || t("booking.error"),
+        severity: "error",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleCloseSnackbar = (
     event?: React.SyntheticEvent | Event,
@@ -854,12 +892,6 @@ const handleSubmit = async (e: React.FormEvent) => {
       router.push("/our-fleet");
     }
   };
-
-  // Get available colors for the selected car
-  // const availableColors = useMemo(() => {
-  //   const carName = formData.selectedCar || selectedCar?.name || '';
-  //   return getColorOptionsForCar(carName);
-  // }, [formData.selectedCar, selectedCar]);
 
   const availableColors: ColorOption[] = [
     {
@@ -1752,7 +1784,6 @@ const handleSubmit = async (e: React.FormEvent) => {
                       />
                     </Box>
 
-                    {/* Contact Number */}
                     <Box sx={{ mb: 3 }}>
                       <Typography
                         variant="body2"
@@ -1765,34 +1796,51 @@ const handleSubmit = async (e: React.FormEvent) => {
                       >
                         {t("booking.phone")}*
                       </Typography>
-                      <Box sx={{ display: "flex", gap: 2 }}>
-                        <TextField
-                          name="countryCode"
-                          value={formData.countryCode}
-                          onChange={handleInputChange}
-                          size="small"
-                          sx={{
-                            width: "120px",
-                            "& .MuiOutlinedInput-root": {
-                              borderRadius: "8px",
-                              backgroundColor: "#F8F8F8",
-                            },
-                          }}
-                        />
-                        <TextField
-                          fullWidth
-                          name="contactNumber"
-                          value={formData.contactNumber}
-                          onChange={handleInputChange}
-                          placeholder={t("booking.phonePlaceholder")}
-                          required
-                          size="small"
-                          sx={{
-                            "& .MuiOutlinedInput-root": {
-                              borderRadius: "8px",
-                              backgroundColor: "#F8F8F8",
-                            },
-                          }}
+
+                      <Box
+                        sx={{
+                          "& .PhoneInput": {
+                            display: "flex",
+                            alignItems: "center",
+                            width: "100%",
+                          },
+
+                          "& .PhoneInputCountry": {
+                            height: "40px", // ✅ SAME AS MUI small
+                            backgroundColor: "#F8F8F8",
+                            border: "1px solid rgba(0,0,0,0.23)",
+                            borderRadius: "8px 0 0 8px",
+                            paddingLeft: "8px",
+                            paddingRight: "8px",
+                          },
+
+                          "& .PhoneInputInput": {
+                            flex: 1,
+                            height: "40px", // ✅ SAME HEIGHT
+                            padding: "8.5px 14px",
+                            fontSize: "0.875rem",
+                            borderRadius: "0 8px 8px 0",
+                            border: "1px solid rgba(0,0,0,0.23)",
+                            backgroundColor: "#F8F8F8",
+                            outline: "none",
+                          },
+
+                          "& .PhoneInputInput:focus": {
+                            borderColor: "#52A4C1",
+                            borderWidth: "2px",
+                          },
+                        }}
+                      >
+                        <PhoneInput
+                          international
+                          defaultCountry="SA"
+                          value={formData.phone}
+                          onChange={(value) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              phone: value || "",
+                            }))
+                          }
                         />
                       </Box>
                     </Box>
@@ -1855,78 +1903,6 @@ const handleSubmit = async (e: React.FormEvent) => {
                         </Select>
                       </FormControl>
                     </Box>
-
-                    {/* Select Color - Hidden for Ford Taurus (default black #1A1A1A), shown for other vehicles */}
-                    {/* {formData.selectedCar && availableColors.length > 0 && !formData.selectedCar.toLowerCase().includes('ford taurus') && (
-                      <Box sx={{ mb: 3 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontWeight: 'bold',
-                            mb: 1,
-                            color: '#333',
-                            fontSize: '0.875rem',
-                          }}
-                        >
-                          {t('booking.color')}
-                        </Typography>
-                        <FormControl
-                          fullWidth
-                          size="small"
-                          sx={{
-                            '& .MuiOutlinedInput-root': {
-                              borderRadius: '8px',
-                              backgroundColor: '#F8F8F8',
-                            },
-                          }}
-                        >
-                          <Select
-                            name="selectedColor"
-                            value={formData.selectedColor}
-                            onChange={handleSelectChange}
-                            displayEmpty
-                            IconComponent={ArrowDropDown}
-                            MenuProps={{
-                              disableScrollLock: true,
-                              PaperProps: {
-                                sx: {
-                                  zIndex: 9999,
-                                  maxHeight: 300,
-                                },
-                              },
-                              anchorOrigin: {
-                                vertical: 'bottom',
-                                horizontal: 'left',
-                              },
-                              transformOrigin: {
-                                vertical: 'top',
-                                horizontal: 'left',
-                              },
-                            }}
-                          >
-                            <MenuItem value="" disabled>
-                              {t('booking.color')}
-                            </MenuItem>
-                            {availableColors.map((color) => (
-                              <MenuItem key={color.id} value={color.id}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                  <Box
-                                    sx={{
-                                      width: 20,
-                                      height: 20,
-                                      borderRadius: '50%',
-                                      backgroundColor: color.color,
-                                      border: '1px solid #E0E0E0',
-                                    }}
-                                  />
-                                  <Typography>{color.name}</Typography>
-                                </Box>
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      </Box>
-                    )} */}
 
                     {/* Service Type */}
                     <Box sx={{ mb: 3 }}>
@@ -2001,199 +1977,8 @@ const handleSubmit = async (e: React.FormEvent) => {
                       </FormControl>
                     </Box>
 
-                    {/* Pickup Location - Show for airport, downtown, and inter-city */}
-                    {/* {(formData.serviceType === "airport-pickup" ||
-                      formData.serviceType === "downtown" ||
-                      formData.serviceType === "inter-city") && ( */}
-                    {/* <Box sx={{ mb: 3 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontWeight: "bold",
-                            mb: 1,
-                            color: "#333",
-                            fontSize: "0.875rem",
-                          }}
-                        >
-                          {t("booking.pickupLocation")}*
-                        </Typography>
-                        <FormControl
-                          fullWidth
-                          size="small"
-                          sx={{
-                            "& .MuiOutlinedInput-root": {
-                              borderRadius: "8px",
-                              backgroundColor: "#F8F8F8",
-                            },
-                          }}
-                        >
-                          <Select
-                            name="pickupLocation"
-                            value={formData.pickupLocation}
-                            onChange={handleSelectChange}
-                            displayEmpty
-                            required
-                            IconComponent={ArrowDropDown}
-                            MenuProps={{
-                              disableScrollLock: true,
-                              PaperProps: {
-                                sx: {
-                                  zIndex: 9999,
-                                  maxHeight: 300,
-                                },
-                              },
-                            }}
-                          >
-                            <MenuItem value="" disabled>
-                              {t("booking.pickupLocationPlaceholder")}
-                            </MenuItem>
-                            <MenuItem value="Riyadh">Riyadh</MenuItem>
-                            <MenuItem value="Dammam">Dammam</MenuItem>
-                            <MenuItem value="Jeddah">Jeddah</MenuItem>
-                            <MenuItem value="Makkah">Makkah</MenuItem>
-                            <MenuItem value="Madina">Madina</MenuItem>
-                            <MenuItem value="JED APT">JED APT</MenuItem>
-                            <MenuItem value="JED CITY">JED CITY</MenuItem>
-                            <MenuItem value="Makah City">Makah City</MenuItem>
-                            <MenuItem value="Madinah City">
-                              Madinah City
-                            </MenuItem>
-                            <MenuItem value="Madinah APT">Madinah APT</MenuItem>
-                            <MenuItem value="DAMMAM APT">DAMMAM APT</MenuItem>
-                            <MenuItem value="DAMMAM CITY">DAMMAM CITY</MenuItem>
-                            <MenuItem value="RYD APT">RYD APT</MenuItem>
-                          </Select>
-                        </FormControl>
-                      </Box> */}
-                    {/* )} */}
                     <PickupDropoffMap />
-                    {/* Destination - Show for inter-city routes or Jeddah Airport to Makkah */}
-                    {/* {(formData.serviceType === "inter-city" ||
-                      (formData.serviceType === "airport-pickup" &&
-                        formData.pickupLocation === "Jeddah") ||
-                      formData.pickupLocation === "Riyadh") && ( */}
-                    {/* <Box sx={{ mb: 3 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontWeight: "bold",
-                            mb: 1,
-                            color: "#333",
-                            fontSize: "0.875rem",
-                          }}
-                        >
-                          {t("booking.destination")}*
-                        </Typography>
-                        <FormControl
-                          fullWidth
-                          size="small"
-                          sx={{
-                            "& .MuiOutlinedInput-root": {
-                              borderRadius: "8px",
-                              backgroundColor: "#F8F8F8",
-                            },
-                          }}
-                        >
-                          <Select
-                            name="destination"
-                            value={formData.destination}
-                            onChange={handleSelectChange}
-                            displayEmpty
-                            required
-                            IconComponent={ArrowDropDown}
-                            MenuProps={{
-                              disableScrollLock: true,
-                              PaperProps: {
-                                sx: {
-                                  zIndex: 9999,
-                                  maxHeight: 300,
-                                },
-                              },
-                            }}
-                          >
-                            <MenuItem value="" disabled>
-                              {t("booking.destinationPlaceholder")}
-                            </MenuItem>
-                            {formData.serviceType === "airport-pickup" &&
-                              formData.pickupLocation === "Jeddah" && [
-                                <MenuItem value="Riyadh">Riyadh</MenuItem>,
-                                <MenuItem value="Dammam">Dammam</MenuItem>,
-                                <MenuItem value="Jeddah">Jeddah</MenuItem>,
-                                <MenuItem value="Makkah">Makkah</MenuItem>,
-                                <MenuItem value="Madina">Madina</MenuItem>,
-                                <MenuItem value="JED APT">JED APT</MenuItem>,
-                                <MenuItem value="JED CITY">JED CITY</MenuItem>,
-                                <MenuItem value="Makah City">
-                                  Makah City
-                                </MenuItem>,
-                                <MenuItem value="Madinah City">
-                                  Madinah City
-                                </MenuItem>,
-                                <MenuItem value="Madinah APT">
-                                  Madinah APT
-                                </MenuItem>,
-                                <MenuItem value="DAMMAM APT">
-                                  DAMMAM APT
-                                </MenuItem>,
-                                <MenuItem value="DAMMAM CITY">
-                                  DAMMAM CITY
-                                </MenuItem>,
-                                <MenuItem value="RYD APT">RYD APT</MenuItem>,
-                              ]}
-                            {formData.serviceType === "inter-city" ||
-                              (formData.pickupLocation === "Riyadh" && [
-                                <MenuItem key="JED_APT" value="JED_APT">
-                                  JED APT
-                                </MenuItem>,
-                                <MenuItem key="JED_CITY" value="JED_CITY">
-                                  JED CITY
-                                </MenuItem>,
-                                <MenuItem key="Makkah_CITY" value="Makkah_CITY">
-                                  Makah City
-                                </MenuItem>,
-                                <MenuItem key="Madina_CITY" value="Madina_CITY">
-                                  Madinah City
-                                </MenuItem>,
-                                <MenuItem key="Madina_APT" value="Madina_APT">
-                                  Madinah APT
-                                </MenuItem>,
-                                <MenuItem key="DAMMAM_APT" value="DAMMAM_APT">
-                                  DAMMAM APT
-                                </MenuItem>,
-                                <MenuItem key="DAMMAM_CITY" value="DAMMAM_CITY">
-                                  DAMMAM CITY
-                                </MenuItem>,
-                                <MenuItem key="RYD_APT" value="RYD_APT">
-                                  RYD APT
-                                </MenuItem>,
-                                <MenuItem key="KAUST" value="KAUST">
-                                  KAUST
-                                </MenuItem>,
-                                <MenuItem key="KAEC" value="KAEC">
-                                  KAEC
-                                </MenuItem>,
-                                <MenuItem key="Yanbu" value="Yanbu">
-                                  Yanbu
-                                </MenuItem>,
-                                <MenuItem
-                                  key="Red_Sea_Umluj"
-                                  value="Red_Sea_Umluj"
-                                >
-                                  Red Sea Umluj
-                                </MenuItem>,
-                                <MenuItem key="NEOM" value="NEOM">
-                                  NEOM
-                                </MenuItem>,
-                                <MenuItem key="Makkah" value="Makkah">
-                                  Makkah
-                                </MenuItem>,
-                                <MenuItem key="Medina" value="Medina">
-                                  Medina
-                                </MenuItem>,
-                              ])}
-                          </Select>
-                        </FormControl>
-                      </Box> */}
+
                     {/* )} */}
 
                     {/* Calculated Price Display */}
@@ -2221,73 +2006,8 @@ const handleSubmit = async (e: React.FormEvent) => {
                           reservation and proceed accordingly. Chauffeur and
                           vehicle details will be provided upon confirmation.
                         </Typography>
-                        {/* <Typography
-                          variant="h5"
-                          sx={{
-                            fontWeight: 'bold',
-                            color: '#52A4C1',
-                          }}
-                        >
-                          {calculatePrice} SAR
-                        </Typography>
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            color: '#666',
-                            fontSize: '0.75rem',
-                            display: 'block',
-                            mt: 0.5,
-                          }}
-                        >
-                          *Excludes VAT 15%
-                        </Typography> */}
                       </Box>
                     )}
-
-                    {/* Upload Photo */}
-                    {/* <Box sx={{ mb: 3 }}>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          fontWeight: 'bold',
-                          mb: 1,
-                          color: '#333',
-                          fontSize: '0.875rem',
-                        }}
-                      >
-                        Upload Photo
-                      </Typography>
-                      <Box
-                        sx={{
-                          border: '2px dashed #ccc',
-                          borderRadius: '8px',
-                          p: 3,
-                          textAlign: 'center',
-                          backgroundColor: '#F8F8F8',
-                          cursor: 'pointer',
-                          '&:hover': {
-                            borderColor: '#52A4C1',
-                            backgroundColor: '#f0f0f0',
-                          },
-                        }}
-                      >
-                        <input
-                          accept="image/*"
-                          style={{ display: 'none' }}
-                          id="photo-upload"
-                          type="file"
-                          onChange={handleFileChange}
-                        />
-                        <label htmlFor="photo-upload">
-                          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-                            <CloudUpload sx={{ fontSize: 40, color: '#52A4C1' }} />
-                            <Typography variant="body2" sx={{ color: '#666' }}>
-                              {formData.photo ? formData.photo.name : 'Upload Photo'}
-                            </Typography>
-                          </Box>
-                        </label>
-                      </Box>
-                    </Box> */}
 
                     {/* Pickup Date (Required) */}
                     <Box sx={{ mb: 3 }}>
@@ -2310,7 +2030,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                         onChange={handleInputChange}
                         required
                         inputProps={{
-                          min: getMinDateTime(),
+                          min: getDynamicMinDateTime(), // ✅ FIXED
                         }}
                         size="small"
                         InputProps={{
@@ -2327,6 +2047,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                           },
                         }}
                       />
+
                       <Typography
                         variant="caption"
                         sx={{

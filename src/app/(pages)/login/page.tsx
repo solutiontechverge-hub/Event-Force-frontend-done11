@@ -98,8 +98,8 @@ console.log("🔥 LOGIN using AuthContext");
             }}
           >
             <AuthForm 
-              mode="signin" 
-              onSocialLogin={handleSocialLogin}
+              // mode="signin" 
+              // onSocialLogin={handleSocialLogin}
             />
           </Grid>
         </Grid>
