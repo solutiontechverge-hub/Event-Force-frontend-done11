@@ -1,8 +1,6 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Suspense } from "react";
-// import { PageContentSkeleton } from "@/components/PageSkeleton";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { PageContentSkeleton } from "./LoadingSkeleton";
 
@@ -12,72 +10,44 @@ import { PageContentSkeleton } from "./LoadingSkeleton";
 
 const FleetSection = dynamic(() => import("./FleetSection"), {
   ssr: false,
+  loading: () => <PageContentSkeleton />,
 });
 
 const TestimonialsSection = dynamic(() => import("./TestimonialsSection"), {
   ssr: false,
+  loading: () => <PageContentSkeleton />,
 });
 
 const BenefitsSection = dynamic(() => import("./BenefitsSection"), {
   ssr: false,
+  loading: () => <PageContentSkeleton />,
 });
 
 const ContactSection = dynamic(() => import("./ContactSection"), {
   ssr: false,
+  loading: () => <PageContentSkeleton />,
 });
 
 /* ======================
-   SUSPENSE WRAPPERS
+   EXPORTS
 ====================== */
 
 export function SuspenseFleetSection() {
   const { language } = useLanguage();
-
-  return (
-    <Suspense
-      key={`fleet-${language}`} // ✅ UNIQUE
-      fallback={<PageContentSkeleton />}
-    >
-      <FleetSection />
-    </Suspense>
-  );
+  return <FleetSection key={`fleet-${language}`} />;
 }
 
 export function SuspenseTestimonialsSection() {
   const { language } = useLanguage();
-
-  return (
-    <Suspense
-      key={`testimonials-${language}`} // ✅ UNIQUE
-      fallback={<PageContentSkeleton />}
-    >
-      <TestimonialsSection />
-    </Suspense>
-  );
+  return <TestimonialsSection key={`testimonials-${language}`} />;
 }
 
 export function SuspenseBenefitsSection() {
   const { language } = useLanguage();
-
-  return (
-    <Suspense
-      key={`benefits-${language}`} // ✅ UNIQUE
-      fallback={<PageContentSkeleton />}
-    >
-      <BenefitsSection />
-    </Suspense>
-  );
+  return <BenefitsSection key={`benefits-${language}`} />;
 }
 
 export function SuspenseContactSection() {
   const { language } = useLanguage();
-
-  return (
-    <Suspense
-      key={`contact-${language}`} // ✅ UNIQUE
-      fallback={<PageContentSkeleton />}
-    >
-      <ContactSection />
-    </Suspense>
-  );
+  return <ContactSection key={`contact-${language}`} />;
 }
