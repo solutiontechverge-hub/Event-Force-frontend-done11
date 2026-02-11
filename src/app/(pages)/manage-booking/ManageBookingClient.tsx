@@ -845,7 +845,6 @@ const ManageBookingClient = () => {
         severity: "success",
       });
     } catch (error: any) {
-      console.error(error);
       setSnackbar({
         open: true,
         message: error.message || t("booking.error"),
@@ -909,7 +908,6 @@ const ManageBookingClient = () => {
       },
     },
   ];
-  console.log(availableColors);
 
   // Get the selected color image from formData
   const formSelectedColorImage = useMemo(() => {

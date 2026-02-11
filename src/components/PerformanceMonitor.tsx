@@ -22,7 +22,7 @@ const PerformanceMonitor: React.FC = () => {
         
         // Log performance metrics
         if (metric.value !== undefined) {
-          console.log(`${metric.name}: ${metric.value.toFixed(2)}ms`);
+         
           
           // Send to analytics (replace with your analytics service)
           if (typeof window !== 'undefined' && 'gtag' in window) {
@@ -40,7 +40,7 @@ const PerformanceMonitor: React.FC = () => {
     try {
       observer.observe({ entryTypes: ['paint', 'largest-contentful-paint', 'first-input', 'layout-shift'] });
     } catch (error) {
-      console.warn('Performance Observer not supported:', error);
+   
     }
 
     // Monitor resource loading
@@ -50,7 +50,6 @@ const PerformanceMonitor: React.FC = () => {
         
         // Log slow resources (> 1 second)
         if (resource.duration > 1000) {
-          console.warn(`Slow resource: ${resource.name} took ${resource.duration.toFixed(2)}ms`);
         }
       }
     });
@@ -58,7 +57,6 @@ const PerformanceMonitor: React.FC = () => {
     try {
       resourceObserver.observe({ entryTypes: ['resource'] });
     } catch (error) {
-      console.warn('Resource Performance Observer not supported:', error);
     }
 
     // Monitor navigation timing
@@ -74,18 +72,13 @@ const PerformanceMonitor: React.FC = () => {
           cls: 0, // Will be set by CLS observer
         };
 
-        console.log('Navigation timing:', {
-          domContentLoaded: nav.domContentLoadedEventEnd - nav.domContentLoadedEventStart,
-          loadComplete: nav.loadEventEnd - nav.loadEventStart,
-          ttfb: metrics.ttfb,
-        });
+       
       }
     });
 
     try {
       navigationObserver.observe({ entryTypes: ['navigation'] });
     } catch (error) {
-      console.warn('Navigation Performance Observer not supported:', error);
     }
 
     // Cleanup observers

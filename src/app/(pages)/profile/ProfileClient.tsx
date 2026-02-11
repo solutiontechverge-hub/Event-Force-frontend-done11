@@ -27,6 +27,7 @@ import {
   getDoc,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { Snackbar, Alert } from "@mui/material";
 
 type Booking = {
   id: string;
@@ -45,6 +46,11 @@ export default function ProfileClient() {
 
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [bookingsLoading, setBookingsLoading] = useState(true);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success" as "success" | "error",
+  });
 
   /* 🔥 SYNC USER DATA FROM FIRESTORE */
   useEffect(() => {
@@ -65,9 +71,7 @@ export default function ProfileClient() {
             phone: data.phone || "",
           });
         }
-      } catch (error) {
-        console.error("Failed to fetch user profile:", error);
-      }
+      } catch (error) {}
     };
 
     fetchUserProfile();
@@ -84,7 +88,7 @@ export default function ProfileClient() {
         const q = query(
           collection(db, "bookings"),
           where("userId", "==", user.id),
-          orderBy("createdAt", "desc")
+          orderBy("createdAt", "desc"),
         );
 
         const snapshot = await getDocs(q);
@@ -104,7 +108,6 @@ export default function ProfileClient() {
 
         setBookings(userBookings);
       } catch (error) {
-        console.error("Failed to fetch bookings:", error);
       } finally {
         setBookingsLoading(false);
       }
@@ -132,9 +135,17 @@ export default function ProfileClient() {
         phone,
       });
 
-      console.log("Profile updated successfully");
+      setSnackbar({
+        open: true,
+        message: "Profile updated successfully",
+        severity: "success",
+      });
     } catch (error) {
-      console.error("Failed to update profile:", error);
+      setSnackbar({
+        open: true,
+        message: "Failed to update profile",
+        severity: "error",
+      });
     } finally {
       setLoading(false);
     }
@@ -184,9 +195,7 @@ export default function ProfileClient() {
 
           <Card sx={cardStyle}>
             <CardContent>
-              <Typography sx={sectionTitle}>
-                Personal Information
-              </Typography>
+              <Typography sx={sectionTitle}>Personal Information</Typography>
 
               <TextField
                 fullWidth
@@ -244,9 +253,7 @@ export default function ProfileClient() {
                   }}
                 >
                   <Box>
-                    <Typography
-                      sx={{ fontWeight: "bold", color: "#ffffff" }}
-                    >
+                    <Typography sx={{ fontWeight: "bold", color: "#ffffff" }}>
                       {booking.service}
                     </Typography>
                     <Typography
@@ -263,8 +270,8 @@ export default function ProfileClient() {
                       booking.status === "confirmed"
                         ? "success"
                         : booking.status === "pending"
-                        ? "warning"
-                        : "error"
+                          ? "warning"
+                          : "error"
                     }
                     sx={{ fontWeight: "bold" }}
                   />
@@ -274,6 +281,20 @@ export default function ProfileClient() {
           )}
         </Box>
       </Box>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert
+          severity={snackbar.severity}
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 }

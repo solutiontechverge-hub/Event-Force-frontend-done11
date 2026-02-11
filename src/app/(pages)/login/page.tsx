@@ -19,7 +19,6 @@ const LoginPage = () => {
   }, []);
 
   const handleSocialLogin = (provider: string) => {
-    console.log(`Sign in with ${provider}`);
     // Handle social login logic here
   };
 
@@ -47,7 +46,6 @@ const LoginPage = () => {
       </Box>
     );
   }
-console.log("🔥 LOGIN using AuthContext");
 
   return (
     <ProtectedRoute requireAuth={false} redirectTo="/home">

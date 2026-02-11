@@ -19,6 +19,7 @@ import { Visibility, VisibilityOff, Google } from "@mui/icons-material";
 import { useMediaQuery } from "../hooks/useMediaQuery";
 import { SlideSidewayInView, SlideUpInView } from "./animations";
 import { useRouter, usePathname } from "next/navigation";
+import { Snackbar } from "@mui/material";
 
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
@@ -42,7 +43,7 @@ const PhoneTextField = React.forwardRef<HTMLInputElement, any>(
         sx={{ mb: 2 }}
       />
     );
-  }
+  },
 );
 
 const AuthForm = memo(() => {
@@ -55,8 +56,8 @@ const AuthForm = memo(() => {
     pathname === "/signup"
       ? "signup"
       : pathname === "/forgot-password"
-      ? "forgot"
-      : "signin";
+        ? "forgot"
+        : "signin";
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -74,81 +75,132 @@ const AuthForm = memo(() => {
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   /* 🔐 SUBMIT */
-  const handleSubmit = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault();
-      setError("");
-      setSuccess("");
-      setLoading(true);
+const handleSubmit = useCallback(
+  async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
 
-      try {
-        if (!isValidEmail(formData.email)) {
-          throw new Error("Please enter a valid email address");
-        }
-
-        /* 🔑 SIGN UP */
-        if (mode === "signup") {
-          if (!formData.phone || !isValidPhoneNumber(formData.phone)) {
-            throw new Error("Please enter a valid phone number");
-          }
-
-          await register({
-            email: formData.email,
-            password: formData.password,
-            name: formData.fullName,
-            phone: formData.phone,
-          });
-
-          router.replace("/home");
-        }
-
-        /* 🔑 SIGN IN */
-        if (mode === "signin") {
-          await login({
-            email: formData.email,
-            password: formData.password,
-          });
-
-          router.replace("/home");
-        }
-
-        /* 🔁 FORGOT PASSWORD */
-        if (mode === "forgot") {
-          const { sendPasswordResetEmail } = await import("firebase/auth");
-          await sendPasswordResetEmail(auth, formData.email);
-          setSuccess("Password reset email sent. Check your inbox.");
-        }
-      } catch (err: any) {
-        setError(err.message || "Something went wrong");
-      } finally {
-        setLoading(false);
+    try {
+      if (!isValidEmail(formData.email)) {
+        throw { code: "auth/invalid-email" };
       }
-    },
-    [formData, mode, router, login, register]
-  );
+
+      if (mode === "signup") {
+        if (!formData.phone || !isValidPhoneNumber(formData.phone)) {
+          throw { code: "auth/invalid-phone" };
+        }
+
+        await register({
+          email: formData.email,
+          password: formData.password,
+          name: formData.fullName,
+          phone: formData.phone,
+        });
+
+        setSnackbar({
+          open: true,
+          message: "Account created successfully",
+          severity: "success",
+        });
+
+        setTimeout(() => router.replace("/home"), 1000);
+      }
+
+      if (mode === "signin") {
+        await login({
+          email: formData.email,
+          password: formData.password,
+        });
+
+        setSnackbar({
+          open: true,
+          message: "Login successful",
+          severity: "success",
+        });
+
+        setTimeout(() => router.replace("/home"), 1000);
+      }
+
+      if (mode === "forgot") {
+        const { sendPasswordResetEmail } = await import("firebase/auth");
+
+        await sendPasswordResetEmail(auth, formData.email);
+
+        setSnackbar({
+          open: true,
+          message: "Password reset email sent",
+          severity: "success",
+        });
+      }
+    } catch (err: any) {
+      let message = "Something went wrong";
+
+      switch (err.code) {
+        case "auth/user-not-found":
+          message = "User not found";
+          break;
+
+        case "auth/wrong-password":
+          message = "Email or password is wrong";
+          break;
+
+        case "auth/invalid-email":
+          message = "Invalid email address";
+          break;
+
+        case "auth/invalid-credential":
+          message = "Email or password is wrong";
+          break;
+
+        case "auth/too-many-requests":
+          message = "Too many attempts. Try again later.";
+          break;
+      }
+
+      setSnackbar({
+        open: true,
+        message,
+        severity: "error",
+      });
+    } finally {
+      setLoading(false); // 🔥 VERY IMPORTANT
+    }
+  },
+  [formData, mode, router, login, register]
+);
+
 
   /* 🔐 GOOGLE LOGIN */
   const handleGoogleLogin = async () => {
-    setError("");
     setLoading(true);
 
     try {
       const provider = new GoogleAuthProvider();
-      const res = await signInWithPopup(auth, provider);
+      await signInWithPopup(auth, provider);
 
-      await login({
-        email: res.user.email || "",
-        password: "google-auth",
+      setSnackbar({
+        open: true,
+        message: "Login successful",
+        severity: "success",
       });
 
       router.replace("/home");
     } catch (err: any) {
-      setError(err.message || "Google login failed");
+      setSnackbar({
+        open: true,
+        message: "Google login failed",
+        severity: "error",
+      });
     } finally {
       setLoading(false);
     }
   };
 
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success" as "success" | "error",
+  });
   return (
     <Card
       sx={{
@@ -166,16 +218,16 @@ const AuthForm = memo(() => {
               {mode === "signup"
                 ? "Create Account"
                 : mode === "forgot"
-                ? "Forgot Password"
-                : " Sign In"}
+                  ? "Forgot Password"
+                  : " Sign In"}
             </Typography>
 
             <Typography variant="body2" color="text.secondary">
               {mode === "signup"
                 ? "Sign up for Event Force"
                 : mode === "forgot"
-                ? "We’ll email you reset instructions"
-                : "Welcome back! Login to access admin dashboard"}
+                  ? "We’ll email you reset instructions"
+                  : "Welcome back! Login to access admin dashboard"}
             </Typography>
           </Box>
         </SlideUpInView>
@@ -196,17 +248,20 @@ const AuthForm = memo(() => {
 
         {mode !== "forgot" && <Divider sx={{ mb: 2 }} />}
 
-        {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={3000}
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        >
+          <Alert
+            severity={snackbar.severity}
+            onClose={() => setSnackbar({ ...snackbar, open: false })}
+            sx={{ width: "100%" }}
+          >
+            {snackbar.message}
           </Alert>
-        )}
-
-        {success && (
-          <Alert severity="success" sx={{ mb: 2 }}>
-            {success}
-          </Alert>
-        )}
+        </Snackbar>
 
         {/* FORM */}
         <Box component="form" onSubmit={handleSubmit}>
@@ -272,15 +327,12 @@ const AuthForm = memo(() => {
               />
 
               {mode === "signin" && (
-                <Box textAlign="right" mb={2}>
-                  <Link
-                    component="button"
-                    onClick={() => router.push("/forgot-password")}
-                    sx={{ fontSize: "0.75rem", fontWeight: "bold" }}
-                  >
-                    Forgot password?
-                  </Link>
-                </Box>
+                <Link
+                  href="/forgot-password"
+                  sx={{ fontSize: "0.75rem", fontWeight: "bold" }}
+                >
+                  Forgot password?
+                </Link>
               )}
             </>
           )}

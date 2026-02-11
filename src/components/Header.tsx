@@ -45,10 +45,7 @@ const Header = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const { t, language } = useLanguage();
   useEffect(() => {
-    console.log("HEADER AUTH STATE →", {
-      isAuthenticated,
-      user,
-    });
+
   }, [user, isAuthenticated]);
 
   useEffect(() => {
@@ -82,19 +79,11 @@ const Header = () => {
     setAnchorEl(null);
   };
 
-  // const handleLogout = async () => {
-  //   try {
-  //     await logout();
-  //     handleMenuClose();
-  //   } catch (error) {
-  //     console.error("Logout failed:", error);
-  //   }
-  // };
+
   const handleLogout = async () => {
     await logout(); // must clear user in context
     setAnchorEl(null);
   };
-  console.log("🔥 HEADER using AuthContext");
 
   const drawer = (
     <Box sx={{ width: "100%", height: "100%", backgroundColor: "#000000" }}>
@@ -240,7 +229,7 @@ const Header = () => {
           ) : (
             <Button
               component={Link}
-              href="/signup"
+              href="/signin"
               variant="contained"
               fullWidth
               onClick={handleDrawerToggle}
@@ -262,7 +251,7 @@ const Header = () => {
                 transition: "all 0.3s ease",
               }}
             >
-              {t("header.signUp")}
+              {t("header.signIn")}
             </Button>
           )}
         </Box>
@@ -452,7 +441,7 @@ const Header = () => {
               ) : (
                 <Button
                   component={Link}
-                  href="/signup"
+                  href="/signin"
                   variant="contained"
                   sx={{
                     backgroundColor: "#52A4C1",
@@ -471,7 +460,7 @@ const Header = () => {
                     transition: "all 0.2s",
                   }}
                 >
-                  {t("header.signUp")}
+                  {t("header.signin")}
                 </Button>
               )}
             </Box>

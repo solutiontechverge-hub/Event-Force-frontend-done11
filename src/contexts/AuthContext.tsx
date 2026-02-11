@@ -15,11 +15,7 @@ import {
   onAuthStateChanged,
 } from "firebase/auth";
 
-import {
-  doc,
-  getDoc,
-  setDoc,
-} from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 import { auth, db } from "@/lib/firebase";
 
@@ -85,43 +81,51 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
   /* 🔥 SESSION RESTORE (MAIN AUTH CONTROL) */
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (!firebaseUser) {
-        dispatch({ type: "AUTH_LOGOUT" });
-        return;
-      }
+useEffect(() => {
+  const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
+    if (!firebaseUser) {
+      dispatch({ type: "AUTH_LOGOUT" });
+      return;
+    }
 
-      const userRef = doc(db, "users", firebaseUser.uid);
-      const snapshot = await getDoc(userRef);
+    const userRef = doc(db, "users", firebaseUser.uid);
+    let snapshot = await getDoc(userRef);
 
-      if (!snapshot.exists()) {
-        dispatch({ type: "AUTH_LOGOUT" });
-        return;
-      }
-
-      const data = snapshot.data();
-
-      const user: User = {
-        id: firebaseUser.uid,
+    if (!snapshot.exists()) {
+      await setDoc(userRef, {
+        name: firebaseUser.displayName || "User",
         email: firebaseUser.email || "",
-        name: data.name,
-        phone: data.phone,
-        role: data.role || "CUSTOMER",
-      };
+        phone: firebaseUser.phoneNumber || "",
+        role: "CUSTOMER",
+        createdAt: new Date(),
+      });
 
-      dispatch({ type: "AUTH_SUCCESS", payload: user });
-    });
+      snapshot = await getDoc(userRef);
+    }
 
-    return () => unsub();
-  }, []);
+    const data = snapshot.data();
+
+    const user: User = {
+      id: firebaseUser.uid,
+      email: firebaseUser.email || "",
+      name: data?.name || "",
+      phone: data?.phone || "",
+      role: data?.role || "CUSTOMER",
+    };
+
+    dispatch({ type: "AUTH_SUCCESS", payload: user });
+  });
+
+  return () => unsub();
+}, []);
+
 
   /* 🔐 LOGIN */
   const login = async (credentials: LoginCredentials) => {
     await signInWithEmailAndPassword(
       auth,
       credentials.email,
-      credentials.password
+      credentials.password,
     );
     // 🔥 DO NOT dispatch here
     // onAuthStateChanged will handle it
@@ -132,7 +136,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const res = await createUserWithEmailAndPassword(
       auth,
       credentials.email,
-      credentials.password
+      credentials.password,
     );
 
     await setDoc(doc(db, "users", res.user.uid), {

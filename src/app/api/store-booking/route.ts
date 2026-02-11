@@ -19,7 +19,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    console.error('Error storing booking data:', error);
     return NextResponse.json(
       { error: 'Failed to store booking data' },
       { status: 500 }

@@ -20,12 +20,10 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(STATIC_CACHE)
       .then((cache) => {
-        console.log('Service Worker: Caching static assets');
         return cache.addAll(STATIC_ASSETS);
       })
       .then(() => self.skipWaiting())
       .catch((error) => {
-        console.error('Service Worker: Failed to cache static assets', error);
       })
   );
 });
@@ -43,7 +41,6 @@ self.addEventListener('activate', (event) => {
                      cacheName !== CACHE_NAME;
             })
             .map((cacheName) => {
-              console.log('Service Worker: Deleting old cache', cacheName);
               return caches.delete(cacheName);
             })
         );

@@ -52,7 +52,6 @@ export const sendOrderConfirmationEmail = async (
 
   // Warn if private key is missing or using placeholder (but allow to proceed)
   if (!privateKey || privateKey === 'YOUR_PRIVATE_KEY_HERE') {
-    console.warn('Warning: EMAILJS_PRIVATE_KEY not set or using placeholder. Email sending may fail. Please set EMAILJS_PRIVATE_KEY in .env.local');
   }
 
   try {
@@ -74,7 +73,6 @@ export const sendOrderConfirmationEmail = async (
       }
     );
   } catch (error: any) {
-    console.error('Error sending order confirmation email:', error);
     const errorMessage = error?.text || error?.message || 'Unknown error occurred';
     throw new Error(`Failed to send confirmation email: ${errorMessage}. Please check your EmailJS configuration.`);
   }
@@ -99,7 +97,6 @@ export const resendBookingConfirmationEmail = async (
 
   // Warn if private key is missing or using placeholder (but allow to proceed)
   if (!privateKey || privateKey === 'YOUR_PRIVATE_KEY_HERE') {
-    console.warn('Warning: EMAILJS_PRIVATE_KEY not set or using placeholder. Email sending may fail. Please set EMAILJS_PRIVATE_KEY in .env.local');
   }
 
   try {
@@ -165,7 +162,6 @@ export const resendBookingConfirmationEmail = async (
       }
     );
   } catch (error: any) {
-    console.error('Error resending booking confirmation email:', error);
     const errorMessage = error?.text || error?.message || 'Unknown error occurred';
     throw new Error(`Failed to resend confirmation email: ${errorMessage}. Please check your EmailJS configuration.`);
   }

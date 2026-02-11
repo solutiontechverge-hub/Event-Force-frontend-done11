@@ -171,7 +171,7 @@ export default function RootLayout({
                 window.addEventListener('load', function() {
                   navigator.serviceWorker.register('/service-worker.js')
                     .then(function(registration) {
-                      console.log('Service Worker registered successfully:', registration.scope);
+                     
                       
                       // Check for updates
                       registration.addEventListener('updatefound', function() {
@@ -194,7 +194,6 @@ export default function RootLayout({
                       }
                     })
                     .catch(function(error) {
-                      console.error('Service Worker registration failed:', error);
                     });
                 });
                 
@@ -205,16 +204,13 @@ export default function RootLayout({
                 
                 // Handle offline/online events
                 window.addEventListener('online', function() {
-                  console.log('Connection restored');
                   // Optionally show a notification or update UI
                 });
                 
                 window.addEventListener('offline', function() {
-                  console.log('Connection lost');
                   // Optionally show offline indicator
                 });
               } else {
-                console.log('Service Worker not supported');
               }
             `,
           }}

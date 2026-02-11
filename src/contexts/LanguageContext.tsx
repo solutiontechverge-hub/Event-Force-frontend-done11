@@ -29,7 +29,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.fleet": "Our Fleet",
     "nav.contact": "Contact Us",
     "nav.booking": "Booking",
-    "nav.signup": "Sign Up",
+    "nav.signin": "Sign In",
 
     // Common
     "common.loading": "Loading...",
@@ -52,7 +52,7 @@ const translations: Record<Language, Record<string, string>> = {
     "header.logout": "Logout",
     "header.profile": "Profile",
     "header.account": "Account",
-    "header.signUp": "Sign Up",
+    "header.signin": "Sign In",
 
 
     // Footer
@@ -261,7 +261,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.fleet": "أسطولنا",
     "nav.contact": "اتصل بنا",
     "nav.booking": "الحجز",
-    "nav.signup": " اشتراك",
+    "nav.signin": "تسجيل الدخول",
     // Common
     "common.loading": "جاري التحميل...",
     "common.submit": "إرسال",
@@ -283,7 +283,7 @@ const translations: Record<Language, Record<string, string>> = {
     "header.logout": "تسجيل الخروج",
     "header.profile": "الملف الشخصي",
     "header.account": "الحساب",
-    "header.signUp": "اشتراك",
+    "header.signin": "تسجيل الدخول",
 
 
     // Footer

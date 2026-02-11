@@ -19,7 +19,6 @@ const SignUpPage = () => {
   }, []);
 
   const handleSocialLogin = (provider: string) => {
-    console.log(`Sign up with ${provider}`);
     // Handle social login logic here
   };
 

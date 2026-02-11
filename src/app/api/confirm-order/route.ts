@@ -24,7 +24,6 @@ export async function GET(request: NextRequest) {
       new URL('/order-confirmed?success=true', request.url)
     );
   } catch (error: any) {
-    console.error('Error confirming order:', error);
     return NextResponse.redirect(
       new URL(`/order-confirmed?error=${encodeURIComponent(error.message)}`, request.url)
     );

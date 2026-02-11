@@ -58,12 +58,10 @@ const ResetPasswordPage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const otpCode = otp.join('');
-    console.log('Verify OTP:', otpCode);
     // Handle OTP verification logic here
   };
 
   const handleResend = () => {
-    console.log('Resend OTP');
     // Handle resend OTP logic here
   };
 
