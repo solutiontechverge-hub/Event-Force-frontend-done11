@@ -1,38 +1,47 @@
 "use client";
 
-import { ReactNode, useEffect } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 
-type ProtectedRouteProps = {
-  children: ReactNode;
-  requireAuth?: boolean; // true = protected page
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+  requireAuth?: boolean;
   redirectTo?: string;
-};
+}
 
 export default function ProtectedRoute({
   children,
   requireAuth = true,
-  redirectTo = "/signin",
+  redirectTo = "/signup",
 }: ProtectedRouteProps) {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (isLoading) return;
+    if (isLoading) return; // 🔥 WAIT
 
-    // 🔒 Protected pages (profile, manage-booking)
     if (requireAuth && !isAuthenticated) {
       router.replace(redirectTo);
     }
 
-    // 🔓 Auth pages (signin/signup)
     if (!requireAuth && isAuthenticated) {
       router.replace("/home");
     }
   }, [isAuthenticated, isLoading, requireAuth, redirectTo, router]);
 
-  if (isLoading) return null;
+  // 🔥 IMPORTANT: Do not render until auth resolved
+  if (isLoading) {
+    return null; // or loading spinner
+  }
+
+  if (requireAuth && !isAuthenticated) {
+    return null;
+  }
+
+  if (!requireAuth && isAuthenticated) {
+    return null;
+  }
 
   return <>{children}</>;
 }

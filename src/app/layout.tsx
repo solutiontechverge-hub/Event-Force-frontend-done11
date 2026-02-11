@@ -167,7 +167,7 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              if ('serviceWorker' in navigator) {
+             if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator){
                 window.addEventListener('load', function() {
                   navigator.serviceWorker.register('/service-worker.js')
                     .then(function(registration) {

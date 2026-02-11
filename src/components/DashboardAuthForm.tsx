@@ -99,7 +99,7 @@ const DashboardAuthForm: React.FC<DashboardAuthFormProps> = memo(({ mode, onSoci
               variant={isMobile ? 'h6' : 'h5'}
               sx={{ fontWeight: 'bold', color: '#333', mb: 0.5 }}
             >
-              {mode === 'signup' ? 'Create Account' : 'Admin Sign In'}
+              {mode === 'signup' ? 'Create Account' : ' Sign In'}
             </Typography>
             <Typography
               variant="body2"

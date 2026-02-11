@@ -7,6 +7,22 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
+
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+} from "firebase/auth";
+
+import {
+  doc,
+  getDoc,
+  setDoc,
+} from "firebase/firestore";
+
+import { auth, db } from "@/lib/firebase";
+
 import {
   AuthState,
   AuthContextType,
@@ -15,17 +31,7 @@ import {
   User,
 } from "@/types/auth";
 
-import {
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-} from "firebase/auth";
-import { auth } from "@/lib/firebase";
-
-/* =========================
-   INITIAL STATE
-========================= */
+/* ========================= */
 
 const initialState: AuthState = {
   user: null,
@@ -34,27 +40,13 @@ const initialState: AuthState = {
   error: null,
 };
 
-/* =========================
-   ACTIONS
-========================= */
-
 type AuthAction =
-  | { type: "AUTH_START" }
   | { type: "AUTH_SUCCESS"; payload: User }
-  | { type: "AUTH_FAILURE"; payload: string }
   | { type: "AUTH_LOGOUT" }
-  | { type: "SET_LOADING"; payload: boolean }
-  | { type: "UPDATE_USER"; payload: Partial<User> };
-
-/* =========================
-   REDUCER
-========================= */
+  | { type: "SET_LOADING"; payload: boolean };
 
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {
-    case "AUTH_START":
-      return { ...state, isLoading: true, error: null };
-
     case "AUTH_SUCCESS":
       return {
         ...state,
@@ -62,15 +54,6 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         isAuthenticated: true,
         isLoading: false,
         error: null,
-      };
-
-    case "AUTH_FAILURE":
-      return {
-        ...state,
-        user: null,
-        isAuthenticated: false,
-        isLoading: false,
-        error: action.payload,
       };
 
     case "AUTH_LOGOUT":
@@ -82,12 +65,6 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         error: null,
       };
 
-    case "UPDATE_USER":
-      return {
-        ...state,
-        user: state.user ? { ...state.user, ...action.payload } : null,
-      };
-
     case "SET_LOADING":
       return { ...state, isLoading: action.payload };
 
@@ -96,32 +73,18 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   }
 };
 
-/* =========================
-   CONTEXT
-========================= */
-
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const useAuth = (): AuthContextType => {
+export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within AuthProvider");
-  }
+  if (!context) throw new Error("useAuth must be used within AuthProvider");
   return context;
 };
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-/* =========================
-   PROVIDER
-========================= */
-
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  /* 🔁 AUTO LOGIN (Firebase session restore) */
+  /* 🔥 SESSION RESTORE (MAIN AUTH CONTROL) */
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
       if (!firebaseUser) {
@@ -129,14 +92,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return;
       }
 
-      const user: User = {
-        id: firebaseUser.uid, // 🔥 SAME AS booking.userId
-        email: firebaseUser.email || "",
-        name: firebaseUser.displayName || "User",
-        role: "CUSTOMER",
-      };
+      const userRef = doc(db, "users", firebaseUser.uid);
+      const snapshot = await getDoc(userRef);
 
-      localStorage.setItem("user", JSON.stringify(user));
+      if (!snapshot.exists()) {
+        dispatch({ type: "AUTH_LOGOUT" });
+        return;
+      }
+
+      const data = snapshot.data();
+
+      const user: User = {
+        id: firebaseUser.uid,
+        email: firebaseUser.email || "",
+        name: data.name,
+        phone: data.phone,
+        role: data.role || "CUSTOMER",
+      };
 
       dispatch({ type: "AUTH_SUCCESS", payload: user });
     });
@@ -145,89 +117,38 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   /* 🔐 LOGIN */
-  const login = async (credentials: LoginCredentials): Promise<void> => {
-    try {
-      dispatch({ type: "AUTH_START" });
-
-      const res = await signInWithEmailAndPassword(
-        auth,
-        credentials.email,
-        credentials.password
-      );
-
-      const firebaseUser = res.user;
-
-      const user: User = {
-        id: firebaseUser.uid, // ✅ CRITICAL
-        email: firebaseUser.email || "",
-        name: firebaseUser.displayName || credentials.email.split("@")[0],
-        role: "CUSTOMER",
-      };
-
-      localStorage.setItem("user", JSON.stringify(user));
-
-      dispatch({ type: "AUTH_SUCCESS", payload: user });
-    } catch (error) {
-      dispatch({
-        type: "AUTH_FAILURE",
-        payload: "Invalid email or password",
-      });
-      throw error;
-    }
+  const login = async (credentials: LoginCredentials) => {
+    await signInWithEmailAndPassword(
+      auth,
+      credentials.email,
+      credentials.password
+    );
+    // 🔥 DO NOT dispatch here
+    // onAuthStateChanged will handle it
   };
 
   /* 📝 REGISTER */
-  const register = async (
-    credentials: RegisterCredentials
-  ): Promise<void> => {
-    try {
-      dispatch({ type: "AUTH_START" });
+  const register = async (credentials: RegisterCredentials) => {
+    const res = await createUserWithEmailAndPassword(
+      auth,
+      credentials.email,
+      credentials.password
+    );
 
-      const res = await createUserWithEmailAndPassword(
-        auth,
-        credentials.email,
-        credentials.password
-      );
+    await setDoc(doc(db, "users", res.user.uid), {
+      name: credentials.name,
+      email: credentials.email,
+      phone: credentials.phone || "",
+      role: "CUSTOMER",
+      createdAt: new Date(),
+    });
 
-      const firebaseUser = res.user;
-
-      const user: User = {
-        id: firebaseUser.uid, // ✅ SAME UID
-        email: firebaseUser.email || "",
-        name: credentials.name || "User",
-        role: "CUSTOMER",
-      };
-
-      localStorage.setItem("user", JSON.stringify(user));
-
-      dispatch({ type: "AUTH_SUCCESS", payload: user });
-    } catch (error) {
-      dispatch({
-        type: "AUTH_FAILURE",
-        payload: "Registration failed",
-      });
-      throw error;
-    }
+    // 🔥 DO NOT dispatch here
+    // onAuthStateChanged will handle it automatically
   };
 
-  /* ✏️ UPDATE USER (PROFILE EDIT) */
-  const updateUser = (data: Partial<User>): void => {
-    dispatch({ type: "UPDATE_USER", payload: data });
-
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      localStorage.setItem(
-        "user",
-        JSON.stringify({ ...JSON.parse(storedUser), ...data })
-      );
-    }
-  };
-
-  /* 🚪 LOGOUT */
-  const logout = async (): Promise<void> => {
+  const logout = async () => {
     await signOut(auth);
-    localStorage.removeItem("user");
-    dispatch({ type: "AUTH_LOGOUT" });
   };
 
   const value: AuthContextType = {
@@ -235,13 +156,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     login,
     register,
     logout,
-    updateUser,
+    updateUser: () => {},
     clearError: () => {},
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

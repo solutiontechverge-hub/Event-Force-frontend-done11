@@ -6,8 +6,7 @@ import DashboardAuthForm from '@/components/DashboardAuthForm';
 
 const AdminLoginPage = () => {
   const handleSocialLogin = (provider: string) => {
-    console.log(`Sign in with ${provider}`);
-    // Handle social login logic here
+  
   };
 
   return (

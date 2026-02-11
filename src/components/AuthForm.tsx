@@ -24,24 +24,10 @@ import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { isValidPhoneNumber } from "libphonenumber-js";
 
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
-  sendPasswordResetEmail,
-} from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
-import { auth, db } from "@/lib/firebase";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 import { useAuth } from "@/contexts/AuthContext";
-const searchParams =
-  typeof window !== "undefined"
-    ? new URLSearchParams(window.location.search)
-    : null;
-
-const redirectPath = searchParams?.get("redirect") || "/";
-
 
 /* 🔹 Styled phone input */
 const PhoneTextField = React.forwardRef<HTMLInputElement, any>(
@@ -56,23 +42,21 @@ const PhoneTextField = React.forwardRef<HTMLInputElement, any>(
         sx={{ mb: 2 }}
       />
     );
-  },
+  }
 );
 
 const AuthForm = memo(() => {
   const router = useRouter();
   const pathname = usePathname();
   const isMobile = useMediaQuery("(max-width:900px)");
+  const { login, register } = useAuth();
 
-  const { login, register } = useAuth(); // ✅ ONLY ADDITION
-
-  /* 🔁 Mode derived from URL */
   const mode =
     pathname === "/signup"
       ? "signup"
       : pathname === "/forgot-password"
-        ? "forgot"
-        : "signin";
+      ? "forgot"
+      : "signin";
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -108,52 +92,29 @@ const AuthForm = memo(() => {
             throw new Error("Please enter a valid phone number");
           }
 
-          const res = await createUserWithEmailAndPassword(
-            auth,
-            formData.email,
-            formData.password,
-          );
-
-          const userData = {
-            id: res.user.uid,
-            email: formData.email,
-            name: formData.fullName,
-            role: "CUSTOMER",
-          };
-
-          await setDoc(doc(db, "users", res.user.uid), {
-            ...userData,
-            phone: formData.phone,
-            createdAt: new Date(),
-          });
-
           await register({
-            email: userData.email,
+            email: formData.email,
             password: formData.password,
-            name: userData.name,
+            name: formData.fullName,
+            phone: formData.phone,
           });
 
-          router.push(redirectPath);
+          router.replace("/home");
         }
 
         /* 🔑 SIGN IN */
         if (mode === "signin") {
-          await signInWithEmailAndPassword(
-            auth,
-            formData.email,
-            formData.password,
-          );
-
           await login({
             email: formData.email,
             password: formData.password,
-          }); // ✅ CONTEXT SYNC
+          });
 
-          router.push(redirectPath);
+          router.replace("/home");
         }
 
         /* 🔁 FORGOT PASSWORD */
         if (mode === "forgot") {
+          const { sendPasswordResetEmail } = await import("firebase/auth");
           await sendPasswordResetEmail(auth, formData.email);
           setSuccess("Password reset email sent. Check your inbox.");
         }
@@ -163,7 +124,7 @@ const AuthForm = memo(() => {
         setLoading(false);
       }
     },
-    [formData, mode, router, login, register],
+    [formData, mode, router, login, register]
   );
 
   /* 🔐 GOOGLE LOGIN */
@@ -178,15 +139,16 @@ const AuthForm = memo(() => {
       await login({
         email: res.user.email || "",
         password: "google-auth",
-      }); // ✅ CONTEXT SYNC
+      });
 
-      router.push(redirectPath);
+      router.replace("/home");
     } catch (err: any) {
       setError(err.message || "Google login failed");
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <Card
       sx={{
@@ -204,15 +166,16 @@ const AuthForm = memo(() => {
               {mode === "signup"
                 ? "Create Account"
                 : mode === "forgot"
-                  ? "Forgot Password"
-                  : "Admin Sign In"}
+                ? "Forgot Password"
+                : " Sign In"}
             </Typography>
+
             <Typography variant="body2" color="text.secondary">
               {mode === "signup"
                 ? "Sign up for Event Force"
                 : mode === "forgot"
-                  ? "We’ll email you reset instructions"
-                  : "Welcome back! Login to access admin dashboard"}
+                ? "We’ll email you reset instructions"
+                : "Welcome back! Login to access admin dashboard"}
             </Typography>
           </Box>
         </SlideUpInView>
@@ -238,6 +201,7 @@ const AuthForm = memo(() => {
             {error}
           </Alert>
         )}
+
         {success && (
           <Alert severity="success" sx={{ mb: 2 }}>
             {success}
@@ -261,7 +225,7 @@ const AuthForm = memo(() => {
 
           <TextField
             fullWidth
-            label="Email Address"
+            label="Email Address "
             value={formData.email}
             onChange={(e) =>
               setFormData({ ...formData, email: e.target.value })
@@ -283,57 +247,61 @@ const AuthForm = memo(() => {
           )}
 
           {mode !== "forgot" && (
-            <TextField
-              fullWidth
-              label="Password"
-              type={showPassword ? "text" : "password"}
-              value={formData.password}
-              onChange={(e) =>
-                setFormData({ ...formData, password: e.target.value })
-              }
-              required
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton onClick={() => setShowPassword(!showPassword)}>
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-              sx={{ mb: 2 }}
-            />
-          )}
+            <>
+              <TextField
+                fullWidth
+                label="Password "
+                type={showPassword ? "text" : "password"}
+                value={formData.password}
+                onChange={(e) =>
+                  setFormData({ ...formData, password: e.target.value })
+                }
+                required
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{ mb: 1.5 }}
+              />
 
-          {mode === "signin" && (
-            <Box textAlign="right" mb={2}>
-              <Link
-                component="button"
-                onClick={() => router.push("/forgot-password")}
-                sx={{ fontSize: "0.75rem", fontWeight: "bold" }}
-              >
-                Forgot password?
-              </Link>
-            </Box>
+              {mode === "signin" && (
+                <Box textAlign="right" mb={2}>
+                  <Link
+                    component="button"
+                    onClick={() => router.push("/forgot-password")}
+                    sx={{ fontSize: "0.75rem", fontWeight: "bold" }}
+                  >
+                    Forgot password?
+                  </Link>
+                </Box>
+              )}
+            </>
           )}
 
           <Button
-  fullWidth
-  variant="contained"
-  type="submit"
-  disabled={loading}
->
-  {loading ? (
-    <CircularProgress size={20} />
-  ) : mode === "signup" ? (
-    "Sign Up"
-  ) : mode === "forgot" ? (
-    "Send Reset Link"
-  ) : (
-    "Sign In"
-  )}
-</Button>
-
+            fullWidth
+            variant="contained"
+            type="submit"
+            disabled={loading}
+            sx={{ mt: 1 }}
+          >
+            {loading ? (
+              <CircularProgress size={20} />
+            ) : mode === "signup" ? (
+              "Sign Up"
+            ) : mode === "forgot" ? (
+              "Send Reset Link"
+            ) : (
+              "SIGN IN"
+            )}
+          </Button>
 
           {/* FOOTER LINKS */}
           <Box textAlign="center" mt={2}>

@@ -22,6 +22,9 @@ import {
   query,
   where,
   orderBy,
+  doc,
+  updateDoc,
+  getDoc,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
@@ -43,7 +46,34 @@ export default function ProfileClient() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [bookingsLoading, setBookingsLoading] = useState(true);
 
-  /* 🔥 FETCH REAL USER BOOKINGS */
+  /* 🔥 SYNC USER DATA FROM FIRESTORE */
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const fetchUserProfile = async () => {
+      try {
+        const userRef = doc(db, "users", user.id);
+        const snapshot = await getDoc(userRef);
+
+        if (snapshot.exists()) {
+          const data = snapshot.data();
+          setName(data.name || "");
+          setPhone(data.phone || "");
+
+          updateUser({
+            name: data.name || "",
+            phone: data.phone || "",
+          });
+        }
+      } catch (error) {
+        console.error("Failed to fetch user profile:", error);
+      }
+    };
+
+    fetchUserProfile();
+  }, [user?.id]);
+
+  /* 🔥 FETCH USER BOOKINGS */
   useEffect(() => {
     if (!user?.id) return;
 
@@ -68,7 +98,7 @@ export default function ProfileClient() {
             date: data.pickupDate
               ? new Date(data.pickupDate).toLocaleDateString()
               : "N/A",
-            status: data.status || "pending", // fallback if not stored
+            status: data.status || "pending",
           };
         });
 
@@ -83,15 +113,28 @@ export default function ProfileClient() {
     fetchBookings();
   }, [user?.id]);
 
-  /* 🔐 UPDATE PROFILE */
+  /* 🔐 UPDATE PROFILE IN FIRESTORE */
   const handleUpdateProfile = async () => {
+    if (!user?.id) return;
+
     setLoading(true);
+
     try {
-      // later: sync with Firebase user profile
+      const userRef = doc(db, "users", user.id);
+
+      await updateDoc(userRef, {
+        name: name,
+        phone: phone,
+      });
+
       updateUser({
         name,
         phone,
       });
+
+      console.log("Profile updated successfully");
+    } catch (error) {
+      console.error("Failed to update profile:", error);
     } finally {
       setLoading(false);
     }
@@ -99,10 +142,8 @@ export default function ProfileClient() {
 
   return (
     <>
-      {/* GLOBAL HEADER */}
       <Header />
 
-      {/* PAGE BACKGROUND */}
       <Box
         sx={{
           minHeight: "100vh",
@@ -119,9 +160,7 @@ export default function ProfileClient() {
           `,
         }}
       >
-        {/* CONTENT WRAPPER */}
         <Box sx={{ width: "100%", maxWidth: 900 }}>
-          {/* TOP BAR */}
           <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
             <Button
               startIcon={<ArrowBackIcon />}
@@ -143,7 +182,6 @@ export default function ProfileClient() {
             </Typography>
           </Box>
 
-          {/* PROFILE CARD */}
           <Card sx={cardStyle}>
             <CardContent>
               <Typography sx={sectionTitle}>
@@ -180,12 +218,11 @@ export default function ProfileClient() {
                 disabled={loading}
                 sx={saveButton}
               >
-                Save Changes
+                {loading ? "Saving..." : "Save Changes"}
               </Button>
             </CardContent>
           </Card>
 
-          {/* BOOKINGS */}
           <Typography sx={sectionTitle}>My Bookings</Typography>
 
           {bookingsLoading ? (

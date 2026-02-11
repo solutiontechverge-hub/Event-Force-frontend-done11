@@ -1,13 +1,6 @@
 "use client";
 
-import React, {
-  useState,
-  memo,
-  useMemo,
-  useCallback,
-  useEffect,
-  use,
-} from "react";
+import React, { useState, memo, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -18,7 +11,6 @@ import {
   Grid,
   Card,
   CardContent,
-  CardMedia,
   Button,
   FormControl,
   InputLabel,
@@ -37,11 +29,7 @@ import {
   CarMercedesVClass,
   CarMw5Series,
 } from "../../public/images";
-import {
-  ScaleInView,
-  SlideSidewayInView,
-  SlideUpInView,
-} from "@/components/animations";
+import { ScaleInView } from "@/components/animations";
 import { CarToyotaCoaster } from "../../public/images";
 
 interface Car {
@@ -53,7 +41,6 @@ interface Car {
   year: string;
   branches: string[];
 }
-
 
 const fleet: Car[] = [
   {
@@ -74,15 +61,7 @@ const fleet: Car[] = [
     year: "2024",
     branches: ["Riyadh", "Jeddah"],
   },
-  // {
-  //   name: 'GMC Yukon',
-  //   price: '150 SAR',
-  //   duration: 'Per hour',
-  //   image: CarGmc,
-  //   class: 'SUV',
-  //   year: '2025',
-  //   branch: 'Jeddah'
-  // },
+
   {
     name: "BMW 5 Series",
     price: "150 SAR",
@@ -154,38 +133,20 @@ const FleetPage = memo(() => {
   const { t } = useLanguage();
   const [selectedBranch, setSelectedBranch] = useState("all");
   const [selectedClass, setSelectedClass] = useState("all");
-  const [selectedYear, setSelectedYear] = useState("all");
   const [hoveredImageIndex, setHoveredImageIndex] = useState<number | null>(
     null,
   );
 
-  // Reset class filter when Jeddah is selected to show all vehicles
-  useEffect(() => {
-    if (selectedBranch === "Jeddah" && selectedClass !== "all") {
-      setSelectedClass("all");
-    }
-  }, [selectedBranch, selectedClass]);
-
   const filteredFleet = useMemo(() => {
-    // If Jeddah branch is selected, show ALL vehicles from ALL branches (like when no branch is selected)
-    if (selectedBranch === "Jeddah") {
-      console.log("Jeddah selected - showing all vehicles from all branches");
-      return fleet; // Return all vehicles regardless of branch
-    }
-
-    // If year is 2024 or 2025, show all vehicles regardless of branch or class
-    if (selectedYear === "2024" || selectedYear === "2025") {
-      return fleet.filter((car) => car.year === selectedYear);
-    }
-
-    // Default filtering: apply branch and class filters
     return fleet.filter((car) => {
-      const classMatch = selectedClass === "all" || car.class === selectedClass;
       const branchMatch =
         selectedBranch === "all" || car.branches.includes(selectedBranch);
+
+      const classMatch = selectedClass === "all" || car.class === selectedClass;
+
       return branchMatch && classMatch;
     });
-  }, [selectedBranch, selectedClass, selectedYear]);
+  }, [selectedBranch, selectedClass]);
 
   const handleBookCar = useCallback(
     (index: number) => {
@@ -199,7 +160,8 @@ const FleetPage = memo(() => {
         });
 
         // Redirect to manage booking page with car data
-        window.location.href = `/manage-booking?${params.toString()}`;
+      router.push(`/manage-booking?${params.toString()}`);
+
       }
     },
     [filteredFleet],
@@ -226,8 +188,6 @@ const FleetPage = memo(() => {
   ];
 
   return (
-
-    
     <Box sx={{ py: 8, backgroundColor: "white" }}>
       <Container maxWidth="lg">
         {/* Filters */}
@@ -280,28 +240,6 @@ const FleetPage = memo(() => {
                 </Select>
               </FormControl>
             </Grid>
-            {/* <Grid size={{ xs: 12, sm: 4 }}>
-              <FormControl fullWidth>
-                <InputLabel>Model Year</InputLabel>
-                <Select
-                  value={selectedYear}
-                  label="Model Year"
-                  onChange={(e) => setSelectedYear(e.target.value)}
-                  MenuProps={{
-                    disableScrollLock: true,
-                  }}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      borderRadius: '8px',
-                    },
-                  }}
-                >
-                  <MenuItem value="all">Select Year</MenuItem>
-                  <MenuItem value="2025">2025</MenuItem>
-                  <MenuItem value="2024">2024</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid> */}
           </Grid>
         </Box>
 
@@ -467,7 +405,7 @@ const FleetPage = memo(() => {
                           if (!isAuthenticated) {
                             router.push("/signup?redirect=/booking");
                           } else {
-                            router.push("/booking");
+                            router.push("/manage-booking");
                           }
                         }}
                         sx={{
