@@ -44,9 +44,7 @@ const Header = () => {
   const pathname = usePathname();
   const { user, isAuthenticated, logout } = useAuth();
   const { t, language } = useLanguage();
-  useEffect(() => {
-
-  }, [user, isAuthenticated]);
+  useEffect(() => {}, [user, isAuthenticated]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -78,7 +76,6 @@ const Header = () => {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
-
 
   const handleLogout = async () => {
     await logout(); // must clear user in context
@@ -173,7 +170,8 @@ const Header = () => {
             <LanguageSelector />
           </Box>
           {isAuthenticated ? (
-            <Box>
+            <Box sx={{ display: "flex", flexDirection: "column" }}>
+              {/* Avatar Card */}
               <Box
                 sx={{
                   display: "flex",
@@ -188,20 +186,41 @@ const Header = () => {
                   {user?.name ? user.name.charAt(0).toUpperCase() : <Person />}
                 </Avatar>
                 <Box>
-                  <Typography
-                    variant="body1"
-                    sx={{ color: "white", fontWeight: "bold" }}
-                  >
+                  <Typography sx={{ color: "white", fontWeight: "bold" }}>
                     {user?.name || "User"}
                   </Typography>
-                  <Typography
-                    variant="body2"
-                    sx={{ color: "rgba(255,255,255,0.7)" }}
-                  >
+                  <Typography sx={{ color: "rgba(255,255,255,0.7)" }}>
                     {user?.email}
                   </Typography>
                 </Box>
               </Box>
+
+              {/* Profile Button */}
+              <Button
+                onClick={() => {
+                  setMobileOpen(false);
+                  setTimeout(() => {
+                    router.push("/profile");
+                  }, 200);
+                }}
+                variant="outlined"
+                fullWidth
+                startIcon={<Person />}
+                sx={{
+                  mb: 2,
+                  borderColor: "#52A4C1",
+                  color: "#52A4C1",
+                  borderRadius: "12px",
+                  height: "56px",
+                  fontSize: "18px",
+                  fontWeight: "bold",
+                  textTransform: "none",
+                }}
+              >
+                Profile
+              </Button>
+
+              {/* Logout Button */}
               <Button
                 onClick={handleLogout}
                 variant="contained"
@@ -211,16 +230,9 @@ const Header = () => {
                   backgroundColor: "#ff4444",
                   borderRadius: "12px",
                   height: "56px",
-                  py: "12px",
-                  px: "24px",
                   fontSize: "18px",
                   fontWeight: "bold",
                   textTransform: "none",
-                  "&:hover": {
-                    backgroundColor: "#ff3333",
-                    transform: "translateY(-2px)",
-                  },
-                  transition: "all 0.3s ease",
                 }}
               >
                 {t("header.logout")}
