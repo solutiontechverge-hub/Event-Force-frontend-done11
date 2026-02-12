@@ -10,12 +10,13 @@ import {
   CardContent,
   Chip,
   CircularProgress,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Header from "@/components/Header";
-
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import {
   collection,
   getDocs,
@@ -27,7 +28,8 @@ import {
   getDoc,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Snackbar, Alert } from "@mui/material";
+import Image from "next/image";
+import { AuthBg } from "../../../../public/images";
 
 type Booking = {
   id: string;
@@ -46,77 +48,70 @@ export default function ProfileClient() {
 
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [bookingsLoading, setBookingsLoading] = useState(true);
+
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
     severity: "success" as "success" | "error",
   });
 
-  /* 🔥 SYNC USER DATA FROM FIRESTORE */
+  /* FETCH USER PROFILE */
   useEffect(() => {
     if (!user?.id) return;
 
     const fetchUserProfile = async () => {
-      try {
-        const userRef = doc(db, "users", user.id);
-        const snapshot = await getDoc(userRef);
+      const userRef = doc(db, "users", user.id);
+      const snapshot = await getDoc(userRef);
 
-        if (snapshot.exists()) {
-          const data = snapshot.data();
-          setName(data.name || "");
-          setPhone(data.phone || "");
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        setName(data.name || "");
+        setPhone(data.phone || "");
 
-          updateUser({
-            name: data.name || "",
-            phone: data.phone || "",
-          });
-        }
-      } catch (error) {}
+        updateUser({
+          name: data.name || "",
+          phone: data.phone || "",
+        });
+      }
     };
 
     fetchUserProfile();
   }, [user?.id]);
 
-  /* 🔥 FETCH USER BOOKINGS */
+  /* FETCH BOOKINGS */
   useEffect(() => {
     if (!user?.id) return;
 
     const fetchBookings = async () => {
-      try {
-        setBookingsLoading(true);
+      setBookingsLoading(true);
 
-        const q = query(
-          collection(db, "bookings"),
-          where("userId", "==", user.id),
-          orderBy("createdAt", "desc"),
-        );
+      const q = query(
+        collection(db, "bookings"),
+        where("userId", "==", user.id),
+        orderBy("createdAt", "desc"),
+      );
 
-        const snapshot = await getDocs(q);
+      const snapshot = await getDocs(q);
 
-        const userBookings: Booking[] = snapshot.docs.map((doc) => {
-          const data = doc.data();
+      const userBookings: Booking[] = snapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          service: data.car || data.serviceType || "Service",
+          date: data.pickupDate
+            ? new Date(data.pickupDate).toLocaleDateString()
+            : "N/A",
+          status: data.status || "pending",
+        };
+      });
 
-          return {
-            id: doc.id,
-            service: data.car || data.serviceType || "Service",
-            date: data.pickupDate
-              ? new Date(data.pickupDate).toLocaleDateString()
-              : "N/A",
-            status: data.status || "pending",
-          };
-        });
-
-        setBookings(userBookings);
-      } catch (error) {
-      } finally {
-        setBookingsLoading(false);
-      }
+      setBookings(userBookings);
+      setBookingsLoading(false);
     };
 
     fetchBookings();
   }, [user?.id]);
 
-  /* 🔐 UPDATE PROFILE IN FIRESTORE */
   const handleUpdateProfile = async () => {
     if (!user?.id) return;
 
@@ -124,23 +119,16 @@ export default function ProfileClient() {
 
     try {
       const userRef = doc(db, "users", user.id);
+      await updateDoc(userRef, { name, phone });
 
-      await updateDoc(userRef, {
-        name: name,
-        phone: phone,
-      });
-
-      updateUser({
-        name,
-        phone,
-      });
+      updateUser({ name, phone });
 
       setSnackbar({
         open: true,
         message: "Profile updated successfully",
         severity: "success",
       });
-    } catch (error) {
+    } catch {
       setSnackbar({
         open: true,
         message: "Failed to update profile",
@@ -155,47 +143,90 @@ export default function ProfileClient() {
     <>
       <Header />
 
-      <Box
-        sx={{
-          minHeight: "100vh",
-          pt: "96px",
-          px: { xs: 2, md: 6 },
-          display: "flex",
-          justifyContent: "center",
-          background: `
-            radial-gradient(
-              1200px 600px at 50% 0%,
-              rgba(0, 180, 200, 0.15),
-              rgba(2, 15, 23, 1) 55%
-            )
-          `,
-        }}
-      >
-        <Box sx={{ width: "100%", maxWidth: 900 }}>
-          <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
+      <Box sx={{ position: "relative", minHeight: "100vh" }}>
+        {/* Background */}
+        <Image
+          src={AuthBg}
+          alt="Profile Background"
+          fill
+          style={{ objectFit: "cover", zIndex: -1 }}
+        />
+
+        {/* Overlay */}
+        <Box
+          sx={{
+            position: "absolute",
+            inset: 0,
+            background: "rgba(0,0,0,0.65)",
+          }}
+        />
+
+        {/* CONTENT */}
+        <Box
+          sx={{
+            position: "relative",
+            zIndex: 2,
+            pt: { xs: 12, md: 14 },
+            px: { xs: 2, md: 4 },
+            maxWidth: 1100,
+            mx: "auto",
+          }}
+        >
+          {/* HEADER SECTION */}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              position: "relative",
+              mb: 6,
+            }}
+          >
             <Button
-              startIcon={<ArrowBackIcon />}
               onClick={() => router.back()}
+              startIcon={<ArrowBackIcon />}
               sx={{
-                color: "#ffffff",
+                position: { xs: "relative", md: "absolute" },
+                left: { md: 0 },
+                mb: { xs: 2, md: 0 },
+                color: "#fff",
+                backgroundColor: "rgba(255,255,255,0.08)",
+                backdropFilter: "blur(6px)",
                 textTransform: "none",
-                fontWeight: "bold",
+                px: 2,
+                py: 1,
+                borderRadius: "8px",
+                "&:hover": {
+                  backgroundColor: "rgba(255,255,255,0.18)",
+                },
               }}
             >
               Back
             </Button>
 
             <Typography
-              variant="h5"
-              sx={{ ml: 2, fontWeight: "bold", color: "#ffffff" }}
+              variant="h3"
+              sx={{
+                fontWeight: "bold",
+                color: "#fff",
+                textAlign: "center",
+                fontSize: {
+                  xs: "1.6rem",
+                  sm: "2rem",
+                  md: "2.5rem",
+                },
+              }}
             >
               My Profile
             </Typography>
           </Box>
 
+          {/* PERSONAL INFO CARD */}
           <Card sx={cardStyle}>
             <CardContent>
-              <Typography sx={sectionTitle}>Personal Information</Typography>
+              <Typography sx={sectionTitle}>
+                Personal Information
+              </Typography>
 
               <TextField
                 fullWidth
@@ -232,6 +263,7 @@ export default function ProfileClient() {
             </CardContent>
           </Card>
 
+          {/* BOOKINGS SECTION */}
           <Typography sx={sectionTitle}>My Bookings</Typography>
 
           {bookingsLoading ? (
@@ -239,7 +271,7 @@ export default function ProfileClient() {
               <CircularProgress />
             </Box>
           ) : bookings.length === 0 ? (
-            <Typography sx={{ color: "rgba(255,255,255,0.6)" }}>
+            <Typography sx={{ color: "rgba(255,255,255,0.7)" }}>
               You haven’t made any bookings yet.
             </Typography>
           ) : (
@@ -253,13 +285,10 @@ export default function ProfileClient() {
                   }}
                 >
                   <Box>
-                    <Typography sx={{ fontWeight: "bold", color: "#ffffff" }}>
+                    <Typography sx={{ fontWeight: "bold", color: "#fff" }}>
                       {booking.service}
                     </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{ color: "rgba(255,255,255,0.6)" }}
-                    >
+                    <Typography sx={{ color: "rgba(255,255,255,0.7)" }}>
                       {booking.date}
                     </Typography>
                   </Box>
@@ -270,8 +299,8 @@ export default function ProfileClient() {
                       booking.status === "confirmed"
                         ? "success"
                         : booking.status === "pending"
-                          ? "warning"
-                          : "error"
+                        ? "warning"
+                        : "error"
                     }
                     sx={{ fontWeight: "bold" }}
                   />
@@ -281,6 +310,7 @@ export default function ProfileClient() {
           )}
         </Box>
       </Box>
+
       <Snackbar
         open={snackbar.open}
         autoHideDuration={3000}
@@ -290,7 +320,7 @@ export default function ProfileClient() {
         <Alert
           severity={snackbar.severity}
           onClose={() => setSnackbar({ ...snackbar, open: false })}
-          sx={{ width: "100%" }}
+          variant="filled"
         >
           {snackbar.message}
         </Alert>
@@ -299,26 +329,28 @@ export default function ProfileClient() {
   );
 }
 
-/* 🎨 STYLES */
+/* STYLES */
+
 const cardStyle = {
   mb: 5,
-  backgroundColor: "rgba(255,255,255,0.06)",
-  backdropFilter: "blur(14px)",
-  border: "1px solid rgba(255,255,255,0.12)",
+  backgroundColor: "rgba(255,255,255,0.08)",
+  backdropFilter: "blur(18px)",
+  border: "1px solid rgba(255,255,255,0.2)",
   boxShadow: "0 20px 60px rgba(0,0,0,0.45)",
 };
 
 const bookingCardStyle = {
   mb: 2,
-  backgroundColor: "rgba(255,255,255,0.05)",
-  backdropFilter: "blur(10px)",
-  border: "1px solid rgba(255,255,255,0.1)",
+  backgroundColor: "rgba(255,255,255,0.08)",
+  backdropFilter: "blur(12px)",
+  border: "1px solid rgba(255,255,255,0.2)",
 };
 
 const sectionTitle = {
   fontWeight: "bold",
-  mb: 2,
+  mb: 3,
   color: "#ffffff",
+  fontSize: "1.3rem",
 };
 
 const saveButton = {
@@ -332,23 +364,19 @@ const saveButton = {
 };
 
 const inputStyles = {
-  mb: 2,
+  mb: 3,
   "& .MuiInputBase-root": {
-    backgroundColor: "rgba(255,255,255,0.14)",
+    backgroundColor: "rgba(255,255,255,0.25)",
     borderRadius: "10px",
     color: "#ffffff",
   },
   "& .MuiInputLabel-root": {
-    color: "rgba(255,255,255,0.7)",
+    color: "#ffffff",
   },
   "& .MuiOutlinedInput-notchedOutline": {
-    borderColor: "rgba(255,255,255,0.3)",
+    borderColor: "rgba(255,255,255,0.5)",
   },
   "&:hover .MuiOutlinedInput-notchedOutline": {
     borderColor: "#52A4C1",
-  },
-  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-    borderColor: "#52A4C1",
-    borderWidth: 2,
   },
 };

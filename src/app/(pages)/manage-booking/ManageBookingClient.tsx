@@ -84,6 +84,8 @@ import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { isValidPhoneNumber } from "libphonenumber-js";
 
+import { useAuth } from "@/contexts/AuthContext";
+
 interface Car {
   name: string;
   price: string;
@@ -207,6 +209,7 @@ const fleet: Car[] = [
 ];
 
 const ManageBookingClient = () => {
+  const { user, updateUser } = useAuth();
   const isValidEmail = (email: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
@@ -1764,15 +1767,13 @@ const ManageBookingClient = () => {
                       >
                         {t("booking.email")}*
                       </Typography>
+                     
                       <TextField
                         fullWidth
-                        name="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        placeholder={t("booking.emailPlaceholder")}
-                        required
-                        size="small"
+                        label="Email"
+                        value={user?.email || ""}
+                        disabled
+                         size="small"
                         sx={{
                           "& .MuiOutlinedInput-root": {
                             borderRadius: "8px",
