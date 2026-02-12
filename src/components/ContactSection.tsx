@@ -233,7 +233,7 @@ const ContactSection = () => {
                         wordBreak: "break-word",
                       }}
                     >
-                      <a href="mailto:info@yourdomain.com">
+                      <a href="mailto:info@eventforce.sa.com">
                         info@eventforce.sa.com
                       </a>
                     </Typography>

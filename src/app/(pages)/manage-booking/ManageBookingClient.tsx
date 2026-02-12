@@ -227,20 +227,22 @@ const ManageBookingClient = () => {
     severity: "success" as "success" | "error" | "info" | "warning",
   });
 
-  const PhoneTextField = React.forwardRef<HTMLInputElement, any>(
-    function PhoneTextField(props, ref) {
-      return (
-        <TextField
-          {...props}
-          inputRef={ref}
-          fullWidth
-          label="Phone Number"
-          required
-          sx={{ mb: 2 }}
-        />
-      );
-    },
-  );
+  const [name, setName] = useState(user?.name || "");
+  const [phone, setPhone] = useState(user?.phone || "");
+  // const PhoneTextField = React.forwardRef<HTMLInputElement, any>(
+  //   function PhoneTextField(props, ref) {
+  //     return (
+  //       <TextField
+  //         {...props}
+  //         inputRef={ref}
+  //         fullWidth
+  //         label="Phone Number"
+  //         required
+  //         sx={{ mb: 2 }}
+  //       />
+  //     );
+  //   },
+  // );
 
   const getMinDateTime = () => {
     const now = new Date();
@@ -1739,11 +1741,9 @@ const ManageBookingClient = () => {
                       </Typography>
                       <TextField
                         fullWidth
-                        name="fullName"
-                        value={formData.fullName}
-                        onChange={handleInputChange}
-                        placeholder={t("booking.fullNamePlaceholder")}
-                        required
+                        label="Full Name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
                         size="small"
                         sx={{
                           "& .MuiOutlinedInput-root": {
@@ -1767,13 +1767,13 @@ const ManageBookingClient = () => {
                       >
                         {t("booking.email")}*
                       </Typography>
-                     
+
                       <TextField
                         fullWidth
                         label="Email"
                         value={user?.email || ""}
                         disabled
-                         size="small"
+                        size="small"
                         sx={{
                           "& .MuiOutlinedInput-root": {
                             borderRadius: "8px",
@@ -1796,52 +1796,19 @@ const ManageBookingClient = () => {
                         {t("booking.phone")}*
                       </Typography>
 
-                      <Box
+                      <TextField
+                        fullWidth
+                        label="Phone"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        size="small"
                         sx={{
-                          "& .PhoneInput": {
-                            display: "flex",
-                            alignItems: "center",
-                            width: "100%",
-                          },
-
-                          "& .PhoneInputCountry": {
-                            height: "40px", // ✅ SAME AS MUI small
+                          "& .MuiOutlinedInput-root": {
+                            borderRadius: "8px",
                             backgroundColor: "#F8F8F8",
-                            border: "1px solid rgba(0,0,0,0.23)",
-                            borderRadius: "8px 0 0 8px",
-                            paddingLeft: "8px",
-                            paddingRight: "8px",
-                          },
-
-                          "& .PhoneInputInput": {
-                            flex: 1,
-                            height: "40px", // ✅ SAME HEIGHT
-                            padding: "8.5px 14px",
-                            fontSize: "0.875rem",
-                            borderRadius: "0 8px 8px 0",
-                            border: "1px solid rgba(0,0,0,0.23)",
-                            backgroundColor: "#F8F8F8",
-                            outline: "none",
-                          },
-
-                          "& .PhoneInputInput:focus": {
-                            borderColor: "#52A4C1",
-                            borderWidth: "2px",
                           },
                         }}
-                      >
-                        <PhoneInput
-                          international
-                          defaultCountry="SA"
-                          value={formData.phone}
-                          onChange={(value) =>
-                            setFormData((prev) => ({
-                              ...prev,
-                              phone: value || "",
-                            }))
-                          }
-                        />
-                      </Box>
+                      />
                     </Box>
 
                     {/* Select Car */}
