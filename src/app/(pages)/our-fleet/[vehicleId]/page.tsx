@@ -97,92 +97,87 @@ interface Car {
   duration: string;
   image: any;
   class: string;
-  year: string;
-  branch: string;
+  transport?: string;
+  branch: string[];
 }
 
 const fleet: Car[] = [
   {
     name: "Ford Taurus",
     price: "125 SAR",
-    duration: "Per hour",
+    duration: "Per Hour",
     image: CarFordTaurus,
     class: "Economy",
-    year: "2024",
-    branch: "Riyadh",
+    branch: ["Riyadh", " ", "&", " ", "Jeddah"],
   },
   {
     name: "GMC Yukon",
     price: "150 SAR",
-    duration: "Per hour",
+    duration: "Per Hour",
     image: CarGmc,
     class: "SUV",
-    year: "2024",
-    branch: "Jeddah",
+    branch: ["Riyadh", " ", "&", " ", "Jeddah"],
   },
   {
     name: "BMW 5 Series",
     price: "150 SAR",
-    duration: "Per day",
-    // image: CarBmw7Series,
+    duration: "Per Hour",
     image: CarBmw7Series,
     class: "Luxury",
-    year: "2025",
-    branch: "Riyadh",
+    branch: ["Riyadh", " ", "&", " ", "Jeddah"],
   },
   {
     name: "Mercedes S450",
     price: "400 SAR",
-    duration: "Per day",
+    duration: "Per Hour",
     image: CarMercedesS450,
     class: "Luxury",
-    year: "2025",
-    branch: "Jeddah",
+    branch: ["Riyadh", " ", "&", " ", "Jeddah"],
   },
   {
     name: "BMW 7 Series",
     price: "400 SAR",
-    duration: "Per day",
+    duration: "Per Hour",
     image: CarBmw7Series,
     class: "Luxury",
-    year: "2025",
-    branch: "Riyadh",
+    branch: ["Riyadh", " ", "&", " ", "Jeddah"],
   },
   {
     name: "Mercedes V Class",
-    price: "100 SAR",
-    duration: "Per day",
+    price: "300 SAR",
+    duration: "Per Hour",
     image: CarMercedesVClass,
     class: "Van",
-    year: "2024",
-    branch: "Jeddah",
+    branch: ["Riyadh", " ", "&", " ", "Jeddah"],
   },
   {
     name: "Toyota Hiace",
     price: "1000 SAR",
     duration: "12 hours",
+    transport: "Airport Transportation only",
     image: CarHiace,
     class: "Van",
-    year: "2024",
-    branch: "Riyadh",
+    branch: ["Riyadh", " ", "&", " ", "Jeddah"],
   },
   {
     name: "Toyota Coaster",
     price: "1500 SAR",
+
+    transport: "Airport Transportation only",
     duration: "12 hours",
     image: CarToyotaCoaster,
     class: "Bus",
-    year: "2024",
-    branch: "Jeddah",
+    branch: ["Riyadh", " ", "&", " ", "Jeddah"],
   },
   {
     name: "Coach 49 Seats",
     price: "2000 SAR",
+
+    transport: "Airport Transportation only",
     duration: "12 hours",
     image: CarChinesbus49Sea,
     class: "Bus",
-    year: "2024",
-    branch: "Riyadh",
+    branch: ["Riyadh", " ", "&", " ", "Jeddah"],
   },
 ];
 
@@ -228,7 +223,7 @@ const VehicleDetailsPage = () => {
   // Find the vehicle by converting the ID back to the vehicle name
   const vehicleName = vehicleId?.replace(/-/g, " ");
   const selectedCar = fleet.find(
-    (car) => car.name.toLowerCase() === vehicleName?.toLowerCase()
+    (car) => car.name.toLowerCase() === vehicleName?.toLowerCase(),
   );
 
   const handleBookNow = () => {
@@ -263,15 +258,24 @@ const VehicleDetailsPage = () => {
 
   // Helper function to check if a color is white
   const isWhiteColor = (color: string, name: string) => {
-    const whiteColorValues = ['#FFFFFF', '#F5F5F5', '#E8E8E8', '#E6E6FA', '#F5F5DC', '#E8F2F6', '#C0C0C0'];
+    const whiteColorValues = [
+      "#FFFFFF",
+      "#F5F5F5",
+      "#E8E8E8",
+      "#E6E6FA",
+      "#F5F5DC",
+      "#E8F2F6",
+      "#C0C0C0",
+    ];
     const colorLower = color.toUpperCase();
     const nameLower = name.toLowerCase();
-    return whiteColorValues.includes(colorLower) || nameLower.includes('white');
+    return whiteColorValues.includes(colorLower) || nameLower.includes("white");
   };
 
   // Color options for vehicles
   const getColorOptions = () => {
-    let colors: Array<{ id: string; name: string; color: string; image: any }> = [];
+    let colors: Array<{ id: string; name: string; color: string; image: any }> =
+      [];
 
     if (selectedCar?.name === "Ford Taurus") {
       colors = [
@@ -658,7 +662,7 @@ const VehicleDetailsPage = () => {
     }
 
     // Filter out white colors
-    return colors.filter(color => !isWhiteColor(color.color, color.name));
+    return colors.filter((color) => !isWhiteColor(color.color, color.name));
   };
 
   const colorOptions = getColorOptions();
@@ -874,7 +878,7 @@ const VehicleDetailsPage = () => {
               },
             }}
           >
-            {t('common.back')} {t('nav.fleet')}
+            {t("common.back")} {t("nav.fleet")}
           </Button>
         </Container>
         <Footer />
@@ -1009,7 +1013,7 @@ const VehicleDetailsPage = () => {
           >
             <ArrowBackIcon />
             <Typography variant="body1" sx={{ ml: 1, fontWeight: 500 }}>
-              {t('common.back')} {t('nav.fleet')}
+              {t("common.back")} {t("nav.fleet")}
             </Typography>
           </IconButton>
 
@@ -1054,8 +1058,9 @@ const VehicleDetailsPage = () => {
                       <Image
                         key={selectedColor}
                         src={currentColorImage?.src || currentColorImage}
-                        alt={`${selectedCar.name} - ${colorOptions[selectedColor]?.name || "Default"
-                          }`}
+                        alt={`${selectedCar.name} - ${
+                          colorOptions[selectedColor]?.name || "Default"
+                        }`}
                         fill
                         style={{ objectFit: "contain" }}
                         priority
@@ -1083,29 +1088,30 @@ const VehicleDetailsPage = () => {
                   </Box>
 
                   {/* Color Swatches - Hidden per requirements */}
-                  {false && (selectedCar?.name === "Ford Taurus" ||
-                    selectedCar?.name === "GMC Yukon" ||
-                    selectedCar?.name?.includes("GMC") ||
-                    selectedCar?.name === "BMW 5 Series" ||
-                    selectedCar?.name?.includes("BMW 5") ||
-                    selectedCar?.name === "BMW 7 Series" ||
-                    selectedCar?.name?.includes("BMW 7") ||
-                    selectedCar?.name === "Mercedes S450" ||
-                    selectedCar?.name?.includes("Mercedes S450") ||
-                    selectedCar?.name?.includes("Mercedes S Class") ||
-                    selectedCar?.name === "Mercedes V Class" ||
-                    selectedCar?.name?.includes("Mercedes V Class") ||
-                    selectedCar?.name?.includes("Mercedes V-Class") ||
-                    selectedCar?.name === "Toyota Hiace" ||
-                    selectedCar?.name?.includes("Toyota Hiace") ||
-                    selectedCar?.name?.includes("Hiace") ||
-                    selectedCar?.name === "Toyota Coaster" ||
-                    selectedCar?.name?.includes("Toyota Coaster") ||
-                    selectedCar?.name?.includes("Coaster") ||
-                    selectedCar?.name === "Coach 49 Seats" ||
-                    selectedCar?.name?.includes("Coach 49 Seats") ||
-                    selectedCar?.name?.includes("Coach 49 Seats") ||
-                    selectedCar?.name?.includes("49 Seater")) &&
+                  {false &&
+                    (selectedCar?.name === "Ford Taurus" ||
+                      selectedCar?.name === "GMC Yukon" ||
+                      selectedCar?.name?.includes("GMC") ||
+                      selectedCar?.name === "BMW 5 Series" ||
+                      selectedCar?.name?.includes("BMW 5") ||
+                      selectedCar?.name === "BMW 7 Series" ||
+                      selectedCar?.name?.includes("BMW 7") ||
+                      selectedCar?.name === "Mercedes S450" ||
+                      selectedCar?.name?.includes("Mercedes S450") ||
+                      selectedCar?.name?.includes("Mercedes S Class") ||
+                      selectedCar?.name === "Mercedes V Class" ||
+                      selectedCar?.name?.includes("Mercedes V Class") ||
+                      selectedCar?.name?.includes("Mercedes V-Class") ||
+                      selectedCar?.name === "Toyota Hiace" ||
+                      selectedCar?.name?.includes("Toyota Hiace") ||
+                      selectedCar?.name?.includes("Hiace") ||
+                      selectedCar?.name === "Toyota Coaster" ||
+                      selectedCar?.name?.includes("Toyota Coaster") ||
+                      selectedCar?.name?.includes("Coaster") ||
+                      selectedCar?.name === "Coach 49 Seats" ||
+                      selectedCar?.name?.includes("Coach 49 Seats") ||
+                      selectedCar?.name?.includes("Coach 49 Seats") ||
+                      selectedCar?.name?.includes("49 Seater")) &&
                     colorOptions.length > 1 && (
                       <Box>
                         <Typography
@@ -1117,7 +1123,7 @@ const VehicleDetailsPage = () => {
                             textAlign: "center",
                           }}
                         >
-                          {t('vehicle.selectColor')}
+                          {t("vehicle.selectColor")}
                         </Typography>
                         <Box
                           sx={{
@@ -1257,7 +1263,7 @@ const VehicleDetailsPage = () => {
                             display: "block",
                           }}
                         >
-                          {t('booking.price')}
+                          {t("booking.price")}
                         </Typography>
                         <Typography
                           variant="h5"
@@ -1268,32 +1274,6 @@ const VehicleDetailsPage = () => {
                           }}
                         >
                           {selectedCar.price}
-                        </Typography>
-                      </Box>
-                      <Box>
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            color: "#757575",
-                            fontSize: "0.75rem",
-                            fontWeight: 500,
-                            textTransform: "uppercase",
-                            letterSpacing: "0.5px",
-                            mb: 1,
-                            display: "block",
-                          }}
-                        >
-                          Year
-                        </Typography>
-                        <Typography
-                          variant="h6"
-                          sx={{
-                            color: "#1a1a1a",
-                            fontSize: "1.25rem",
-                            fontWeight: 600,
-                          }}
-                        >
-                          {selectedCar.year}
                         </Typography>
                       </Box>
                     </Grid>
@@ -1352,6 +1332,34 @@ const VehicleDetailsPage = () => {
                           {selectedCar.class}
                         </Typography>
                       </Box>
+                      {selectedCar.transport && (
+                      <Box sx={{ mb: 3 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                            letterSpacing: "0.5px",
+                            mb: 1,
+                            display: "block",
+                          }}
+                        >
+                          Transportation
+                        </Typography>
+                        <Typography
+                          variant="h6"
+                          sx={{
+                            color: "#1a1a1a",
+                            fontSize: "1.25rem",
+                            fontWeight: 600,
+                          }}
+                        >
+                          {selectedCar.transport}
+                        </Typography>
+                      </Box>
+                      )}
                       <Box>
                         <Typography
                           variant="caption"
@@ -1378,6 +1386,11 @@ const VehicleDetailsPage = () => {
                           {selectedCar.branch}
                         </Typography>
                       </Box>
+
+
+                     
+                      
+                      
                     </Grid>
                   </Grid>
 
@@ -1399,7 +1412,7 @@ const VehicleDetailsPage = () => {
                       },
                     }}
                   >
-                    {t('vehicle.bookNow')}
+                    {t("vehicle.bookNow")}
                   </Button>
                 </CardContent>
               </Card>
@@ -1419,7 +1432,7 @@ const VehicleDetailsPage = () => {
                   textAlign: "center",
                 }}
               >
-                {t('vehicle.specifications')}
+                {t("vehicle.specifications")}
               </Typography>
 
               <Grid container spacing={3}>
@@ -1634,7 +1647,7 @@ const VehicleDetailsPage = () => {
                           borderBottom: "2px solid #52A4C1",
                         }}
                       >
-                        {t('vehicle.interior')}
+                        {t("vehicle.interior")}
                       </Typography>
                       <Box sx={{ mb: 2 }}>
                         <Typography
@@ -1722,4107 +1735,4107 @@ const VehicleDetailsPage = () => {
           {/* GMC Yukon Denali Features Section */}
           {(selectedCar?.name === "GMC Yukon" ||
             selectedCar?.name?.includes("GMC")) && (
-              <Box sx={{ mt: 6 }}>
-                <Typography
-                  variant="h4"
-                  component="h2"
-                  sx={{
-                    fontWeight: "bold",
-                    color: "#1a1a1a",
-                    mb: 4,
-                    textAlign: "center",
-                  }}
-                >
-                  Denali Features
-                </Typography>
+            <Box sx={{ mt: 6 }}>
+              <Typography
+                variant="h4"
+                component="h2"
+                sx={{
+                  fontWeight: "bold",
+                  color: "#1a1a1a",
+                  mb: 4,
+                  textAlign: "center",
+                }}
+              >
+                Denali Features
+              </Typography>
 
-                <Grid container spacing={3}>
-                  {/* Key Features */}
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        height: "100%",
-                      }}
-                    >
-                      <CardContent sx={{ p: 3 }}>
+              <Grid container spacing={3}>
+                {/* Key Features */}
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      height: "100%",
+                    }}
+                  >
+                    <CardContent sx={{ p: 3 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#52A4C1",
+                          mb: 3,
+                          pb: 1,
+                          borderBottom: "2px solid #52A4C1",
+                        }}
+                      >
+                        Includes Denali Key Standard Features, Plus Adds or
+                        Substitutes
+                      </Typography>
+                      <Box sx={{ mb: 2 }}>
                         <Typography
-                          variant="h6"
+                          variant="body2"
                           sx={{
-                            fontWeight: "bold",
-                            color: "#52A4C1",
-                            mb: 3,
-                            pb: 1,
-                            borderBottom: "2px solid #52A4C1",
+                            color: "#1a1a1a",
+                            mb: 1.5,
+                            display: "flex",
+                            alignItems: "flex-start",
                           }}
                         >
-                          Includes Denali Key Standard Features, Plus Adds or
-                          Substitutes
+                          <Box
+                            component="span"
+                            sx={{ color: "#52A4C1", mr: 1, fontWeight: "bold" }}
+                          >
+                            •
+                          </Box>
+                          <Box component="span">
+                            Super Cruise hands-free driver assistance
+                            technology* with 3-year OnStar® One plan*
+                          </Box>
                         </Typography>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="body2"
-                            sx={{
-                              color: "#1a1a1a",
-                              mb: 1.5,
-                              display: "flex",
-                              alignItems: "flex-start",
-                            }}
-                          >
-                            <Box
-                              component="span"
-                              sx={{ color: "#52A4C1", mr: 1, fontWeight: "bold" }}
-                            >
-                              •
-                            </Box>
-                            <Box component="span">
-                              Super Cruise hands-free driver assistance
-                              technology* with 3-year OnStar® One plan*
-                            </Box>
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{
-                              color: "#1a1a1a",
-                              mb: 1.5,
-                              display: "flex",
-                              alignItems: "flex-start",
-                            }}
-                          >
-                            <Box
-                              component="span"
-                              sx={{ color: "#52A4C1", mr: 1, fontWeight: "bold" }}
-                            >
-                              •
-                            </Box>
-                            <Box component="span">
-                              Air Ride Adaptive Suspension
-                            </Box>
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{
-                              color: "#1a1a1a",
-                              mb: 1.5,
-                              display: "flex",
-                              alignItems: "flex-start",
-                            }}
-                          >
-                            <Box
-                              component="span"
-                              sx={{ color: "#52A4C1", mr: 1, fontWeight: "bold" }}
-                            >
-                              •
-                            </Box>
-                            <Box component="span">
-                              24" selective machined and painted After Midnight
-                              Metallic aluminum wheels
-                            </Box>
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{
-                              color: "#1a1a1a",
-                              mb: 1.5,
-                              display: "flex",
-                              alignItems: "flex-start",
-                            }}
-                          >
-                            <Box
-                              component="span"
-                              sx={{ color: "#52A4C1", mr: 1, fontWeight: "bold" }}
-                            >
-                              •
-                            </Box>
-                            <Box component="span">
-                              16-way power front seats with massage feature
-                            </Box>
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{
-                              color: "#1a1a1a",
-                              display: "flex",
-                              alignItems: "flex-start",
-                            }}
-                          >
-                            <Box
-                              component="span"
-                              sx={{ color: "#52A4C1", mr: 1, fontWeight: "bold" }}
-                            >
-                              •
-                            </Box>
-                            <Box component="span">
-                              Bose* 18-speaker sound system
-                            </Box>
-                          </Typography>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-
-                  {/* Available Features */}
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        height: "100%",
-                      }}
-                    >
-                      <CardContent sx={{ p: 3 }}>
                         <Typography
-                          variant="h6"
+                          variant="body2"
                           sx={{
-                            fontWeight: "bold",
-                            color: "#52A4C1",
-                            mb: 3,
-                            pb: 1,
-                            borderBottom: "2px solid #52A4C1",
+                            color: "#1a1a1a",
+                            mb: 1.5,
+                            display: "flex",
+                            alignItems: "flex-start",
                           }}
                         >
-                          Key Available Features*
+                          <Box
+                            component="span"
+                            sx={{ color: "#52A4C1", mr: 1, fontWeight: "bold" }}
+                          >
+                            •
+                          </Box>
+                          <Box component="span">
+                            Air Ride Adaptive Suspension
+                          </Box>
                         </Typography>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="body2"
-                            sx={{
-                              color: "#1a1a1a",
-                              mb: 1.5,
-                              display: "flex",
-                              alignItems: "flex-start",
-                            }}
-                          >
-                            <Box
-                              component="span"
-                              sx={{ color: "#52A4C1", mr: 1, fontWeight: "bold" }}
-                            >
-                              •
-                            </Box>
-                            <Box component="span">Night Vision*</Box>
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{
-                              color: "#1a1a1a",
-                              display: "flex",
-                              alignItems: "flex-start",
-                            }}
-                          >
-                            <Box
-                              component="span"
-                              sx={{ color: "#52A4C1", mr: 1, fontWeight: "bold" }}
-                            >
-                              •
-                            </Box>
-                            <Box component="span">
-                              Second-row heated and ventilated executive seating*
-                              with massage feature and Bose* head-restraint
-                              speakers
-                            </Box>
-                          </Typography>
-                        </Box>
                         <Typography
-                          variant="caption"
+                          variant="body2"
                           sx={{
-                            color: "#757575",
-                            fontSize: "0.7rem",
-                            fontStyle: "italic",
-                            mt: 2,
-                            display: "block",
+                            color: "#1a1a1a",
+                            mb: 1.5,
+                            display: "flex",
+                            alignItems: "flex-start",
                           }}
                         >
-                          *Available features may vary by trim and model year.
+                          <Box
+                            component="span"
+                            sx={{ color: "#52A4C1", mr: 1, fontWeight: "bold" }}
+                          >
+                            •
+                          </Box>
+                          <Box component="span">
+                            24" selective machined and painted After Midnight
+                            Metallic aluminum wheels
+                          </Box>
                         </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: "#1a1a1a",
+                            mb: 1.5,
+                            display: "flex",
+                            alignItems: "flex-start",
+                          }}
+                        >
+                          <Box
+                            component="span"
+                            sx={{ color: "#52A4C1", mr: 1, fontWeight: "bold" }}
+                          >
+                            •
+                          </Box>
+                          <Box component="span">
+                            16-way power front seats with massage feature
+                          </Box>
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: "#1a1a1a",
+                            display: "flex",
+                            alignItems: "flex-start",
+                          }}
+                        >
+                          <Box
+                            component="span"
+                            sx={{ color: "#52A4C1", mr: 1, fontWeight: "bold" }}
+                          >
+                            •
+                          </Box>
+                          <Box component="span">
+                            Bose* 18-speaker sound system
+                          </Box>
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                  </Card>
                 </Grid>
-              </Box>
-            )}
+
+                {/* Available Features */}
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      height: "100%",
+                    }}
+                  >
+                    <CardContent sx={{ p: 3 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#52A4C1",
+                          mb: 3,
+                          pb: 1,
+                          borderBottom: "2px solid #52A4C1",
+                        }}
+                      >
+                        Key Available Features*
+                      </Typography>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: "#1a1a1a",
+                            mb: 1.5,
+                            display: "flex",
+                            alignItems: "flex-start",
+                          }}
+                        >
+                          <Box
+                            component="span"
+                            sx={{ color: "#52A4C1", mr: 1, fontWeight: "bold" }}
+                          >
+                            •
+                          </Box>
+                          <Box component="span">Night Vision*</Box>
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: "#1a1a1a",
+                            display: "flex",
+                            alignItems: "flex-start",
+                          }}
+                        >
+                          <Box
+                            component="span"
+                            sx={{ color: "#52A4C1", mr: 1, fontWeight: "bold" }}
+                          >
+                            •
+                          </Box>
+                          <Box component="span">
+                            Second-row heated and ventilated executive seating*
+                            with massage feature and Bose* head-restraint
+                            speakers
+                          </Box>
+                        </Typography>
+                      </Box>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          color: "#757575",
+                          fontSize: "0.7rem",
+                          fontStyle: "italic",
+                          mt: 2,
+                          display: "block",
+                        }}
+                      >
+                        *Available features may vary by trim and model year.
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+            </Box>
+          )}
 
           {/* BMW 5 Series Specifications Section */}
           {(selectedCar?.name === "BMW 5 Series" ||
             selectedCar?.name?.includes("BMW 5")) && (
-              <Box sx={{ mt: 6 }}>
-                <Typography
-                  variant="h4"
-                  component="h2"
-                  sx={{
-                    fontWeight: "bold",
-                    color: "#1a1a1a",
-                    mb: 4,
-                    textAlign: "center",
-                  }}
-                >
-                  {t('vehicle.specifications')}
-                </Typography>
+            <Box sx={{ mt: 6 }}>
+              <Typography
+                variant="h4"
+                component="h2"
+                sx={{
+                  fontWeight: "bold",
+                  color: "#1a1a1a",
+                  mb: 4,
+                  textAlign: "center",
+                }}
+              >
+                {t("vehicle.specifications")}
+              </Typography>
 
-                <Grid container spacing={3}>
-                  {/* Performance Specifications */}
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        height: "100%",
-                      }}
-                    >
-                      <CardContent sx={{ p: 3 }}>
+              <Grid container spacing={3}>
+                {/* Performance Specifications */}
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      height: "100%",
+                    }}
+                  >
+                    <CardContent sx={{ p: 3 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#52A4C1",
+                          mb: 3,
+                          pb: 1,
+                          borderBottom: "2px solid #52A4C1",
+                        }}
+                      >
+                        Performance
+                      </Typography>
+                      <Box sx={{ mb: 2 }}>
                         <Typography
-                          variant="h6"
+                          variant="caption"
                           sx={{
-                            fontWeight: "bold",
-                            color: "#52A4C1",
-                            mb: 3,
-                            pb: 1,
-                            borderBottom: "2px solid #52A4C1",
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
                           }}
                         >
-                          Performance
+                          Engine
                         </Typography>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Engine
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            3.0L I-6 Turbocharged
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            2.0L I-4 Turbocharged
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Horsepower
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Up to 523 HP
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Transmission
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            8-Speed Sport Automatic
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Drive Type
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Rear-Wheel Drive / xDrive AWD
-                          </Typography>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-
-                  {/* Exterior Specifications */}
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        height: "100%",
-                      }}
-                    >
-                      <CardContent sx={{ p: 3 }}>
                         <Typography
-                          variant="h6"
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          3.0L I-6 Turbocharged
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          2.0L I-4 Turbocharged
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
                           sx={{
-                            fontWeight: "bold",
-                            color: "#52A4C1",
-                            mb: 3,
-                            pb: 1,
-                            borderBottom: "2px solid #52A4C1",
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
                           }}
                         >
-                          Exterior
+                          Horsepower
                         </Typography>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Headlights
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Adaptive LED Headlights
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Laserlight (Available)
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Wheels
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            18" / 19" / 20" Alloy Wheels
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Body Style
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            4-Door Sedan
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Paint Options
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Solid, Metallic, and Individual Colors
-                          </Typography>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-
-                  {/* Interior & Technology */}
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        height: "100%",
-                      }}
-                    >
-                      <CardContent sx={{ p: 3 }}>
                         <Typography
-                          variant="h6"
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Up to 523 HP
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
                           sx={{
-                            fontWeight: "bold",
-                            color: "#52A4C1",
-                            mb: 3,
-                            pb: 1,
-                            borderBottom: "2px solid #52A4C1",
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
                           }}
                         >
-                          {t('vehicle.interior')} & Technology
+                          Transmission
                         </Typography>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Seating
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Available seating for 5
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Sport Seats (Available)
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Infotainment
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            BMW iDrive 8.5
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            14.9" Curved Display
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Sound System
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Harman Kardon* Surround Sound
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Bowers & Wilkins* (Available)
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Climate Control
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            4-Zone Automatic Climate Control
-                          </Typography>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          8-Speed Sport Automatic
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Drive Type
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Rear-Wheel Drive / xDrive AWD
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                  </Card>
                 </Grid>
-              </Box>
-            )}
+
+                {/* Exterior Specifications */}
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      height: "100%",
+                    }}
+                  >
+                    <CardContent sx={{ p: 3 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#52A4C1",
+                          mb: 3,
+                          pb: 1,
+                          borderBottom: "2px solid #52A4C1",
+                        }}
+                      >
+                        Exterior
+                      </Typography>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Headlights
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Adaptive LED Headlights
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Laserlight (Available)
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Wheels
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          18" / 19" / 20" Alloy Wheels
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Body Style
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          4-Door Sedan
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Paint Options
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Solid, Metallic, and Individual Colors
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                {/* Interior & Technology */}
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      height: "100%",
+                    }}
+                  >
+                    <CardContent sx={{ p: 3 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#52A4C1",
+                          mb: 3,
+                          pb: 1,
+                          borderBottom: "2px solid #52A4C1",
+                        }}
+                      >
+                        {t("vehicle.interior")} & Technology
+                      </Typography>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Seating
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Available seating for 5
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Sport Seats (Available)
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Infotainment
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          BMW iDrive 8.5
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          14.9" Curved Display
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Sound System
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Harman Kardon* Surround Sound
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Bowers & Wilkins* (Available)
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Climate Control
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          4-Zone Automatic Climate Control
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+            </Box>
+          )}
 
           {/* Mercedes S450 Specifications Section */}
           {(selectedCar?.name === "Mercedes S450" ||
             selectedCar?.name?.includes("Mercedes S450") ||
             selectedCar?.name?.includes("Mercedes S Class")) && (
-              <Box sx={{ mt: 6 }}>
-                <Typography
-                  variant="h4"
-                  component="h2"
-                  sx={{
-                    fontWeight: "bold",
-                    color: "#1a1a1a",
-                    mb: 4,
-                    textAlign: "center",
-                  }}
-                >
-                  {t('vehicle.specifications')}
-                </Typography>
+            <Box sx={{ mt: 6 }}>
+              <Typography
+                variant="h4"
+                component="h2"
+                sx={{
+                  fontWeight: "bold",
+                  color: "#1a1a1a",
+                  mb: 4,
+                  textAlign: "center",
+                }}
+              >
+                {t("vehicle.specifications")}
+              </Typography>
 
-                <Grid container spacing={3}>
-                  {/* Dimensions & General */}
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        height: "100%",
-                      }}
-                    >
-                      <CardContent sx={{ p: 3 }}>
+              <Grid container spacing={3}>
+                {/* Dimensions & General */}
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      height: "100%",
+                    }}
+                  >
+                    <CardContent sx={{ p: 3 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#52A4C1",
+                          mb: 3,
+                          pb: 1,
+                          borderBottom: "2px solid #52A4C1",
+                        }}
+                      >
+                        Dimensions
+                      </Typography>
+                      <Box sx={{ mb: 2 }}>
                         <Typography
-                          variant="h6"
+                          variant="caption"
                           sx={{
-                            fontWeight: "bold",
-                            color: "#52A4C1",
-                            mb: 3,
-                            pb: 1,
-                            borderBottom: "2px solid #52A4C1",
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
                           }}
                         >
-                          Dimensions
+                          Overall Length
                         </Typography>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Overall Length
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            5141 mm / 16'10" feet
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Overall Width
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            1905 mm / 6'3" feet
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Overall Height
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            1498 mm / 4'11" feet
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Wheel Base
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            3035 mm
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Ground Clearance
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            127 mm
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Kerb Weight
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            2015 KG
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Boot Space
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            529 L
-                          </Typography>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-
-                  {/* Engine & Performance */}
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        height: "100%",
-                      }}
-                    >
-                      <CardContent sx={{ p: 3 }}>
                         <Typography
-                          variant="h6"
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          5141 mm / 16'10" feet
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
                           sx={{
-                            fontWeight: "bold",
-                            color: "#52A4C1",
-                            mb: 3,
-                            pb: 1,
-                            borderBottom: "2px solid #52A4C1",
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
                           }}
                         >
-                          {t('vehicle.engine')} & {t('vehicle.performance')}
+                          Overall Width
                         </Typography>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Engine Type
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Petrol, Turbo Charger
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Displacement
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            2999 cc
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Cylinders
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            6 Cylinders, V Configuration
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Horse Power
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            367 HP @ 6100 RPM
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Torque
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            500 Nm @ 4000 RPM
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Compression Ratio
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            10.5:1
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Fuel System
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Electronic Fuel Injection
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Max Speed
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            260 KM/H
-                          </Typography>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-
-                  {/* Transmission & Steering */}
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        height: "100%",
-                      }}
-                    >
-                      <CardContent sx={{ p: 3 }}>
                         <Typography
-                          variant="h6"
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          1905 mm / 6'3" feet
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
                           sx={{
-                            fontWeight: "bold",
-                            color: "#52A4C1",
-                            mb: 3,
-                            pb: 1,
-                            borderBottom: "2px solid #52A4C1",
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
                           }}
                         >
-                          Transmission & Steering
+                          Overall Height
                         </Typography>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Transmission Type
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Automatic (AT)
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Gearbox
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            9-Speed
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Drive Train
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            RWD (Rear-Wheel Drive)
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Steering Type
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Rack & Pinion
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Power Assisted
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Electric
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Minimum Turning Radius
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            6.1m
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Seating Capacity
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            5 persons
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            No. of Doors
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            4 doors
-                          </Typography>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          1498 mm / 4'11" feet
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Wheel Base
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          3035 mm
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Ground Clearance
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          127 mm
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Kerb Weight
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          2015 KG
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Boot Space
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          529 L
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                  </Card>
                 </Grid>
-              </Box>
-            )}
+
+                {/* Engine & Performance */}
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      height: "100%",
+                    }}
+                  >
+                    <CardContent sx={{ p: 3 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#52A4C1",
+                          mb: 3,
+                          pb: 1,
+                          borderBottom: "2px solid #52A4C1",
+                        }}
+                      >
+                        {t("vehicle.engine")} & {t("vehicle.performance")}
+                      </Typography>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Engine Type
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Petrol, Turbo Charger
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Displacement
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          2999 cc
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Cylinders
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          6 Cylinders, V Configuration
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Horse Power
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          367 HP @ 6100 RPM
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Torque
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          500 Nm @ 4000 RPM
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Compression Ratio
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          10.5:1
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Fuel System
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Electronic Fuel Injection
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Max Speed
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          260 KM/H
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                {/* Transmission & Steering */}
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      height: "100%",
+                    }}
+                  >
+                    <CardContent sx={{ p: 3 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#52A4C1",
+                          mb: 3,
+                          pb: 1,
+                          borderBottom: "2px solid #52A4C1",
+                        }}
+                      >
+                        Transmission & Steering
+                      </Typography>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Transmission Type
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Automatic (AT)
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Gearbox
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          9-Speed
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Drive Train
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          RWD (Rear-Wheel Drive)
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Steering Type
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Rack & Pinion
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Power Assisted
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Electric
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Minimum Turning Radius
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          6.1m
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Seating Capacity
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          5 persons
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          No. of Doors
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          4 doors
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+            </Box>
+          )}
 
           {/* BMW 7 Series Specifications Section */}
           {(selectedCar?.name === "BMW 7 Series" ||
             selectedCar?.name?.includes("BMW 7")) && (
-              <Box sx={{ mt: 6 }}>
-                <Typography
-                  variant="h4"
-                  component="h2"
-                  sx={{
-                    fontWeight: "bold",
-                    color: "#1a1a1a",
-                    mb: 4,
-                    textAlign: "center",
-                  }}
-                >
-                  {t('vehicle.specifications')}
-                </Typography>
+            <Box sx={{ mt: 6 }}>
+              <Typography
+                variant="h4"
+                component="h2"
+                sx={{
+                  fontWeight: "bold",
+                  color: "#1a1a1a",
+                  mb: 4,
+                  textAlign: "center",
+                }}
+              >
+                {t("vehicle.specifications")}
+              </Typography>
 
-                <Grid container spacing={3}>
-                  {/* Overview & Dimensions */}
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        height: "100%",
-                      }}
-                    >
-                      <CardContent sx={{ p: 3 }}>
+              <Grid container spacing={3}>
+                {/* Overview & Dimensions */}
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      height: "100%",
+                    }}
+                  >
+                    <CardContent sx={{ p: 3 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#52A4C1",
+                          mb: 3,
+                          pb: 1,
+                          borderBottom: "2px solid #52A4C1",
+                        }}
+                      >
+                        Overview
+                      </Typography>
+                      <Box sx={{ mb: 2 }}>
                         <Typography
-                          variant="h6"
+                          variant="caption"
                           sx={{
-                            fontWeight: "bold",
-                            color: "#52A4C1",
-                            mb: 3,
-                            pb: 1,
-                            borderBottom: "2px solid #52A4C1",
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
                           }}
                         >
-                          Overview
+                          Dimensions
                         </Typography>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Dimensions
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            212.2" L x 76.8" W x 60.8" H
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Seating Capacity
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Up to 5 persons
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            MSRP
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            From $97,300
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Fuel Tank Capacity
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            19.5 gallons
-                          </Typography>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-
-                  {/* Engine & Performance */}
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        height: "100%",
-                      }}
-                    >
-                      <CardContent sx={{ p: 3 }}>
                         <Typography
-                          variant="h6"
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          212.2" L x 76.8" W x 60.8" H
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
                           sx={{
-                            fontWeight: "bold",
-                            color: "#52A4C1",
-                            mb: 3,
-                            pb: 1,
-                            borderBottom: "2px solid #52A4C1",
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
                           }}
                         >
-                          {t('vehicle.engine')} & {t('vehicle.performance')}
+                          Seating Capacity
                         </Typography>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Horsepower
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Up to 650 HP
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Engine Options
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            3.0L I-6 TwinPower Turbo
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            4.4L V-8 TwinPower Turbo
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Electric Motor (i7 models)
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            0-60 MPH
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            4.1 - 5.2 seconds
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Drive Train
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            RWD / xDrive AWD
-                          </Typography>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-
-                  {/* Technology & Features */}
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        height: "100%",
-                      }}
-                    >
-                      <CardContent sx={{ p: 3 }}>
                         <Typography
-                          variant="h6"
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Up to 5 persons
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
                           sx={{
-                            fontWeight: "bold",
-                            color: "#52A4C1",
-                            mb: 3,
-                            pb: 1,
-                            borderBottom: "2px solid #52A4C1",
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
                           }}
                         >
-                          {t('vehicle.features')}
+                          MSRP
                         </Typography>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Operating System
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            BMW OS 8.5
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Theater Screen
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            31" 8K with Amazon Fire TV
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            {t('vehicle.safety')} {t('vehicle.features')}
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Active Blind Spot Protection
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Frontal Collision Warning
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Lane Departure Warning
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Fuel Economy
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            18-31 mpg (city/highway)
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            65 mpge (750e xDrive)
-                          </Typography>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          From $97,300
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Fuel Tank Capacity
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          19.5 gallons
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                  </Card>
                 </Grid>
-              </Box>
-            )}
+
+                {/* Engine & Performance */}
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      height: "100%",
+                    }}
+                  >
+                    <CardContent sx={{ p: 3 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#52A4C1",
+                          mb: 3,
+                          pb: 1,
+                          borderBottom: "2px solid #52A4C1",
+                        }}
+                      >
+                        {t("vehicle.engine")} & {t("vehicle.performance")}
+                      </Typography>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Horsepower
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Up to 650 HP
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Engine Options
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          3.0L I-6 TwinPower Turbo
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          4.4L V-8 TwinPower Turbo
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Electric Motor (i7 models)
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          0-60 MPH
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          4.1 - 5.2 seconds
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Drive Train
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          RWD / xDrive AWD
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                {/* Technology & Features */}
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      height: "100%",
+                    }}
+                  >
+                    <CardContent sx={{ p: 3 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#52A4C1",
+                          mb: 3,
+                          pb: 1,
+                          borderBottom: "2px solid #52A4C1",
+                        }}
+                      >
+                        {t("vehicle.features")}
+                      </Typography>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Operating System
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          BMW OS 8.5
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Theater Screen
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          31" 8K with Amazon Fire TV
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          {t("vehicle.safety")} {t("vehicle.features")}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Active Blind Spot Protection
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Frontal Collision Warning
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Lane Departure Warning
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Fuel Economy
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          18-31 mpg (city/highway)
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          65 mpge (750e xDrive)
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+            </Box>
+          )}
 
           {/* Mercedes V Class Specifications Section */}
           {(selectedCar?.name === "Mercedes V Class" ||
             selectedCar?.name?.includes("Mercedes V Class") ||
             selectedCar?.name?.includes("Mercedes V-Class")) && (
-              <Box sx={{ mt: 6 }}>
-                <Typography
-                  variant="h4"
-                  component="h2"
-                  sx={{
-                    fontWeight: "bold",
-                    color: "#1a1a1a",
-                    mb: 4,
-                    textAlign: "center",
-                  }}
-                >
-                  {t('vehicle.specifications')}
-                </Typography>
+            <Box sx={{ mt: 6 }}>
+              <Typography
+                variant="h4"
+                component="h2"
+                sx={{
+                  fontWeight: "bold",
+                  color: "#1a1a1a",
+                  mb: 4,
+                  textAlign: "center",
+                }}
+              >
+                {t("vehicle.specifications")}
+              </Typography>
 
-                <Grid container spacing={3}>
-                  {/* Seating & Interior */}
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        height: "100%",
-                      }}
-                    >
-                      <CardContent sx={{ p: 3 }}>
+              <Grid container spacing={3}>
+                {/* Seating & Interior */}
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      height: "100%",
+                    }}
+                  >
+                    <CardContent sx={{ p: 3 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#52A4C1",
+                          mb: 3,
+                          pb: 1,
+                          borderBottom: "2px solid #52A4C1",
+                        }}
+                      >
+                        Seating & Interior
+                      </Typography>
+                      <Box sx={{ mb: 2 }}>
                         <Typography
-                          variant="h6"
+                          variant="caption"
                           sx={{
-                            fontWeight: "bold",
-                            color: "#52A4C1",
-                            mb: 3,
-                            pb: 1,
-                            borderBottom: "2px solid #52A4C1",
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
                           }}
                         >
-                          Seating & Interior
+                          Seating Configuration
                         </Typography>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Seating Configuration
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            3-Seater Bench 1st Row
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            3-Seater Bench 2nd Row
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Climate Control
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            THERMOTRONIC Automatic
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Tempmatic in Rear
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            {t('vehicle.interior')} Features
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Ambience Lighting (64 Colors)
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Comfort Seats with Lumbar Support
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Keyless Start
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Convenience
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Electric Sliding Doors
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Electric Tailgate
-                          </Typography>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-
-                  {/* Technology & Entertainment */}
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        height: "100%",
-                      }}
-                    >
-                      <CardContent sx={{ p: 3 }}>
                         <Typography
-                          variant="h6"
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          3-Seater Bench 1st Row
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          3-Seater Bench 2nd Row
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
                           sx={{
-                            fontWeight: "bold",
-                            color: "#52A4C1",
-                            mb: 3,
-                            pb: 1,
-                            borderBottom: "2px solid #52A4C1",
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
                           }}
                         >
-                          Technology & Entertainment
+                          Climate Control
                         </Typography>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Multimedia System
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            MBUX with 12.3" Touchscreen
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Dual High-Resolution Displays
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Connectivity
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Apple CarPlay & Android Auto
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Wireless Charging
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            USB Ports & SD Card Slot
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Audio System
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            2-Way Speaker System
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            FrontBass Speakers
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Digital Radio
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Safety Services
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Emergency Call System (eCall)
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Breakdown Management
-                          </Typography>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-
-                  {/* Safety & Driver Assistance */}
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        height: "100%",
-                      }}
-                    >
-                      <CardContent sx={{ p: 3 }}>
                         <Typography
-                          variant="h6"
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          THERMOTRONIC Automatic
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Tempmatic in Rear
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
                           sx={{
-                            fontWeight: "bold",
-                            color: "#52A4C1",
-                            mb: 3,
-                            pb: 1,
-                            borderBottom: "2px solid #52A4C1",
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
                           }}
                         >
-                          Safety & Driver Assistance
+                          {t("vehicle.interior")} Features
                         </Typography>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Active Safety
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Active Brake Assist
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Active Distance Assist DISTRONIC
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Active Lane Keeping Assist
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Blind Spot Assist
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Airbags
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Driver & Front Passenger
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Sidebags & Windowbags
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Centre Airbag
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Parking & Assistance
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Active Parking Assist
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            360° Camera
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Crosswind Assist
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Driving Modes
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Agility Select: Comfort, ECO, Sport, Individual
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            ECO Start-Stop Function
-                          </Typography>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Ambience Lighting (64 Colors)
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Comfort Seats with Lumbar Support
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Keyless Start
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Convenience
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Electric Sliding Doors
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Electric Tailgate
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                  </Card>
                 </Grid>
-              </Box>
-            )}
+
+                {/* Technology & Entertainment */}
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      height: "100%",
+                    }}
+                  >
+                    <CardContent sx={{ p: 3 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#52A4C1",
+                          mb: 3,
+                          pb: 1,
+                          borderBottom: "2px solid #52A4C1",
+                        }}
+                      >
+                        Technology & Entertainment
+                      </Typography>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Multimedia System
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          MBUX with 12.3" Touchscreen
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Dual High-Resolution Displays
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Connectivity
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Apple CarPlay & Android Auto
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Wireless Charging
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          USB Ports & SD Card Slot
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Audio System
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          2-Way Speaker System
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          FrontBass Speakers
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Digital Radio
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Safety Services
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Emergency Call System (eCall)
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Breakdown Management
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                {/* Safety & Driver Assistance */}
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      height: "100%",
+                    }}
+                  >
+                    <CardContent sx={{ p: 3 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#52A4C1",
+                          mb: 3,
+                          pb: 1,
+                          borderBottom: "2px solid #52A4C1",
+                        }}
+                      >
+                        Safety & Driver Assistance
+                      </Typography>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Active Safety
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Active Brake Assist
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Active Distance Assist DISTRONIC
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Active Lane Keeping Assist
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Blind Spot Assist
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Airbags
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Driver & Front Passenger
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Sidebags & Windowbags
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Centre Airbag
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Parking & Assistance
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Active Parking Assist
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          360° Camera
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Crosswind Assist
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Driving Modes
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Agility Select: Comfort, ECO, Sport, Individual
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          ECO Start-Stop Function
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+            </Box>
+          )}
 
           {/* Toyota Hiace Specifications Section */}
           {(selectedCar?.name === "Toyota Hiace" ||
             selectedCar?.name?.includes("Toyota Hiace") ||
             selectedCar?.name?.includes("Hiace")) && (
-              <Box sx={{ mt: 6 }}>
-                <Typography
-                  variant="h4"
-                  component="h2"
-                  sx={{
-                    fontWeight: "bold",
-                    color: "#1a1a1a",
-                    mb: 4,
-                    textAlign: "center",
-                  }}
-                >
-                  {t('vehicle.specifications')}
-                </Typography>
+            <Box sx={{ mt: 6 }}>
+              <Typography
+                variant="h4"
+                component="h2"
+                sx={{
+                  fontWeight: "bold",
+                  color: "#1a1a1a",
+                  mb: 4,
+                  textAlign: "center",
+                }}
+              >
+                {t("vehicle.specifications")}
+              </Typography>
 
-                <Grid container spacing={3}>
-                  {/* Engine & Performance */}
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        height: "100%",
-                      }}
-                    >
-                      <CardContent sx={{ p: 3 }}>
+              <Grid container spacing={3}>
+                {/* Engine & Performance */}
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      height: "100%",
+                    }}
+                  >
+                    <CardContent sx={{ p: 3 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#52A4C1",
+                          mb: 3,
+                          pb: 1,
+                          borderBottom: "2px solid #52A4C1",
+                        }}
+                      >
+                        {t("vehicle.engine")} & {t("vehicle.performance")}
+                      </Typography>
+                      <Box sx={{ mb: 2 }}>
                         <Typography
-                          variant="h6"
+                          variant="caption"
                           sx={{
-                            fontWeight: "bold",
-                            color: "#52A4C1",
-                            mb: 3,
-                            pb: 1,
-                            borderBottom: "2px solid #52A4C1",
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
                           }}
                         >
-                          {t('vehicle.engine')} & {t('vehicle.performance')}
+                          Engine Type
                         </Typography>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Engine Type
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            2TR-FE Gasoline
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Fuel System
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Electronic Fuel Injection
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Valve Mechanism
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            16 Valve DOHC with VVT-i
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Transmission
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Continuously Variable Transmission (CVT)
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Body Style
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Commercial Vehicles
-                          </Typography>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-
-                  {/* Safety Features */}
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        height: "100%",
-                      }}
-                    >
-                      <CardContent sx={{ p: 3 }}>
                         <Typography
-                          variant="h6"
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          2TR-FE Gasoline
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
                           sx={{
-                            fontWeight: "bold",
-                            color: "#52A4C1",
-                            mb: 3,
-                            pb: 1,
-                            borderBottom: "2px solid #52A4C1",
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
                           }}
                         >
-                          {t('vehicle.safety')} {t('vehicle.features')}
+                          Fuel System
                         </Typography>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Braking System
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            ABS (Anti-lock Brake System)
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Brake Pedal Intrusion-Reduction
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Safety Systems
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Superior Active Safety System
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Dynamic Stability Control
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Crumple Zone Protection
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Suspension
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Front Suspension - Double Wishbone
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Durability
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Corrosion Resistant Construction
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Long-term Reliability
-                          </Typography>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-
-                  {/* Overview & Features */}
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        height: "100%",
-                      }}
-                    >
-                      <CardContent sx={{ p: 3 }}>
                         <Typography
-                          variant="h6"
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Electronic Fuel Injection
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
                           sx={{
-                            fontWeight: "bold",
-                            color: "#52A4C1",
-                            mb: 3,
-                            pb: 1,
-                            borderBottom: "2px solid #52A4C1",
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
                           }}
                         >
-                          Overview & Features
+                          Valve Mechanism
                         </Typography>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Year
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            2025
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Make & Model
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Toyota Hiace
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Key Features
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Proven Track Record of Durability
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Impressive Handling & Stability
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Passenger Safety Focused
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Vehicle Investment
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Long-term Reliability Protection
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Vehicle Investment Security
-                          </Typography>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          16 Valve DOHC with VVT-i
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Transmission
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Continuously Variable Transmission (CVT)
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Body Style
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Commercial Vehicles
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                  </Card>
                 </Grid>
-              </Box>
-            )}
+
+                {/* Safety Features */}
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      height: "100%",
+                    }}
+                  >
+                    <CardContent sx={{ p: 3 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#52A4C1",
+                          mb: 3,
+                          pb: 1,
+                          borderBottom: "2px solid #52A4C1",
+                        }}
+                      >
+                        {t("vehicle.safety")} {t("vehicle.features")}
+                      </Typography>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Braking System
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          ABS (Anti-lock Brake System)
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Brake Pedal Intrusion-Reduction
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Safety Systems
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Superior Active Safety System
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Dynamic Stability Control
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Crumple Zone Protection
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Suspension
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Front Suspension - Double Wishbone
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Durability
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Corrosion Resistant Construction
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Long-term Reliability
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                {/* Overview & Features */}
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      height: "100%",
+                    }}
+                  >
+                    <CardContent sx={{ p: 3 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#52A4C1",
+                          mb: 3,
+                          pb: 1,
+                          borderBottom: "2px solid #52A4C1",
+                        }}
+                      >
+                        Overview & Features
+                      </Typography>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Year
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          2025
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Make & Model
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Toyota Hiace
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Key Features
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Proven Track Record of Durability
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Impressive Handling & Stability
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Passenger Safety Focused
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Vehicle Investment
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Long-term Reliability Protection
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Vehicle Investment Security
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+            </Box>
+          )}
 
           {/* Toyota Hiace Interior Section */}
           {(selectedCar?.name === "Toyota Hiace" ||
             selectedCar?.name?.includes("Toyota Hiace") ||
             selectedCar?.name?.includes("Hiace")) && (
-              <Box sx={{ mt: 6 }}>
-                <Typography
-                  variant="h4"
-                  component="h2"
-                  sx={{
-                    fontWeight: "bold",
-                    color: "#1a1a1a",
-                    mb: 4,
-                    textAlign: "center",
-                  }}
-                >
-                  {t('vehicle.interior')} {t('vehicle.features')}
-                </Typography>
+            <Box sx={{ mt: 6 }}>
+              <Typography
+                variant="h4"
+                component="h2"
+                sx={{
+                  fontWeight: "bold",
+                  color: "#1a1a1a",
+                  mb: 4,
+                  textAlign: "center",
+                }}
+              >
+                {t("vehicle.interior")} {t("vehicle.features")}
+              </Typography>
 
-                <Grid container spacing={3}>
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <Card
+              <Grid container spacing={3}>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <Box
                       sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                        position: "relative",
+                        width: "100%",
+                        height: "300px",
+                        cursor: "zoom-in",
                         overflow: "hidden",
                       }}
+                      onMouseEnter={() => setHoveredInteriorImage(0)}
+                      onMouseLeave={() => setHoveredInteriorImage(null)}
                     >
                       <Box
                         sx={{
                           position: "relative",
                           width: "100%",
-                          height: "300px",
-                          cursor: "zoom-in",
-                          overflow: "hidden",
+                          height: "100%",
+                          transform:
+                            hoveredInteriorImage === 0
+                              ? "scale(1.15)"
+                              : "scale(1)",
+                          transition:
+                            "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                          willChange: "transform",
                         }}
-                        onMouseEnter={() => setHoveredInteriorImage(0)}
-                        onMouseLeave={() => setHoveredInteriorImage(null)}
                       >
-                        <Box
-                          sx={{
-                            position: "relative",
-                            width: "100%",
-                            height: "100%",
-                            transform:
-                              hoveredInteriorImage === 0
-                                ? "scale(1.15)"
-                                : "scale(1)",
-                            transition:
-                              "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-                            willChange: "transform",
-                          }}
-                        >
-                          <Image
-                            src={ToyotaHiaceInteriorDesign}
-                            alt="Interior Design"
-                            fill
-                            style={{ objectFit: "cover" }}
-                          />
-                        </Box>
+                        <Image
+                          src={ToyotaHiaceInteriorDesign}
+                          alt="Interior Design"
+                          fill
+                          style={{ objectFit: "cover" }}
+                        />
                       </Box>
-                      <CardContent sx={{ p: 2 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontWeight: 600,
-                            color: "#1a1a1a",
-                            textAlign: "center",
-                          }}
-                        >
-                          {t('vehicle.interior')} Design
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <Box
+                    </Box>
+                    <CardContent sx={{ p: 2 }}>
+                      <Typography
+                        variant="body2"
                         sx={{
-                          position: "relative",
-                          width: "100%",
-                          height: "300px",
-                          cursor: "zoom-in",
-                          overflow: "hidden",
+                          fontWeight: 600,
+                          color: "#1a1a1a",
+                          textAlign: "center",
                         }}
-                        onMouseEnter={() => setHoveredInteriorImage(1)}
-                        onMouseLeave={() => setHoveredInteriorImage(null)}
                       >
-                        <Box
-                          sx={{
-                            position: "relative",
-                            width: "100%",
-                            height: "100%",
-                            transform:
-                              hoveredInteriorImage === 1
-                                ? "scale(1.15)"
-                                : "scale(1)",
-                            transition:
-                              "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-                            willChange: "transform",
-                          }}
-                        >
-                          <Image
-                            src={ToyotaHiaceActiveHeadRest}
-                            alt="Active Head Rest"
-                            fill
-                            style={{ objectFit: "cover" }}
-                          />
-                        </Box>
-                      </Box>
-                      <CardContent sx={{ p: 2 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontWeight: 600,
-                            color: "#1a1a1a",
-                            textAlign: "center",
-                          }}
-                        >
-                          Active Head Rest
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          position: "relative",
-                          width: "100%",
-                          height: "300px",
-                          cursor: "zoom-in",
-                          overflow: "hidden",
-                        }}
-                        onMouseEnter={() => setHoveredInteriorImage(2)}
-                        onMouseLeave={() => setHoveredInteriorImage(null)}
-                      >
-                        <Box
-                          sx={{
-                            position: "relative",
-                            width: "100%",
-                            height: "100%",
-                            transform:
-                              hoveredInteriorImage === 2
-                                ? "scale(1.15)"
-                                : "scale(1)",
-                            transition:
-                              "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-                            willChange: "transform",
-                          }}
-                        >
-                          <Image
-                            src={ToyotaHiaceSpaceComfort}
-                            alt="Space & Comfort"
-                            fill
-                            style={{ objectFit: "cover" }}
-                          />
-                        </Box>
-                      </Box>
-                      <CardContent sx={{ p: 2 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontWeight: 600,
-                            color: "#1a1a1a",
-                            textAlign: "center",
-                          }}
-                        >
-                          Space & Comfort
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          position: "relative",
-                          width: "100%",
-                          height: "300px",
-                          cursor: "zoom-in",
-                          overflow: "hidden",
-                        }}
-                        onMouseEnter={() => setHoveredInteriorImage(3)}
-                        onMouseLeave={() => setHoveredInteriorImage(null)}
-                      >
-                        <Box
-                          sx={{
-                            position: "relative",
-                            width: "100%",
-                            height: "100%",
-                            transform:
-                              hoveredInteriorImage === 3
-                                ? "scale(1.15)"
-                                : "scale(1)",
-                            transition:
-                              "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-                            willChange: "transform",
-                          }}
-                        >
-                          <Image
-                            src={ToyotaHiaceRearRecliningSeats}
-                            alt="Rear Reclining Seats"
-                            fill
-                            style={{ objectFit: "cover" }}
-                          />
-                        </Box>
-                      </Box>
-                      <CardContent sx={{ p: 2 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontWeight: 600,
-                            color: "#1a1a1a",
-                            textAlign: "center",
-                          }}
-                        >
-                          Rear Reclining Seats
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          position: "relative",
-                          width: "100%",
-                          height: "250px",
-                          cursor: "zoom-in",
-                          overflow: "hidden",
-                        }}
-                        onMouseEnter={() => setHoveredInteriorImage(4)}
-                        onMouseLeave={() => setHoveredInteriorImage(null)}
-                      >
-                        <Box
-                          sx={{
-                            position: "relative",
-                            width: "100%",
-                            height: "100%",
-                            transform:
-                              hoveredInteriorImage === 4
-                                ? "scale(1.15)"
-                                : "scale(1)",
-                            transition:
-                              "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-                            willChange: "transform",
-                          }}
-                        >
-                          <Image
-                            src={ToyotaHiaceDialControls}
-                            alt="Dial Controls"
-                            fill
-                            style={{ objectFit: "cover" }}
-                          />
-                        </Box>
-                      </Box>
-                      <CardContent sx={{ p: 2 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontWeight: 600,
-                            color: "#1a1a1a",
-                            textAlign: "center",
-                          }}
-                        >
-                          Dial Controls
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          position: "relative",
-                          width: "100%",
-                          height: "250px",
-                          cursor: "zoom-in",
-                          overflow: "hidden",
-                        }}
-                        onMouseEnter={() => setHoveredInteriorImage(5)}
-                        onMouseLeave={() => setHoveredInteriorImage(null)}
-                      >
-                        <Box
-                          sx={{
-                            position: "relative",
-                            width: "100%",
-                            height: "100%",
-                            transform:
-                              hoveredInteriorImage === 5
-                                ? "scale(1.15)"
-                                : "scale(1)",
-                            transition:
-                              "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-                            willChange: "transform",
-                          }}
-                        >
-                          <Image
-                            src={ToyotaHiaceDualAcControl}
-                            alt="Dual A/C Control"
-                            fill
-                            style={{ objectFit: "cover" }}
-                          />
-                        </Box>
-                      </Box>
-                      <CardContent sx={{ p: 2 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontWeight: 600,
-                            color: "#1a1a1a",
-                            textAlign: "center",
-                          }}
-                        >
-                          Dual A/C Control
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          position: "relative",
-                          width: "100%",
-                          height: "250px",
-                          cursor: "zoom-in",
-                          overflow: "hidden",
-                        }}
-                        onMouseEnter={() => setHoveredInteriorImage(6)}
-                        onMouseLeave={() => setHoveredInteriorImage(null)}
-                      >
-                        <Box
-                          sx={{
-                            position: "relative",
-                            width: "100%",
-                            height: "100%",
-                            transform:
-                              hoveredInteriorImage === 6
-                                ? "scale(1.15)"
-                                : "scale(1)",
-                            transition:
-                              "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-                            willChange: "transform",
-                          }}
-                        >
-                          <Image
-                            src={ToyotaHiaceDualAcVent}
-                            alt="Dual A/C with Separate Air Vent"
-                            fill
-                            style={{ objectFit: "cover" }}
-                          />
-                        </Box>
-                      </Box>
-                      <CardContent sx={{ p: 2 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontWeight: 600,
-                            color: "#1a1a1a",
-                            textAlign: "center",
-                          }}
-                        >
-                          Dual A/C with Separate Air Vent
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          position: "relative",
-                          width: "100%",
-                          height: "300px",
-                          cursor: "zoom-in",
-                          overflow: "hidden",
-                        }}
-                        onMouseEnter={() => setHoveredInteriorImage(7)}
-                        onMouseLeave={() => setHoveredInteriorImage(null)}
-                      >
-                        <Box
-                          sx={{
-                            position: "relative",
-                            width: "100%",
-                            height: "100%",
-                            transform:
-                              hoveredInteriorImage === 7
-                                ? "scale(1.15)"
-                                : "scale(1)",
-                            transition:
-                              "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-                            willChange: "transform",
-                          }}
-                        >
-                          <Image
-                            src={ToyotaHiaceLowerGloveBox}
-                            alt="Lower Glove Box"
-                            fill
-                            style={{ objectFit: "cover" }}
-                          />
-                        </Box>
-                      </Box>
-                      <CardContent sx={{ p: 2 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontWeight: 600,
-                            color: "#1a1a1a",
-                            textAlign: "center",
-                          }}
-                        >
-                          Lower Glove Box
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          position: "relative",
-                          width: "100%",
-                          height: "300px",
-                          cursor: "zoom-in",
-                          overflow: "hidden",
-                        }}
-                        onMouseEnter={() => setHoveredInteriorImage(8)}
-                        onMouseLeave={() => setHoveredInteriorImage(null)}
-                      >
-                        <Box
-                          sx={{
-                            position: "relative",
-                            width: "100%",
-                            height: "100%",
-                            transform:
-                              hoveredInteriorImage === 8
-                                ? "scale(1.15)"
-                                : "scale(1)",
-                            transition:
-                              "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-                            willChange: "transform",
-                          }}
-                        >
-                          <Image
-                            src={ToyotaHiaceLuggageSpace}
-                            alt="Luggage Space"
-                            fill
-                            style={{ objectFit: "cover" }}
-                          />
-                        </Box>
-                      </Box>
-                      <CardContent sx={{ p: 2 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontWeight: 600,
-                            color: "#1a1a1a",
-                            textAlign: "center",
-                          }}
-                        >
-                          Luggage Space
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
+                        {t("vehicle.interior")} Design
+                      </Typography>
+                    </CardContent>
+                  </Card>
                 </Grid>
-              </Box>
-            )}
+
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        position: "relative",
+                        width: "100%",
+                        height: "300px",
+                        cursor: "zoom-in",
+                        overflow: "hidden",
+                      }}
+                      onMouseEnter={() => setHoveredInteriorImage(1)}
+                      onMouseLeave={() => setHoveredInteriorImage(null)}
+                    >
+                      <Box
+                        sx={{
+                          position: "relative",
+                          width: "100%",
+                          height: "100%",
+                          transform:
+                            hoveredInteriorImage === 1
+                              ? "scale(1.15)"
+                              : "scale(1)",
+                          transition:
+                            "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                          willChange: "transform",
+                        }}
+                      >
+                        <Image
+                          src={ToyotaHiaceActiveHeadRest}
+                          alt="Active Head Rest"
+                          fill
+                          style={{ objectFit: "cover" }}
+                        />
+                      </Box>
+                    </Box>
+                    <CardContent sx={{ p: 2 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: 600,
+                          color: "#1a1a1a",
+                          textAlign: "center",
+                        }}
+                      >
+                        Active Head Rest
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        position: "relative",
+                        width: "100%",
+                        height: "300px",
+                        cursor: "zoom-in",
+                        overflow: "hidden",
+                      }}
+                      onMouseEnter={() => setHoveredInteriorImage(2)}
+                      onMouseLeave={() => setHoveredInteriorImage(null)}
+                    >
+                      <Box
+                        sx={{
+                          position: "relative",
+                          width: "100%",
+                          height: "100%",
+                          transform:
+                            hoveredInteriorImage === 2
+                              ? "scale(1.15)"
+                              : "scale(1)",
+                          transition:
+                            "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                          willChange: "transform",
+                        }}
+                      >
+                        <Image
+                          src={ToyotaHiaceSpaceComfort}
+                          alt="Space & Comfort"
+                          fill
+                          style={{ objectFit: "cover" }}
+                        />
+                      </Box>
+                    </Box>
+                    <CardContent sx={{ p: 2 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: 600,
+                          color: "#1a1a1a",
+                          textAlign: "center",
+                        }}
+                      >
+                        Space & Comfort
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        position: "relative",
+                        width: "100%",
+                        height: "300px",
+                        cursor: "zoom-in",
+                        overflow: "hidden",
+                      }}
+                      onMouseEnter={() => setHoveredInteriorImage(3)}
+                      onMouseLeave={() => setHoveredInteriorImage(null)}
+                    >
+                      <Box
+                        sx={{
+                          position: "relative",
+                          width: "100%",
+                          height: "100%",
+                          transform:
+                            hoveredInteriorImage === 3
+                              ? "scale(1.15)"
+                              : "scale(1)",
+                          transition:
+                            "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                          willChange: "transform",
+                        }}
+                      >
+                        <Image
+                          src={ToyotaHiaceRearRecliningSeats}
+                          alt="Rear Reclining Seats"
+                          fill
+                          style={{ objectFit: "cover" }}
+                        />
+                      </Box>
+                    </Box>
+                    <CardContent sx={{ p: 2 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: 600,
+                          color: "#1a1a1a",
+                          textAlign: "center",
+                        }}
+                      >
+                        Rear Reclining Seats
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        position: "relative",
+                        width: "100%",
+                        height: "250px",
+                        cursor: "zoom-in",
+                        overflow: "hidden",
+                      }}
+                      onMouseEnter={() => setHoveredInteriorImage(4)}
+                      onMouseLeave={() => setHoveredInteriorImage(null)}
+                    >
+                      <Box
+                        sx={{
+                          position: "relative",
+                          width: "100%",
+                          height: "100%",
+                          transform:
+                            hoveredInteriorImage === 4
+                              ? "scale(1.15)"
+                              : "scale(1)",
+                          transition:
+                            "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                          willChange: "transform",
+                        }}
+                      >
+                        <Image
+                          src={ToyotaHiaceDialControls}
+                          alt="Dial Controls"
+                          fill
+                          style={{ objectFit: "cover" }}
+                        />
+                      </Box>
+                    </Box>
+                    <CardContent sx={{ p: 2 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: 600,
+                          color: "#1a1a1a",
+                          textAlign: "center",
+                        }}
+                      >
+                        Dial Controls
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        position: "relative",
+                        width: "100%",
+                        height: "250px",
+                        cursor: "zoom-in",
+                        overflow: "hidden",
+                      }}
+                      onMouseEnter={() => setHoveredInteriorImage(5)}
+                      onMouseLeave={() => setHoveredInteriorImage(null)}
+                    >
+                      <Box
+                        sx={{
+                          position: "relative",
+                          width: "100%",
+                          height: "100%",
+                          transform:
+                            hoveredInteriorImage === 5
+                              ? "scale(1.15)"
+                              : "scale(1)",
+                          transition:
+                            "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                          willChange: "transform",
+                        }}
+                      >
+                        <Image
+                          src={ToyotaHiaceDualAcControl}
+                          alt="Dual A/C Control"
+                          fill
+                          style={{ objectFit: "cover" }}
+                        />
+                      </Box>
+                    </Box>
+                    <CardContent sx={{ p: 2 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: 600,
+                          color: "#1a1a1a",
+                          textAlign: "center",
+                        }}
+                      >
+                        Dual A/C Control
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        position: "relative",
+                        width: "100%",
+                        height: "250px",
+                        cursor: "zoom-in",
+                        overflow: "hidden",
+                      }}
+                      onMouseEnter={() => setHoveredInteriorImage(6)}
+                      onMouseLeave={() => setHoveredInteriorImage(null)}
+                    >
+                      <Box
+                        sx={{
+                          position: "relative",
+                          width: "100%",
+                          height: "100%",
+                          transform:
+                            hoveredInteriorImage === 6
+                              ? "scale(1.15)"
+                              : "scale(1)",
+                          transition:
+                            "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                          willChange: "transform",
+                        }}
+                      >
+                        <Image
+                          src={ToyotaHiaceDualAcVent}
+                          alt="Dual A/C with Separate Air Vent"
+                          fill
+                          style={{ objectFit: "cover" }}
+                        />
+                      </Box>
+                    </Box>
+                    <CardContent sx={{ p: 2 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: 600,
+                          color: "#1a1a1a",
+                          textAlign: "center",
+                        }}
+                      >
+                        Dual A/C with Separate Air Vent
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        position: "relative",
+                        width: "100%",
+                        height: "300px",
+                        cursor: "zoom-in",
+                        overflow: "hidden",
+                      }}
+                      onMouseEnter={() => setHoveredInteriorImage(7)}
+                      onMouseLeave={() => setHoveredInteriorImage(null)}
+                    >
+                      <Box
+                        sx={{
+                          position: "relative",
+                          width: "100%",
+                          height: "100%",
+                          transform:
+                            hoveredInteriorImage === 7
+                              ? "scale(1.15)"
+                              : "scale(1)",
+                          transition:
+                            "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                          willChange: "transform",
+                        }}
+                      >
+                        <Image
+                          src={ToyotaHiaceLowerGloveBox}
+                          alt="Lower Glove Box"
+                          fill
+                          style={{ objectFit: "cover" }}
+                        />
+                      </Box>
+                    </Box>
+                    <CardContent sx={{ p: 2 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: 600,
+                          color: "#1a1a1a",
+                          textAlign: "center",
+                        }}
+                      >
+                        Lower Glove Box
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        position: "relative",
+                        width: "100%",
+                        height: "300px",
+                        cursor: "zoom-in",
+                        overflow: "hidden",
+                      }}
+                      onMouseEnter={() => setHoveredInteriorImage(8)}
+                      onMouseLeave={() => setHoveredInteriorImage(null)}
+                    >
+                      <Box
+                        sx={{
+                          position: "relative",
+                          width: "100%",
+                          height: "100%",
+                          transform:
+                            hoveredInteriorImage === 8
+                              ? "scale(1.15)"
+                              : "scale(1)",
+                          transition:
+                            "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                          willChange: "transform",
+                        }}
+                      >
+                        <Image
+                          src={ToyotaHiaceLuggageSpace}
+                          alt="Luggage Space"
+                          fill
+                          style={{ objectFit: "cover" }}
+                        />
+                      </Box>
+                    </Box>
+                    <CardContent sx={{ p: 2 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: 600,
+                          color: "#1a1a1a",
+                          textAlign: "center",
+                        }}
+                      >
+                        Luggage Space
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+            </Box>
+          )}
 
           {/* Toyota Coaster Specifications Section */}
           {(selectedCar?.name === "Toyota Coaster" ||
             selectedCar?.name?.includes("Toyota Coaster") ||
             selectedCar?.name?.includes("Coaster")) && (
-              <Box sx={{ mt: 6 }}>
-                <Typography
-                  variant="h4"
-                  component="h2"
-                  sx={{
-                    fontWeight: "bold",
-                    color: "#1a1a1a",
-                    mb: 4,
-                    textAlign: "center",
-                  }}
-                >
-                  {t('vehicle.specifications')}
-                </Typography>
+            <Box sx={{ mt: 6 }}>
+              <Typography
+                variant="h4"
+                component="h2"
+                sx={{
+                  fontWeight: "bold",
+                  color: "#1a1a1a",
+                  mb: 4,
+                  textAlign: "center",
+                }}
+              >
+                {t("vehicle.specifications")}
+              </Typography>
 
-                <Grid container spacing={3}>
-                  {/* Overview & Dimensions */}
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        height: "100%",
-                      }}
-                    >
-                      <CardContent sx={{ p: 3 }}>
+              <Grid container spacing={3}>
+                {/* Overview & Dimensions */}
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      height: "100%",
+                    }}
+                  >
+                    <CardContent sx={{ p: 3 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#52A4C1",
+                          mb: 3,
+                          pb: 1,
+                          borderBottom: "2px solid #52A4C1",
+                        }}
+                      >
+                        Overview & Dimensions
+                      </Typography>
+                      <Box sx={{ mb: 2 }}>
                         <Typography
-                          variant="h6"
+                          variant="caption"
                           sx={{
-                            fontWeight: "bold",
-                            color: "#52A4C1",
-                            mb: 3,
-                            pb: 1,
-                            borderBottom: "2px solid #52A4C1",
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
                           }}
                         >
-                          Overview & Dimensions
+                          Model
                         </Typography>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Model
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Toyota Coaster 29 Seater F/L
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Dimensions
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            6990 x 2080 x 2635 mm
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Ground Clearance
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            185 mm
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Seating Capacity
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            29 Persons
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Kerb Weight
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            5670 KG
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Tyre Size
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            215/70/18
-                          </Typography>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-
-                  {/* Engine & Performance */}
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        height: "100%",
-                      }}
-                    >
-                      <CardContent sx={{ p: 3 }}>
                         <Typography
-                          variant="h6"
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Toyota Coaster 29 Seater F/L
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
                           sx={{
-                            fontWeight: "bold",
-                            color: "#52A4C1",
-                            mb: 3,
-                            pb: 1,
-                            borderBottom: "2px solid #52A4C1",
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
                           }}
                         >
-                          {t('vehicle.engine')} & {t('vehicle.performance')}
+                          Dimensions
                         </Typography>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Engine
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            4.0L Turbo Diesel (1GD-FTV)
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Displacement
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            4009 cc
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Horsepower
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            134 HP (100 kW)
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Torque
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            353 Nm
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Transmission
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Manual
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Fuel Type
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Diesel
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Mileage
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            7-9 KM/L
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Top Speed
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            160 KM/H
-                          </Typography>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-
-                  {/* Features & Safety */}
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        height: "100%",
-                      }}
-                    >
-                      <CardContent sx={{ p: 3 }}>
                         <Typography
-                          variant="h6"
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          6990 x 2080 x 2635 mm
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
                           sx={{
-                            fontWeight: "bold",
-                            color: "#52A4C1",
-                            mb: 3,
-                            pb: 1,
-                            borderBottom: "2px solid #52A4C1",
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
                           }}
                         >
-                          {t('vehicle.features')} & {t('vehicle.safety')}
+                          Ground Clearance
                         </Typography>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            {t('vehicle.safety')} {t('vehicle.features')}
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            2 Airbags (Driver & Front Passenger)
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            ABS (Anti-lock Brake System)
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Seat Belts with Pretensioners
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Rigid Circular Body Structure
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Comfort Features
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Rear AC Vents
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Adjustable Headlights
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Fog Lights
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Power Door Locks
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Rear Speakers
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Fuel Tank Capacity
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            95 L
-                          </Typography>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          185 mm
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Seating Capacity
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          29 Persons
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Kerb Weight
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          5670 KG
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Tyre Size
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          215/70/18
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                  </Card>
                 </Grid>
-              </Box>
-            )}
+
+                {/* Engine & Performance */}
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      height: "100%",
+                    }}
+                  >
+                    <CardContent sx={{ p: 3 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#52A4C1",
+                          mb: 3,
+                          pb: 1,
+                          borderBottom: "2px solid #52A4C1",
+                        }}
+                      >
+                        {t("vehicle.engine")} & {t("vehicle.performance")}
+                      </Typography>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Engine
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          4.0L Turbo Diesel (1GD-FTV)
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Displacement
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          4009 cc
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Horsepower
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          134 HP (100 kW)
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Torque
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          353 Nm
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Transmission
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Manual
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Fuel Type
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Diesel
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Mileage
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          7-9 KM/L
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Top Speed
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          160 KM/H
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                {/* Features & Safety */}
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      height: "100%",
+                    }}
+                  >
+                    <CardContent sx={{ p: 3 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#52A4C1",
+                          mb: 3,
+                          pb: 1,
+                          borderBottom: "2px solid #52A4C1",
+                        }}
+                      >
+                        {t("vehicle.features")} & {t("vehicle.safety")}
+                      </Typography>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          {t("vehicle.safety")} {t("vehicle.features")}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          2 Airbags (Driver & Front Passenger)
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          ABS (Anti-lock Brake System)
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Seat Belts with Pretensioners
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Rigid Circular Body Structure
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Comfort Features
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Rear AC Vents
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Adjustable Headlights
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Fog Lights
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Power Door Locks
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Rear Speakers
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Fuel Tank Capacity
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          95 L
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+            </Box>
+          )}
 
           {/* Toyota Coaster Interior Section */}
           {(selectedCar?.name === "Toyota Coaster" ||
             selectedCar?.name?.includes("Toyota Coaster") ||
             selectedCar?.name?.includes("Coaster")) && (
-              <Box sx={{ mt: 6 }}>
-                <Typography
-                  variant="h4"
-                  component="h2"
-                  sx={{
-                    fontWeight: "bold",
-                    color: "#1a1a1a",
-                    mb: 4,
-                    textAlign: "center",
-                  }}
-                >
-                  {t('vehicle.interior')} {t('vehicle.features')}
-                </Typography>
+            <Box sx={{ mt: 6 }}>
+              <Typography
+                variant="h4"
+                component="h2"
+                sx={{
+                  fontWeight: "bold",
+                  color: "#1a1a1a",
+                  mb: 4,
+                  textAlign: "center",
+                }}
+              >
+                {t("vehicle.interior")} {t("vehicle.features")}
+              </Typography>
 
-                <Grid container spacing={3}>
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <Card
+              <Grid container spacing={3}>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <Box
                       sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                        position: "relative",
+                        width: "100%",
+                        height: "300px",
+                        cursor: "zoom-in",
                         overflow: "hidden",
                       }}
+                      onMouseEnter={() => setHoveredInteriorImage(9)}
+                      onMouseLeave={() => setHoveredInteriorImage(null)}
                     >
                       <Box
                         sx={{
                           position: "relative",
                           width: "100%",
-                          height: "300px",
-                          cursor: "zoom-in",
-                          overflow: "hidden",
+                          height: "100%",
+                          transform:
+                            hoveredInteriorImage === 9
+                              ? "scale(1.15)"
+                              : "scale(1)",
+                          transition:
+                            "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                          willChange: "transform",
                         }}
-                        onMouseEnter={() => setHoveredInteriorImage(9)}
-                        onMouseLeave={() => setHoveredInteriorImage(null)}
                       >
-                        <Box
-                          sx={{
-                            position: "relative",
-                            width: "100%",
-                            height: "100%",
-                            transform:
-                              hoveredInteriorImage === 9
-                                ? "scale(1.15)"
-                                : "scale(1)",
-                            transition:
-                              "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-                            willChange: "transform",
-                          }}
-                        >
-                          <Image
-                            src={ToyotaCoasterInterior}
-                            alt="Interior"
-                            fill
-                            style={{ objectFit: "cover" }}
-                          />
-                        </Box>
+                        <Image
+                          src={ToyotaCoasterInterior}
+                          alt="Interior"
+                          fill
+                          style={{ objectFit: "cover" }}
+                        />
                       </Box>
-                      <CardContent sx={{ p: 2 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontWeight: 600,
-                            color: "#1a1a1a",
-                            textAlign: "center",
-                          }}
-                        >
-                          {t('vehicle.interior')}
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <Box
+                    </Box>
+                    <CardContent sx={{ p: 2 }}>
+                      <Typography
+                        variant="body2"
                         sx={{
-                          position: "relative",
-                          width: "100%",
-                          height: "300px",
-                          cursor: "zoom-in",
-                          overflow: "hidden",
+                          fontWeight: 600,
+                          color: "#1a1a1a",
+                          textAlign: "center",
                         }}
-                        onMouseEnter={() => setHoveredInteriorImage(10)}
-                        onMouseLeave={() => setHoveredInteriorImage(null)}
                       >
-                        <Box
-                          sx={{
-                            position: "relative",
-                            width: "100%",
-                            height: "100%",
-                            transform:
-                              hoveredInteriorImage === 10
-                                ? "scale(1.15)"
-                                : "scale(1)",
-                            transition:
-                              "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-                            willChange: "transform",
-                          }}
-                        >
-                          <Image
-                            src={ToyotaCoasterAccommodate}
-                            alt="Made to Accommodate"
-                            fill
-                            style={{ objectFit: "cover" }}
-                          />
-                        </Box>
-                      </Box>
-                      <CardContent sx={{ p: 2 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontWeight: 600,
-                            color: "#1a1a1a",
-                            textAlign: "center",
-                          }}
-                        >
-                          Made to Accommodate
-                        </Typography>
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            color: "#757575",
-                            textAlign: "center",
-                            display: "block",
-                            mt: 0.5,
-                          }}
-                        >
-                          Seats up to 30 people comfortably with high roof and
-                          wide body
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          position: "relative",
-                          width: "100%",
-                          height: "300px",
-                          cursor: "zoom-in",
-                          overflow: "hidden",
-                        }}
-                        onMouseEnter={() => setHoveredInteriorImage(11)}
-                        onMouseLeave={() => setHoveredInteriorImage(null)}
-                      >
-                        <Box
-                          sx={{
-                            position: "relative",
-                            width: "100%",
-                            height: "100%",
-                            transform:
-                              hoveredInteriorImage === 11
-                                ? "scale(1.15)"
-                                : "scale(1)",
-                            transition:
-                              "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-                            willChange: "transform",
-                          }}
-                        >
-                          <Image
-                            src={ToyotaCoasterCreatureComforts}
-                            alt="Creature Comforts"
-                            fill
-                            style={{ objectFit: "cover" }}
-                          />
-                        </Box>
-                      </Box>
-                      <CardContent sx={{ p: 2 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontWeight: 600,
-                            color: "#1a1a1a",
-                            textAlign: "center",
-                          }}
-                        >
-                          Creature Comforts
-                        </Typography>
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            color: "#757575",
-                            textAlign: "center",
-                            display: "block",
-                            mt: 0.5,
-                          }}
-                        >
-                          Large, comfortable seats with individual adjustable
-                          air-conditioning vents
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          position: "relative",
-                          width: "100%",
-                          height: "300px",
-                          cursor: "zoom-in",
-                          overflow: "hidden",
-                        }}
-                        onMouseEnter={() => setHoveredInteriorImage(12)}
-                        onMouseLeave={() => setHoveredInteriorImage(null)}
-                      >
-                        <Box
-                          sx={{
-                            position: "relative",
-                            width: "100%",
-                            height: "100%",
-                            transform:
-                              hoveredInteriorImage === 12
-                                ? "scale(1.15)"
-                                : "scale(1)",
-                            transition:
-                              "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-                            willChange: "transform",
-                          }}
-                        >
-                          <Image
-                            src={ToyotaCoasterEasierBoarding}
-                            alt="Easier Boarding"
-                            fill
-                            style={{ objectFit: "cover" }}
-                          />
-                        </Box>
-                      </Box>
-                      <CardContent sx={{ p: 2 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontWeight: 600,
-                            color: "#1a1a1a",
-                            textAlign: "center",
-                          }}
-                        >
-                          Easier Boarding
-                        </Typography>
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            color: "#757575",
-                            textAlign: "center",
-                            display: "block",
-                            mt: 0.5,
-                          }}
-                        >
-                          Deep and large doorstep allows passengers to board more
-                          easily and safely
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          position: "relative",
-                          width: "100%",
-                          height: "300px",
-                          cursor: "zoom-in",
-                          overflow: "hidden",
-                        }}
-                        onMouseEnter={() => setHoveredInteriorImage(13)}
-                        onMouseLeave={() => setHoveredInteriorImage(null)}
-                      >
-                        <Box
-                          sx={{
-                            position: "relative",
-                            width: "100%",
-                            height: "100%",
-                            transform:
-                              hoveredInteriorImage === 13
-                                ? "scale(1.15)"
-                                : "scale(1)",
-                            transition:
-                              "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-                            willChange: "transform",
-                          }}
-                        >
-                          <Image
-                            src={ToyotaCoasterEfficientSteering}
-                            alt="Efficient Steering"
-                            fill
-                            style={{ objectFit: "cover" }}
-                          />
-                        </Box>
-                      </Box>
-                      <CardContent sx={{ p: 2 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontWeight: 600,
-                            color: "#1a1a1a",
-                            textAlign: "center",
-                          }}
-                        >
-                          Efficient Steering
-                        </Typography>
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            color: "#757575",
-                            textAlign: "center",
-                            display: "block",
-                            mt: 0.5,
-                          }}
-                        >
-                          Power steering and five-speed manual transmission for
-                          easy and comfortable driving
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
+                        {t("vehicle.interior")}
+                      </Typography>
+                    </CardContent>
+                  </Card>
                 </Grid>
-              </Box>
-            )}
+
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        position: "relative",
+                        width: "100%",
+                        height: "300px",
+                        cursor: "zoom-in",
+                        overflow: "hidden",
+                      }}
+                      onMouseEnter={() => setHoveredInteriorImage(10)}
+                      onMouseLeave={() => setHoveredInteriorImage(null)}
+                    >
+                      <Box
+                        sx={{
+                          position: "relative",
+                          width: "100%",
+                          height: "100%",
+                          transform:
+                            hoveredInteriorImage === 10
+                              ? "scale(1.15)"
+                              : "scale(1)",
+                          transition:
+                            "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                          willChange: "transform",
+                        }}
+                      >
+                        <Image
+                          src={ToyotaCoasterAccommodate}
+                          alt="Made to Accommodate"
+                          fill
+                          style={{ objectFit: "cover" }}
+                        />
+                      </Box>
+                    </Box>
+                    <CardContent sx={{ p: 2 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: 600,
+                          color: "#1a1a1a",
+                          textAlign: "center",
+                        }}
+                      >
+                        Made to Accommodate
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          color: "#757575",
+                          textAlign: "center",
+                          display: "block",
+                          mt: 0.5,
+                        }}
+                      >
+                        Seats up to 30 people comfortably with high roof and
+                        wide body
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        position: "relative",
+                        width: "100%",
+                        height: "300px",
+                        cursor: "zoom-in",
+                        overflow: "hidden",
+                      }}
+                      onMouseEnter={() => setHoveredInteriorImage(11)}
+                      onMouseLeave={() => setHoveredInteriorImage(null)}
+                    >
+                      <Box
+                        sx={{
+                          position: "relative",
+                          width: "100%",
+                          height: "100%",
+                          transform:
+                            hoveredInteriorImage === 11
+                              ? "scale(1.15)"
+                              : "scale(1)",
+                          transition:
+                            "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                          willChange: "transform",
+                        }}
+                      >
+                        <Image
+                          src={ToyotaCoasterCreatureComforts}
+                          alt="Creature Comforts"
+                          fill
+                          style={{ objectFit: "cover" }}
+                        />
+                      </Box>
+                    </Box>
+                    <CardContent sx={{ p: 2 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: 600,
+                          color: "#1a1a1a",
+                          textAlign: "center",
+                        }}
+                      >
+                        Creature Comforts
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          color: "#757575",
+                          textAlign: "center",
+                          display: "block",
+                          mt: 0.5,
+                        }}
+                      >
+                        Large, comfortable seats with individual adjustable
+                        air-conditioning vents
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        position: "relative",
+                        width: "100%",
+                        height: "300px",
+                        cursor: "zoom-in",
+                        overflow: "hidden",
+                      }}
+                      onMouseEnter={() => setHoveredInteriorImage(12)}
+                      onMouseLeave={() => setHoveredInteriorImage(null)}
+                    >
+                      <Box
+                        sx={{
+                          position: "relative",
+                          width: "100%",
+                          height: "100%",
+                          transform:
+                            hoveredInteriorImage === 12
+                              ? "scale(1.15)"
+                              : "scale(1)",
+                          transition:
+                            "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                          willChange: "transform",
+                        }}
+                      >
+                        <Image
+                          src={ToyotaCoasterEasierBoarding}
+                          alt="Easier Boarding"
+                          fill
+                          style={{ objectFit: "cover" }}
+                        />
+                      </Box>
+                    </Box>
+                    <CardContent sx={{ p: 2 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: 600,
+                          color: "#1a1a1a",
+                          textAlign: "center",
+                        }}
+                      >
+                        Easier Boarding
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          color: "#757575",
+                          textAlign: "center",
+                          display: "block",
+                          mt: 0.5,
+                        }}
+                      >
+                        Deep and large doorstep allows passengers to board more
+                        easily and safely
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        position: "relative",
+                        width: "100%",
+                        height: "300px",
+                        cursor: "zoom-in",
+                        overflow: "hidden",
+                      }}
+                      onMouseEnter={() => setHoveredInteriorImage(13)}
+                      onMouseLeave={() => setHoveredInteriorImage(null)}
+                    >
+                      <Box
+                        sx={{
+                          position: "relative",
+                          width: "100%",
+                          height: "100%",
+                          transform:
+                            hoveredInteriorImage === 13
+                              ? "scale(1.15)"
+                              : "scale(1)",
+                          transition:
+                            "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                          willChange: "transform",
+                        }}
+                      >
+                        <Image
+                          src={ToyotaCoasterEfficientSteering}
+                          alt="Efficient Steering"
+                          fill
+                          style={{ objectFit: "cover" }}
+                        />
+                      </Box>
+                    </Box>
+                    <CardContent sx={{ p: 2 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: 600,
+                          color: "#1a1a1a",
+                          textAlign: "center",
+                        }}
+                      >
+                        Efficient Steering
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          color: "#757575",
+                          textAlign: "center",
+                          display: "block",
+                          mt: 0.5,
+                        }}
+                      >
+                        Power steering and five-speed manual transmission for
+                        easy and comfortable driving
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+            </Box>
+          )}
 
           {/* Chinese Bus 49 Seater Specifications Section */}
           {(selectedCar?.name === "Coach 49 Seats" ||
             selectedCar?.name?.includes("Coach 49 Seats") ||
             selectedCar?.name?.includes("Coach 49 Seats") ||
             selectedCar?.name?.includes("49 Seater")) && (
-              <Box sx={{ mt: 6 }}>
-                <Typography
-                  variant="h4"
-                  component="h2"
-                  sx={{
-                    fontWeight: "bold",
-                    color: "#1a1a1a",
-                    mb: 4,
-                    textAlign: "center",
-                  }}
-                >
-                  {t('vehicle.specifications')}
-                </Typography>
+            <Box sx={{ mt: 6 }}>
+              <Typography
+                variant="h4"
+                component="h2"
+                sx={{
+                  fontWeight: "bold",
+                  color: "#1a1a1a",
+                  mb: 4,
+                  textAlign: "center",
+                }}
+              >
+                {t("vehicle.specifications")}
+              </Typography>
 
-                <Grid container spacing={3}>
-                  {/* Overview & Dimensions */}
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        height: "100%",
-                      }}
-                    >
-                      <CardContent sx={{ p: 3 }}>
+              <Grid container spacing={3}>
+                {/* Overview & Dimensions */}
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      height: "100%",
+                    }}
+                  >
+                    <CardContent sx={{ p: 3 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#52A4C1",
+                          mb: 3,
+                          pb: 1,
+                          borderBottom: "2px solid #52A4C1",
+                        }}
+                      >
+                        Overview & Dimensions
+                      </Typography>
+                      <Box sx={{ mb: 2 }}>
                         <Typography
-                          variant="h6"
+                          variant="caption"
                           sx={{
-                            fontWeight: "bold",
-                            color: "#52A4C1",
-                            mb: 3,
-                            pb: 1,
-                            borderBottom: "2px solid #52A4C1",
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
                           }}
                         >
-                          Overview & Dimensions
+                          Model
                         </Typography>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Model
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Chinese Bus 49 Seater
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Seating Capacity
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            49 Persons
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Body Type
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Luxury Coach Bus
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Dimensions (L x W x H)
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            ~12000 x 2500 x 3600 mm
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Ground Clearance
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            ~200 mm
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Gross Vehicle Weight
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            ~18000 KG
-                          </Typography>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-
-                  {/* Engine & Performance */}
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        height: "100%",
-                      }}
-                    >
-                      <CardContent sx={{ p: 3 }}>
                         <Typography
-                          variant="h6"
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Chinese Bus 49 Seater
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
                           sx={{
-                            fontWeight: "bold",
-                            color: "#52A4C1",
-                            mb: 3,
-                            pb: 1,
-                            borderBottom: "2px solid #52A4C1",
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
                           }}
                         >
-                          {t('vehicle.engine')} & {t('vehicle.performance')}
+                          Seating Capacity
                         </Typography>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Engine Type
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Turbo Diesel
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Displacement
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            ~6000-8000 cc
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Horsepower
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            ~250-350 HP
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Transmission
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Manual Transmission
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Fuel Type
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Diesel
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Fuel Tank Capacity
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            ~200-250 L
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Top Speed
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            ~120-140 KM/H
-                          </Typography>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-
-                  {/* Features & Safety */}
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <Card
-                      sx={{
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        height: "100%",
-                      }}
-                    >
-                      <CardContent sx={{ p: 3 }}>
                         <Typography
-                          variant="h6"
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          49 Persons
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
                           sx={{
-                            fontWeight: "bold",
-                            color: "#52A4C1",
-                            mb: 3,
-                            pb: 1,
-                            borderBottom: "2px solid #52A4C1",
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
                           }}
                         >
-                          {t('vehicle.features')} & {t('vehicle.safety')}
+                          Body Type
                         </Typography>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            {t('vehicle.safety')} {t('vehicle.features')}
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            ABS (Anti-lock Brake System)
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Airbags (Driver & Front)
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Seat Belts for All Passengers
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Emergency Exits
-                          </Typography>
-                        </Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Comfort Features
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Air Conditioning System
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Reclining Seats
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Overhead Storage
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Reading Lights
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Audio/Video System
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#757575",
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Additional Features
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Power Steering
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Large Windows
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#1a1a1a", mt: 0.5 }}
-                          >
-                            Luggage Compartment
-                          </Typography>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Luxury Coach Bus
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Dimensions (L x W x H)
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          ~12000 x 2500 x 3600 mm
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Ground Clearance
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          ~200 mm
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Gross Vehicle Weight
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          ~18000 KG
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                  </Card>
                 </Grid>
-              </Box>
-            )}
+
+                {/* Engine & Performance */}
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      height: "100%",
+                    }}
+                  >
+                    <CardContent sx={{ p: 3 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#52A4C1",
+                          mb: 3,
+                          pb: 1,
+                          borderBottom: "2px solid #52A4C1",
+                        }}
+                      >
+                        {t("vehicle.engine")} & {t("vehicle.performance")}
+                      </Typography>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Engine Type
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Turbo Diesel
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Displacement
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          ~6000-8000 cc
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Horsepower
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          ~250-350 HP
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Transmission
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Manual Transmission
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Fuel Type
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Diesel
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Fuel Tank Capacity
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          ~200-250 L
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Top Speed
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          ~120-140 KM/H
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                {/* Features & Safety */}
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Card
+                    sx={{
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      height: "100%",
+                    }}
+                  >
+                    <CardContent sx={{ p: 3 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#52A4C1",
+                          mb: 3,
+                          pb: 1,
+                          borderBottom: "2px solid #52A4C1",
+                        }}
+                      >
+                        {t("vehicle.features")} & {t("vehicle.safety")}
+                      </Typography>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          {t("vehicle.safety")} {t("vehicle.features")}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          ABS (Anti-lock Brake System)
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Airbags (Driver & Front)
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Seat Belts for All Passengers
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Emergency Exits
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Comfort Features
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Air Conditioning System
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Reclining Seats
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Overhead Storage
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Reading Lights
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Audio/Video System
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#757575",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Additional Features
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Power Steering
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Large Windows
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "#1a1a1a", mt: 0.5 }}
+                        >
+                          Luggage Compartment
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+            </Box>
+          )}
         </Container>
       </Box>
 
