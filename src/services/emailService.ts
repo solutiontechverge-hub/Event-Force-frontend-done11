@@ -150,43 +150,55 @@ export const sendBookingEmail = async (formData: BookingFormData): Promise<void>
 
   try {
     const reservationNumber = formData.reservationNumber || 'PENDING';
-    const templateParams = {
-      full_name: formData.fullName,
-      email: formData.email,
-      phone: `${formData.phone} ${formData.phone}`,
-      car: formData.selectedCar,
+const templateParams = {
+  full_name: formData.fullName,
+  email: formData.email,
+  phone: formData.phone,
+  car: formData.selectedCar,
 
-      service_type: formData.serviceType,
-      pickup_location: formData.pickupLocation || 'Not specified',
-      destination: formData.destination || 'Not specified',
-      pickup_date: formData.pickupDate || 'Not specified',
-      pickup_time: getTimeFromDateTime(formData.pickupDate),
+  service_type: formData.serviceType,
+  pickup_location: formData.pickupLocation || "",
+  destination: formData.destination || "",
 
-      flight_no: formData.returnDate || 'Not specified',
+  pickup_date: formData.pickupDate
+    ? formData.pickupDate.split("T")[0]
+    : "",
 
-      reservation_number: reservationNumber,
-      to_email: 'reservations@eventforce.sa.com',
-      reply_to: formData.email,
-    };
+  pickup_time: formData.pickupDate
+    ? getTimeFromDateTime(formData.pickupDate)
+    : "",
 
-    const templateParamsUser = {
-      full_name: formData.fullName,
-      email: formData.email,
-      phone: `${formData.phone} ${formData.phone}`,
-      car: formData.selectedCar,
+  flight_no: formData.returnDate || "",
+  reservation_number: reservationNumber,
+  to_email: 'reservations@eventforce.sa.com',
+  reply_to: formData.email,
+};
 
-      service_type: formData.serviceType,
-      pickup_location: formData.pickupLocation || 'Not specified',
-      destination: formData.destination || 'Not specified',
-      pickup_date: formData.pickupDate || 'Not specified',
-      pickup_time: getTimeFromDateTime(formData.pickupDate),
 
-      flight_no: formData.returnDate || 'Not specified',
+   const templateParamsUser = {
+  full_name: formData.fullName,
+  email: formData.email,
+  phone: formData.phone,
+  car: formData.selectedCar,
 
-      reservation_number: reservationNumber,
-      to_email: 'reservations@eventforce.sa.com',
-      reply_to: 'reservations@eventforce.sa.com',
-    };
+  service_type: formData.serviceType,
+  pickup_location: formData.pickupLocation || "",
+  destination: formData.destination || "",
+
+  pickup_date: formData.pickupDate
+    ? formData.pickupDate.split("T")[0]
+    : "",
+
+  pickup_time: formData.pickupDate
+    ? getTimeFromDateTime(formData.pickupDate)
+    : "",
+
+  flight_no: formData.returnDate || "",
+  reservation_number: reservationNumber,
+  to_email: 'reservations@eventforce.sa.com',
+  reply_to: formData.email,
+};
+
 
     // Send admin email
     let adminEmailSuccess = false;

@@ -85,6 +85,7 @@ import "react-phone-number-input/style.css";
 import { isValidPhoneNumber } from "libphonenumber-js";
 
 import { useAuth } from "@/contexts/AuthContext";
+import PickupDestinationSingleFlow from "./PickupDropoffMap";
 
 interface Car {
   name: string;
@@ -794,16 +795,16 @@ const ManageBookingClient = () => {
     //   });
     //   return;
     // }
-const userEmail = auth.currentUser?.email;
+    const userEmail = auth.currentUser?.email;
 
-if (!userEmail) {
-  setSnackbar({
-    open: true,
-    message: "User email not found. Please login again.",
-    severity: "error",
-  });
-  return;
-}
+    if (!userEmail) {
+      setSnackbar({
+        open: true,
+        message: "User email not found. Please login again.",
+        severity: "error",
+      });
+      return;
+    }
 
     /* ✅ PHONE VALIDATION (country code + number) */
     // const fullPhone = `${formData.phone}`;
@@ -815,16 +816,16 @@ if (!userEmail) {
     //   });
     //   return;
     // }
-const fullPhone = phone;
+    const fullPhone = phone;
 
-if (!fullPhone || fullPhone.length < 8) {
-  setSnackbar({
-    open: true,
-    message: "Please enter a valid phone number",
-    severity: "error",
-  });
-  return;
-}
+    if (!fullPhone || fullPhone.length < 8) {
+      setSnackbar({
+        open: true,
+        message: "Please enter a valid phone number",
+        severity: "error",
+      });
+      return;
+    }
 
     setIsSubmitting(true);
 
@@ -865,12 +866,11 @@ if (!fullPhone || fullPhone.length < 8) {
       /* 📧 EMAIL */
       // await sendBookingEmail(formData);
       await sendBookingEmail({
-  ...formData,
-  email: userEmail,
-  phone: phone,
-  fullName: name,
-});
-
+        ...formData,
+        email: userEmail,
+        phone: phone,
+        fullName: name,
+      });
 
       setSnackbar({
         open: true,
@@ -1971,7 +1971,21 @@ if (!fullPhone || fullPhone.length < 8) {
                       </FormControl>
                     </Box>
 
-                    <PickupDropoffMap />
+                    {/* <PickupDropoffMap /> */}
+                    <PickupDestinationSingleFlow
+                      setPickupLocation={(value) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          pickupLocation: value,
+                        }))
+                      }
+                      setDestinationLocation={(value) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          destination: value,
+                        }))
+                      }
+                    />
 
                     {/* )} */}
 

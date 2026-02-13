@@ -21,7 +21,10 @@ interface MapLocation extends BaseLocation {
 type Location = BaseLocation | MapLocation;
 type LocationMode = "" | "map" | string;
 
-type SetLocationFn = React.Dispatch<React.SetStateAction<Location | null>>;
+interface Props {
+  setPickupLocation: (value: string) => void;
+  setDestinationLocation: (value: string) => void;
+}
 
 /* ================= CONSTANTS ================= */
 
@@ -41,32 +44,12 @@ const PRESET_LOCATIONS: string[] = [
 const isMapLocation = (loc: Location | null): loc is MapLocation =>
   !!loc && typeof (loc as MapLocation).lat === "number";
 
-/* ================= HELPERS ================= */
-
-const getCurrentLocation = (setLocation: SetLocationFn): void => {
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      const lat = pos.coords.latitude;
-      const lng = pos.coords.longitude;
-
-      const geocoder = new window.google.maps.Geocoder();
-      geocoder.geocode({ location: { lat, lng } }, (results) => {
-        if (results?.[0]) {
-          setLocation({
-            address: results[0].formatted_address,
-            lat,
-            lng,
-          });
-        }
-      });
-    },
-    () => alert("Location permission denied"),
-  );
-};
-
 /* ================= COMPONENT ================= */
 
-const PickupDestinationSingleFlow: React.FC = () => {
+const PickupDestinationSingleFlow: React.FC<Props> = ({
+  setPickupLocation,
+  setDestinationLocation,
+}) => {
   const pickupRef = useRef<google.maps.places.Autocomplete | null>(null);
   const destRef = useRef<google.maps.places.Autocomplete | null>(null);
 
@@ -76,13 +59,39 @@ const PickupDestinationSingleFlow: React.FC = () => {
   const [pickup, setPickup] = useState<Location | null>(null);
   const [destination, setDestination] = useState<Location | null>(null);
 
+  /* ================= CURRENT LOCATION ================= */
+
+  const getCurrentLocation = () => {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+
+        const geocoder = new window.google.maps.Geocoder();
+        geocoder.geocode({ location: { lat, lng } }, (results) => {
+          if (results?.[0]) {
+            const address = results[0].formatted_address;
+
+            setPickup({
+              address,
+              lat,
+              lng,
+            });
+
+            setPickupLocation(address); // ✅ parent update
+          }
+        });
+      },
+      () => alert("Location permission denied")
+    );
+  };
+
+  /* ================= MAP CENTER ================= */
+
   const mapCenter = (() => {
-    if (isMapLocation(pickup)) {
-      return { lat: pickup.lat, lng: pickup.lng };
-    }
-    if (isMapLocation(destination)) {
+    if (isMapLocation(pickup)) return { lat: pickup.lat, lng: pickup.lng };
+    if (isMapLocation(destination))
       return { lat: destination.lat, lng: destination.lng };
-    }
     return null;
   })();
 
@@ -95,31 +104,26 @@ const PickupDestinationSingleFlow: React.FC = () => {
       <Box sx={{ mb: 3 }}>
         <Typography
           variant="body2"
-          sx={{
-            fontWeight: "bold",
-            mb: 1,
-            color: "#333",
-            fontSize: "0.875rem",
-          }}
+          sx={{ fontWeight: "bold", mb: 1 }}
         >
           Pickup Location *
         </Typography>
 
         <TextField
-          sx={{
-            "& .MuiOutlinedInput-root": {
-              borderRadius: "8px",
-              backgroundColor: "#F8F8F8",
-            },
-          }}
           select
           fullWidth
           size="small"
           value={pickupMode}
           onChange={(e) => {
-            const v = e.target.value as LocationMode;
-            setPickupMode(v);
-            setPickup(v === "map" ? null : { address: v });
+            const value = e.target.value as LocationMode;
+            setPickupMode(value);
+
+            if (value !== "map") {
+              setPickup({ address: value });
+              setPickupLocation(value); // ✅ update parent
+            } else {
+              setPickup(null);
+            }
           }}
         >
           <MenuItem value="" disabled>
@@ -132,29 +136,39 @@ const PickupDestinationSingleFlow: React.FC = () => {
             </MenuItem>
           ))}
 
-          <MenuItem value="map">🔍 Search on Google Map</MenuItem>
+          <MenuItem value="map">
+            🔍 Search on Google Map
+          </MenuItem>
         </TextField>
       </Box>
 
       {pickupMode === "map" && (
         <Box sx={{ mb: 3 }}>
           <Autocomplete
-            onLoad={(r) => (pickupRef.current = r)}
+            onLoad={(ref) => (pickupRef.current = ref)}
             onPlaceChanged={() => {
               const place = pickupRef.current?.getPlace();
               if (!place?.geometry?.location) return;
 
+              const address = place.formatted_address || "";
+
               setPickup({
-                address: place.formatted_address || "",
+                address,
                 lat: place.geometry.location.lat(),
                 lng: place.geometry.location.lng(),
               });
+
+              setPickupLocation(address); // ✅ parent update
             }}
           >
-            <TextField fullWidth size="small" placeholder="Search pickup" />
+            <TextField
+              fullWidth
+              size="small"
+              placeholder="Search pickup"
+            />
           </Autocomplete>
 
-          <Button onClick={() => getCurrentLocation(setPickup)}>
+          <Button onClick={getCurrentLocation}>
             📍 Use my location
           </Button>
         </Box>
@@ -164,31 +178,26 @@ const PickupDestinationSingleFlow: React.FC = () => {
       <Box sx={{ mb: 3 }}>
         <Typography
           variant="body2"
-          sx={{
-            fontWeight: "bold",
-            mb: 1,
-            color: "#333",
-            fontSize: "0.875rem",
-          }}
+          sx={{ fontWeight: "bold", mb: 1 }}
         >
           Destination *
         </Typography>
 
         <TextField
-          sx={{
-            "& .MuiOutlinedInput-root": {
-              borderRadius: "8px",
-              backgroundColor: "#F8F8F8",
-            },
-          }}
           select
           fullWidth
           size="small"
           value={destMode}
           onChange={(e) => {
-            const v = e.target.value as LocationMode;
-            setDestMode(v);
-            setDestination(v === "map" ? null : { address: v });
+            const value = e.target.value as LocationMode;
+            setDestMode(value);
+
+            if (value !== "map") {
+              setDestination({ address: value });
+              setDestinationLocation(value); // ✅ FIXED
+            } else {
+              setDestination(null);
+            }
           }}
         >
           <MenuItem value="" disabled>
@@ -201,25 +210,35 @@ const PickupDestinationSingleFlow: React.FC = () => {
             </MenuItem>
           ))}
 
-          <MenuItem value="map">🔍 Search on Google Map</MenuItem>
+          <MenuItem value="map">
+            🔍 Search on Google Map
+          </MenuItem>
         </TextField>
       </Box>
 
       {destMode === "map" && (
         <Autocomplete
-          onLoad={(r) => (destRef.current = r)}
+          onLoad={(ref) => (destRef.current = ref)}
           onPlaceChanged={() => {
             const place = destRef.current?.getPlace();
             if (!place?.geometry?.location) return;
 
+            const address = place.formatted_address || "";
+
             setDestination({
-              address: place.formatted_address || "",
+              address,
               lat: place.geometry.location.lat(),
               lng: place.geometry.location.lng(),
             });
+
+            setDestinationLocation(address); // ✅ FIXED
           }}
         >
-          <TextField fullWidth size="small" placeholder="Search destination" />
+          <TextField
+            fullWidth
+            size="small"
+            placeholder="Search destination"
+          />
         </Autocomplete>
       )}
 
@@ -228,10 +247,16 @@ const PickupDestinationSingleFlow: React.FC = () => {
         <GoogleMap
           zoom={12}
           center={mapCenter}
-          mapContainerStyle={{ height: "280px", width: "100%" }}
+          mapContainerStyle={{
+            height: "280px",
+            width: "100%",
+          }}
         >
           {isMapLocation(pickup) && (
-            <Marker position={{ lat: pickup.lat, lng: pickup.lng }} label="P" />
+            <Marker
+              position={{ lat: pickup.lat, lng: pickup.lng }}
+              label="P"
+            />
           )}
 
           {isMapLocation(destination) && (
