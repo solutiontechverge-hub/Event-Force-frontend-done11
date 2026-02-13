@@ -785,26 +785,46 @@ const ManageBookingClient = () => {
     }
 
     /* ✅ EMAIL VALIDATION */
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      setSnackbar({
-        open: true,
-        message: "Please enter a valid email address",
-        severity: "error",
-      });
-      return;
-    }
+    // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // if (!emailRegex.test(formData.email)) {
+    //   setSnackbar({
+    //     open: true,
+    //     message: "Please enter a valid email address",
+    //     severity: "error",
+    //   });
+    //   return;
+    // }
+const userEmail = auth.currentUser?.email;
+
+if (!userEmail) {
+  setSnackbar({
+    open: true,
+    message: "User email not found. Please login again.",
+    severity: "error",
+  });
+  return;
+}
 
     /* ✅ PHONE VALIDATION (country code + number) */
-    const fullPhone = `${formData.phone}`;
-    if (!isValidPhoneNumber(fullPhone)) {
-      setSnackbar({
-        open: true,
-        message: "Please enter a valid phone number",
-        severity: "error",
-      });
-      return;
-    }
+    // const fullPhone = `${formData.phone}`;
+    // if (!isValidPhoneNumber(fullPhone)) {
+    //   setSnackbar({
+    //     open: true,
+    //     message: "Please enter a valid phone number",
+    //     severity: "error",
+    //   });
+    //   return;
+    // }
+const fullPhone = phone;
+
+if (!fullPhone || fullPhone.length < 8) {
+  setSnackbar({
+    open: true,
+    message: "Please enter a valid phone number",
+    severity: "error",
+  });
+  return;
+}
 
     setIsSubmitting(true);
 
@@ -829,7 +849,8 @@ const ManageBookingClient = () => {
       await addDoc(collection(db, "bookings"), {
         userId: auth.currentUser.uid,
         fullName: formData.fullName,
-        email: formData.email,
+        email: userEmail,
+
         phone: fullPhone, // ✅ validated phone
         car: displayCar.name,
         serviceType: formData.serviceType,
@@ -842,7 +863,14 @@ const ManageBookingClient = () => {
       });
 
       /* 📧 EMAIL */
-      await sendBookingEmail(formData);
+      // await sendBookingEmail(formData);
+      await sendBookingEmail({
+  ...formData,
+  email: userEmail,
+  phone: phone,
+  fullName: name,
+});
+
 
       setSnackbar({
         open: true,

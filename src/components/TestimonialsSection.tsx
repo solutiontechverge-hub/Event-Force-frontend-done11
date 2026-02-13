@@ -46,7 +46,7 @@ const TestimonialsSection = () => {
       quoteColor: '#52A4C1'
     },
     {
-      name: 'Sarah Johnson',
+      name: 'Ali Al-Sayed',
       quote: 'The team at EventForce went above and beyond for our company retreat. Professional drivers, immaculate vehicles, and excellent communication throughout. Will definitely use them again!',
       image: ClientAliAhmad, // Reusing existing image for now
       borderColor: '#67B6B2',
