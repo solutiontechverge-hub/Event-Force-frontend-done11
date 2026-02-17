@@ -396,24 +396,27 @@ const FleetSection = () => {
                         </Box>
 
                         {/* Book Now Button */}
-                        <Button
-                          component={Link}
-                          href="/manage-booking"
-                          variant="contained"
-                          fullWidth
-                          sx={{
-                            backgroundColor: THEME.colors.primary,
-                            borderRadius: 2,
-                            py: 1.5,
-                            fontWeight: "bold",
-                            textTransform: "none",
-                            "&:hover": {
-                              backgroundColor: THEME.colors.primaryDark,
-                            },
-                          }}
-                        >
-                          {t("fleet.bookNow")}
-                        </Button>
+<Button
+  variant="contained"
+  fullWidth
+  onClick={() => {
+    const vehicleId = car.name.toLowerCase().replace(/\s+/g, "-");
+
+    window.location.href = `/manage-booking?car=${vehicleId}&from=fleet`;
+  }}
+  sx={{
+    backgroundColor: THEME.colors.primary,
+    borderRadius: 2,
+    py: 1.5,
+    fontWeight: "bold",
+    textTransform: "none",
+    "&:hover": {
+      backgroundColor: THEME.colors.primaryDark,
+    },
+  }}
+>
+  {t("fleet.bookNow")}
+</Button>
                       </CardContent>
                     </Card>
                   </Box>
