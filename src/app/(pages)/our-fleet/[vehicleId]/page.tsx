@@ -14,7 +14,6 @@ import {
   CardContent,
   Skeleton,
 } from "@mui/material";
-import { ArrowBack as ArrowBackIcon } from "@mui/icons-material";
 import Image from "next/image";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -90,6 +89,7 @@ import {
   ToyotaCoasterEfficientSteering,
 } from "../../../../../public/images";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { ArrowBack } from "@mui/icons-material";
 
 interface Car {
   name: string;
@@ -226,35 +226,35 @@ const VehicleDetailsPage = () => {
     (car) => car.name.toLowerCase() === vehicleName?.toLowerCase(),
   );
 
-  const handleBookNow = () => {
-    if (selectedCar) {
-      const colorOptions = getColorOptions();
-      const selectedColorOption = colorOptions[selectedColor];
-      const imageToUse = selectedColorOption?.image || selectedCar?.image;
+const handleBookNow = () => {
+  if (!selectedCar) return;
 
-      // Get image source - handle both imported images and string paths
-      let imageSrc = "";
-      if (imageToUse) {
-        if (typeof imageToUse === "string") {
-          imageSrc = imageToUse;
-        } else if (imageToUse.src) {
-          imageSrc = imageToUse.src;
-        } else if (imageToUse.default) {
-          imageSrc = imageToUse.default.src || imageToUse.default;
-        }
-      }
+  const colorOptions = getColorOptions();
+  const selectedColorOption = colorOptions[selectedColor];
+  const imageToUse = selectedColorOption?.image || selectedCar?.image;
 
-      const params = new URLSearchParams({
-        car: selectedCar.name.toLowerCase().replace(/\s+/g, "-"),
-        price: selectedCar.price,
-        duration: selectedCar.duration,
-        colorIndex: selectedColor.toString(),
-        colorId: selectedColorOption?.id || "default",
-        image: imageSrc,
-      });
-      window.location.href = `/manage-booking?${params.toString()}`;
+  let imageSrc = "";
+
+  if (imageToUse) {
+    if (typeof imageToUse === "string") {
+      imageSrc = imageToUse;
+    } else if (imageToUse.src) {
+      imageSrc = imageToUse.src;
     }
-  };
+  }
+
+  const params = new URLSearchParams({
+    car: selectedCar.name.toLowerCase().replace(/\s+/g, "-"),
+    price: selectedCar.price,
+    duration: selectedCar.duration,
+    colorIndex: selectedColor.toString(),
+    colorId: selectedColorOption?.id || "default",
+    image: imageSrc,
+    from: "details", // ✅ IMPORTANT
+  });
+
+  router.push(`/manage-booking?${params.toString()}`);
+};
 
   // Helper function to check if a color is white
   const isWhiteColor = (color: string, name: string) => {
@@ -1001,7 +1001,7 @@ const VehicleDetailsPage = () => {
       <Box sx={{ py: 8, backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
         <Container maxWidth="lg">
           {/* Back Button */}
-          <IconButton
+          {/* <IconButton
             onClick={() => router.push("/our-fleet")}
             sx={{
               mb: 4,
@@ -1015,9 +1015,23 @@ const VehicleDetailsPage = () => {
             <Typography variant="body1" sx={{ ml: 1, fontWeight: 500 }}>
               {t("common.back")} {t("nav.fleet")}
             </Typography>
-          </IconButton>
+          </IconButton> */}
+           <Button
+                startIcon={<ArrowBack />}
+                onClick={() => router.push("/our-fleet")}
+                sx={{
+                  color: "#52A4C1",
+                  textTransform: "none",
+                  fontWeight: 600,
+                  "&:hover": {
+                    backgroundColor: "rgba(82, 164, 193, 0.1)",
+                  },
+                }}
+              >
+                Back to Fleet
+              </Button>
 
-          <Grid container spacing={4}>
+          <Grid container spacing={4} mt={2}>
             {/* Vehicle Image with 360 Viewer - Left Side */}
             <Grid size={{ xs: 12, md: 5 }}>
               <Card

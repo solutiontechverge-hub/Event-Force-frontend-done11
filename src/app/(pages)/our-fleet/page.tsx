@@ -15,7 +15,6 @@ import { useLanguage } from '@/contexts/LanguageContext';
 const OurFleetPage = () => {
     const { t } = useLanguage();
     const [isMounted, setIsMounted] = useState(false);
-    const [heroImageLoaded, setHeroImageLoaded] = useState(false);
 
     useEffect(() => {
         const timer = setTimeout(() => {

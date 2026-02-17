@@ -160,8 +160,7 @@ const FleetPage = memo(() => {
         });
 
         // Redirect to manage booking page with car data
-      router.push(`/manage-booking?${params.toString()}`);
-
+        router.push(`/manage-booking?${params.toString()}`);
       }
     },
     [filteredFleet],
@@ -398,21 +397,27 @@ const FleetPage = memo(() => {
                       >
                         {t("fleet.viewDetails")}
                       </Button>
-               <Button
-  variant="contained"
-  fullWidth
-  onClick={() => {
-    const vehicleId = car.name.toLowerCase().replace(/\s+/g, "-");
+                      <Button
+                        variant="contained"
+                        fullWidth
+                        onClick={() => {
+                          const vehicleId = car.name
+                            .toLowerCase()
+                            .replace(/\s+/g, "-");
 
-    if (!isAuthenticated) {
-      router.push(`/signup?redirect=/manage-booking?car=${vehicleId}`);
-    } else {
-      router.push(`/manage-booking?car=${vehicleId}`);
-    }
-  }}
->
-  {t("fleet.bookNow")}
-</Button>
+                          const bookingUrl = `/manage-booking?car=${vehicleId}&from=fleet`;
+
+                          if (!isAuthenticated) {
+                            router.push(
+                              `/signup?redirect=${encodeURIComponent(bookingUrl)}`,
+                            );
+                          } else {
+                            router.push(bookingUrl);
+                          }
+                        }}
+                      >
+                        {t("fleet.bookNow")}
+                      </Button>
                     </Box>
                   </CardContent>
                 </Card>

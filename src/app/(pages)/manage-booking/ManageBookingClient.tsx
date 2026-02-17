@@ -476,28 +476,25 @@ const ManageBookingClient = () => {
     router.push("/our-fleet");
   };
 
-  const handleBackToDetails = () => {
-    if (displayCar) {
-      // Construct vehicleId from car name - convert to lowercase and replace spaces with hyphens
-      const vehicleId = displayCar.name.toLowerCase().replace(/\s+/g, "-");
+const handleBackToDetails = () => {
+  const from = searchParams.get("from");
 
-      // Build URL with current color selection if available
-      const params = new URLSearchParams();
-      if (colorIdParam) {
-        params.set("color", colorIdParam);
-      }
-      if (colorIndexParam) {
-        params.set("colorIndex", colorIndexParam);
-      }
+  // If came from fleet page
+  if (from === "fleet") {
+    router.push("/our-fleet");
+    return;
+  }
 
-      const queryString = params.toString();
-      const url = `/our-fleet/${vehicleId}${queryString ? `?${queryString}` : ""}`;
-      router.push(url);
-    } else {
-      // Fallback to fleet page if car not found
-      router.push("/our-fleet");
-    }
-  };
+  // If came from vehicle details page
+  if (from === "details" && displayCar) {
+    const vehicleId = displayCar.name.toLowerCase().replace(/\s+/g, "-");
+    router.push(`/our-fleet/${vehicleId}`);
+    return;
+  }
+
+  // fallback
+  router.push("/our-fleet");
+};
 
   // Get the selected color image from formData
 
@@ -1296,7 +1293,9 @@ const ManageBookingClient = () => {
                   },
                 }}
               >
-                Back to Vehicle Details
+                {searchParams.get("from") === "fleet"
+                  ? "Back to Fleet"
+                  : "Back to Vehicle Details"}
               </Button>
             </Box>
           )}
