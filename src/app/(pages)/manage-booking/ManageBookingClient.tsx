@@ -19,11 +19,9 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
-
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import "react-phone-number-input/style.css";
-
 import { CalendarToday, ArrowDropDown, ArrowBack } from "@mui/icons-material";
 import Image from "next/image";
 import Header from "@/components/Header";
@@ -31,7 +29,11 @@ import Footer from "@/components/Footer";
 import { SlideUpInView } from "@/components/animations";
 import { sendBookingEmail } from "@/services/emailService";
 import { useLanguage } from "@/contexts/LanguageContext";
+import "react-phone-number-input/style.css";
+import { useAuth } from "@/contexts/AuthContext";
+import PickupDestinationSingleFlow from "./PickupDropoffMap";
 import {
+  BmwBlack1,
   CarBmw7Series,
   CarChinesbus49Sea,
   CarGmc,
@@ -41,51 +43,7 @@ import {
   CarToyotaCoaster,
   ManageBookingBg,
   MeTrendAgateBlack01,
-  Gmc1,
-  Gmc2,
-  Gmc3,
-  Gmc4,
-  Gmc5,
-  Gmc6,
-  Gmc7,
-  BmwBlack1,
-  Bmw2,
-  Bmw3,
-  Bmw4,
-  Bmw5,
-  Bmw6,
-  Bmw7,
-  Bmw8,
-  MercedesS450White,
-  MercedesS450Black,
-  Bmw7SeriesBlack1,
-  Bmw7SeriesAlpineWhite,
-  Bmw7SeriesMineralWhiteMetallic,
-  Bmw7SeriesOxideGrayMetallic,
-  Bmw7SeriesBrooklynGreyMetallic,
-  MercedesVClassBlack,
-  MercedesVClassSilver,
-  MercedesVClassBlue,
-  MercedesVClassGrey,
-  ToyotaHiaceBlack,
-  ToyotaHiaceSilver,
-  ToyotaCoasterDefault,
-  ToyotaCoasterSafetyRobust,
-  ToyotaCoasterWhiteLavender,
-  ToyotaCoasterWhiteTurquoise,
-  ToyotaCoasterWhiteBeige,
-  ToyotaCoasterYellow,
-  ChineseBus49Default,
-  ChineseBus49YuTong,
-  ChineseBus49KingLong,
 } from "../../../../public/images";
-import PickupDropoffMap from "./PickupDropoffMap";
-import PhoneInput from "react-phone-number-input";
-import "react-phone-number-input/style.css";
-import { isValidPhoneNumber } from "libphonenumber-js";
-
-import { useAuth } from "@/contexts/AuthContext";
-import PickupDestinationSingleFlow from "./PickupDropoffMap";
 
 interface Car {
   name: string;
@@ -97,25 +55,12 @@ interface Car {
   branch: string;
 }
 
-interface ColorOption {
-  id: string;
-  name: string;
-  color: string;
-  image: {
-    src: string;
-    width: number;
-    height: number;
-    blurWidth: number;
-    blurHeight: number;
-    blurDataURL: string;
-  };
-}
 export interface BookingFormData {
   fullName: string;
   email: string;
   phone: string; // ✅ single international phone
   selectedCar: string;
-  selectedColor: string;
+  // selectedColor: string;
   serviceType: string;
   pickupLocation: string;
   destination: string;
@@ -147,7 +92,7 @@ const fleet: Car[] = [
   {
     name: "BMW 5 Series",
     price: "150 SAR",
-    duration: "Per day",
+    duration: "Per hour",
     image: BmwBlack1,
     class: "Luxury",
     year: "2025",
@@ -156,7 +101,7 @@ const fleet: Car[] = [
   {
     name: "Mercedes S450",
     price: "400 SAR",
-    duration: "Per day",
+    duration: "Per hour",
     image: CarMercedesS450,
     class: "Luxury",
     year: "2025",
@@ -165,7 +110,7 @@ const fleet: Car[] = [
   {
     name: "BMW 7 Series",
     price: "400 SAR",
-    duration: "Per day",
+    duration: "Per hour",
     image: CarBmw7Series,
     class: "Luxury",
     year: "2025",
@@ -174,7 +119,7 @@ const fleet: Car[] = [
   {
     name: "Mercedes V Class",
     price: "300 SAR",
-    duration: "Per day",
+    duration: "Per hour",
     image: CarMercedesVClass,
     class: "Van",
     year: "2024",
@@ -230,20 +175,6 @@ const ManageBookingClient = () => {
 
   const [name, setName] = useState(user?.name || "");
   const [phone, setPhone] = useState(user?.phone || "");
-  // const PhoneTextField = React.forwardRef<HTMLInputElement, any>(
-  //   function PhoneTextField(props, ref) {
-  //     return (
-  //       <TextField
-  //         {...props}
-  //         inputRef={ref}
-  //         fullWidth
-  //         label="Phone Number"
-  //         required
-  //         sx={{ mb: 2 }}
-  //       />
-  //     );
-  //   },
-  // );
 
   const getMinDateTime = () => {
     const now = new Date();
@@ -264,8 +195,8 @@ const ManageBookingClient = () => {
     fullName: "",
     email: "",
     phone: "", // ← ONLY phone
-    selectedCar: "black",
-    selectedColor: "",
+    selectedCar: "",
+
     serviceType: "",
     pickupLocation: "",
     destination: "",
@@ -299,414 +230,44 @@ const ManageBookingClient = () => {
   const colorIndexParam = searchParams?.get("colorIndex") || "";
 
   // Function to get color image based on car name and color ID
-  const getColorImage = (carName: string, colorId: string) => {
-    if (!colorId) return null;
-
-    const normalizedName = carName.toLowerCase();
-
-    if (normalizedName.includes("ford taurus")) {
-      // Ford Taurus: Always return black image (#1A1A1A) - no other colors
-      return MeTrendAgateBlack01;
-    }
-
-    if (
-      normalizedName.includes("gmc yukon") ||
-      normalizedName.includes("gmc")
-    ) {
-      const colorMap: { [key: string]: any } = {
-        "glacier-white-tricoat": Gmc1,
-        "titanium-rush-metallic": Gmc2,
-        "summit-white": Gmc3,
-        "onyx-black": Gmc4,
-        "volcanic-red-tintcoat": Gmc5,
-        "sterling-metallic": Gmc6,
-        "downpour-metallic": Gmc7,
-      };
-      return colorMap[colorId] || null;
-    }
-
-    if (
-      normalizedName.includes("bmw 5 series") ||
-      normalizedName.includes("bmw 5")
-    ) {
-      const colorMap: { [key: string]: any } = {
-        black: BmwBlack1,
-        "color-2": Bmw2,
-        "color-3": Bmw3,
-        "color-4": Bmw4,
-        "color-5": Bmw5,
-        "color-6": Bmw6,
-        "color-7": Bmw7,
-        "color-8": Bmw8,
-      };
-      return colorMap[colorId] || null;
-    }
-
-    if (
-      normalizedName.includes("mercedes s450") ||
-      normalizedName.includes("mercedes s class")
-    ) {
-      const colorMap: { [key: string]: any } = {
-        black: MercedesS450Black,
-        white: MercedesS450White,
-      };
-      return colorMap[colorId] || null;
-    }
-
-    if (
-      normalizedName.includes("bmw 7 series") ||
-      normalizedName.includes("bmw 7")
-    ) {
-      const colorMap: { [key: string]: any } = {
-        black: Bmw7SeriesBlack1,
-        "alpine-white": Bmw7SeriesAlpineWhite,
-        "mineral-white-metallic": Bmw7SeriesMineralWhiteMetallic,
-        "oxide-gray-metallic": Bmw7SeriesOxideGrayMetallic,
-        "brooklyn-grey-metallic": Bmw7SeriesBrooklynGreyMetallic,
-      };
-      return colorMap[colorId] || null;
-    }
-
-    if (
-      normalizedName.includes("mercedes v class") ||
-      normalizedName.includes("mercedes v-class")
-    ) {
-      const colorMap: { [key: string]: any } = {
-        black: MercedesVClassBlack,
-        silver: MercedesVClassSilver,
-        blue: MercedesVClassBlue,
-        grey: MercedesVClassGrey,
-      };
-      return colorMap[colorId] || null;
-    }
-
-    if (
-      normalizedName.includes("toyota hiace") ||
-      normalizedName.includes("hiace")
-    ) {
-      const colorMap: { [key: string]: any } = {
-        black: ToyotaHiaceBlack,
-        silver: ToyotaHiaceSilver,
-      };
-      return colorMap[colorId] || null;
-    }
-
-    if (
-      normalizedName.includes("toyota coaster") ||
-      normalizedName.includes("coaster")
-    ) {
-      const colorMap: { [key: string]: any } = {
-        default: ToyotaCoasterDefault,
-        "safety-robust": ToyotaCoasterSafetyRobust,
-        "white-lavender": ToyotaCoasterWhiteLavender,
-        "white-turquoise": ToyotaCoasterWhiteTurquoise,
-        "white-beige": ToyotaCoasterWhiteBeige,
-        yellow: ToyotaCoasterYellow,
-      };
-      return colorMap[colorId] || null;
-    }
-
-    if (
-      normalizedName.includes("chines bus 49") ||
-      normalizedName.includes("chinese bus 49") ||
-      normalizedName.includes("49 seater")
-    ) {
-      const colorMap: { [key: string]: any } = {
-        default: ChineseBus49Default,
-        "yu-tong": ChineseBus49YuTong,
-        "king-long": ChineseBus49KingLong,
-      };
-      return colorMap[colorId] || null;
-    }
-
-    return null;
-  };
 
   // Function to get all color options for a car
-  const getColorOptionsForCar = (carName: string) => {
-    if (!carName) return [];
-
-    const normalizedName = carName.toLowerCase();
-
-    // Ford Taurus: Default color is #1A1A1A (black), no color selection - return empty array
-    if (normalizedName.includes("ford taurus")) {
-      return [];
-    }
-
-    if (
-      normalizedName.includes("gmc yukon") ||
-      normalizedName.includes("gmc")
-    ) {
-      return [
-        {
-          id: "glacier-white-tricoat",
-          name: "Glacier White Tricoat",
-          color: "#FFFFFF",
-          image: Gmc1,
-        },
-        {
-          id: "titanium-rush-metallic",
-          name: "Titanium Rush Metallic",
-          color: "#4A5568",
-          image: Gmc2,
-        },
-        {
-          id: "summit-white",
-          name: "Summit White",
-          color: "#F5F5F5",
-          image: Gmc3,
-        },
-        { id: "onyx-black", name: "Onyx Black", color: "#1A1A1A", image: Gmc4 },
-        {
-          id: "volcanic-red-tintcoat",
-          name: "Volcanic Red Tintcoat",
-          color: "#8B2635",
-          image: Gmc5,
-        },
-        {
-          id: "sterling-metallic",
-          name: "Sterling Metallic",
-          color: "#9CA3AF",
-          image: Gmc6,
-        },
-        {
-          id: "downpour-metallic",
-          name: "Downpour Metallic",
-          color: "#4B5563",
-          image: Gmc7,
-        },
-      ];
-    }
-
-    if (
-      normalizedName.includes("mercedes s450") ||
-      normalizedName.includes("mercedes s class")
-    ) {
-      return [
-        {
-          id: "black",
-          name: "Black",
-          color: "#1A1A1A",
-          image: MercedesS450Black,
-        },
-        {
-          id: "white",
-          name: "White",
-          color: "#FFFFFF",
-          image: MercedesS450White,
-        },
-      ];
-    }
-
-    if (
-      normalizedName.includes("bmw 7 series") ||
-      normalizedName.includes("bmw 7")
-    ) {
-      return [
-        {
-          id: "black",
-          name: "Black",
-          color: "#1A1A1A",
-          image: Bmw7SeriesBlack1,
-        },
-        {
-          id: "alpine-white",
-          name: "Alpine White",
-          color: "#FFFFFF",
-          image: Bmw7SeriesAlpineWhite,
-        },
-        {
-          id: "mineral-white-metallic",
-          name: "Mineral White Metallic",
-          color: "#F5F5F5",
-          image: Bmw7SeriesMineralWhiteMetallic,
-        },
-        {
-          id: "oxide-gray-metallic",
-          name: "Oxide Gray Metallic",
-          color: "#4A1A1A",
-          image: Bmw7SeriesOxideGrayMetallic,
-        },
-        {
-          id: "brooklyn-grey-metallic",
-          name: "Brooklyn Grey Metallic",
-          color: "#1A1F2E",
-          image: Bmw7SeriesBrooklynGreyMetallic,
-        },
-      ];
-    }
-
-    if (
-      normalizedName.includes("mercedes v class") ||
-      normalizedName.includes("mercedes v-class")
-    ) {
-      return [
-        {
-          id: "black",
-          name: "Black",
-          color: "#1A1A1A",
-          image: MercedesVClassBlack,
-        },
-        {
-          id: "silver",
-          name: "Silver",
-          color: "#FFFFFF",
-          image: MercedesVClassSilver,
-        },
-        {
-          id: "blue",
-          name: "Blue",
-          color: "#F5F5F5",
-          image: MercedesVClassBlue,
-        },
-        {
-          id: "grey",
-          name: "Grey",
-          color: "#6B7280",
-          image: MercedesVClassGrey,
-        },
-      ];
-    }
-
-    if (
-      normalizedName.includes("toyota hiace") ||
-      normalizedName.includes("hiace")
-    ) {
-      return [
-        {
-          id: "black",
-          name: "Black",
-          color: "#1A1A1A",
-          image: ToyotaHiaceBlack,
-        },
-        {
-          id: "silver",
-          name: "Silver",
-          color: "#C0C0C0",
-          image: ToyotaHiaceSilver,
-        },
-      ];
-    }
-
-    if (
-      normalizedName.includes("toyota coaster") ||
-      normalizedName.includes("coaster")
-    ) {
-      return [
-        {
-          id: "default",
-          name: "Default",
-          color: "#52A4C1",
-          image: ToyotaCoasterDefault,
-        },
-        {
-          id: "safety-robust",
-          name: "Safety Robust",
-          color: "#9699CD",
-          image: ToyotaCoasterSafetyRobust,
-        },
-        {
-          id: "white-lavender",
-          name: "White / Lavender",
-          color: "#E6E6FA",
-          image: ToyotaCoasterWhiteLavender,
-        },
-        {
-          id: "white-turquoise",
-          name: "White / Turquoise",
-          color: "#40E0D0",
-          image: ToyotaCoasterWhiteTurquoise,
-        },
-        {
-          id: "white-beige",
-          name: "White Beige",
-          color: "#F5F5DC",
-          image: ToyotaCoasterWhiteBeige,
-        },
-        {
-          id: "yellow",
-          name: "Yellow",
-          color: "#FFD700",
-          image: ToyotaCoasterYellow,
-        },
-      ];
-    }
-
-    if (
-      normalizedName.includes("chines bus 49") ||
-      normalizedName.includes("chinese bus 49") ||
-      normalizedName.includes("49 seater")
-    ) {
-      return [
-        {
-          id: "default",
-          name: "Default",
-          color: "#253F58",
-          image: ChineseBus49Default,
-        },
-        {
-          id: "yu-tong",
-          name: "Yu Tong",
-          color: "#E8F2F6",
-          image: ChineseBus49YuTong,
-        },
-        {
-          id: "king-long",
-          name: "King Long",
-          color: "#4D85B4",
-          image: ChineseBus49KingLong,
-        },
-      ];
-    }
-
-    // Default: return empty array for cars without color options
-    return [];
-  };
 
   // Find the selected car
   const selectedCar = useMemo(() => {
-    if (carParam) {
-      const carName = carParam.replace(/-/g, " ");
-      return (
-        fleet.find((car) => car.name.toLowerCase() === carName.toLowerCase()) ||
-        null
-      );
-    }
-    return null;
+    if (!carParam) return null;
+
+    const carName = carParam.replace(/-/g, " ");
+
+    return (
+      fleet.find((car) => car.name.toLowerCase() === carName.toLowerCase()) ||
+      null
+    );
   }, [carParam]);
 
-  // Get selected color image
-  const selectedColorImage = useMemo(() => {
-    if (selectedCar && colorIdParam) {
-      return getColorImage(selectedCar.name, colorIdParam);
-    }
-    return null;
-  }, [selectedCar, colorIdParam]);
-
-  // Set default car if provided in URL or use first car as default
   useEffect(() => {
-    if (selectedCar && !formData.selectedCar) {
+    if (selectedCar) {
       setFormData((prev) => ({
         ...prev,
         selectedCar: selectedCar.name,
-        // For Ford Taurus: always set to black (#1A1A1A), for others use URL color if available
-        selectedColor: selectedCar.name.toLowerCase().includes("ford taurus")
-          ? "agate-black"
-          : colorIdParam || prev.selectedColor,
       }));
-    } else if (!formData.selectedCar && !selectedCar) {
-      // Set first car as default if no car is selected
+    }
+  }, [selectedCar]);
+
+  // Set default car if provided in URL or use first car as default
+  useEffect(() => {
+    if (selectedCar) {
+      setFormData((prev) => ({
+        ...prev,
+        selectedCar: selectedCar.name,
+      }));
+    } else if (!formData.selectedCar) {
       setFormData((prev) => ({
         ...prev,
         selectedCar: fleet[0].name,
-        // For Ford Taurus: always set to black (#1A1A1A)
-        selectedColor: fleet[0].name.toLowerCase().includes("ford taurus")
-          ? "agate-black"
-          : prev.selectedColor,
       }));
     }
-  }, [selectedCar, colorIdParam]);
-
+  }, [selectedCar]);
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
@@ -716,7 +277,25 @@ const ManageBookingClient = () => {
       [name]: value,
     }));
   };
+  const vehicleKeyMap: Record<string, string> = {
+    "ford taurus": "fordTaurus",
+    "gmc yukon": "yukon",
+    "bmw 5 series": "bmw5",
+    "bmw 7 series": "bmw7Mercedes",
+    "mercedes s450": "bmw7Mercedes",
+    "mercedes v class": "bmw7Mercedes",
+    "toyota hiace": "hiace12",
+    "toyota coaster": "coaster23",
+    "coach 49 seats": "bus49",
+  };
 
+  const getVehicleKey = (name: string) => {
+    if (!name) return null;
+
+    const lower = name.toLowerCase().trim();
+
+    return vehicleKeyMap[lower] || null;
+  };
   const handleSelectChange = (e: any) => {
     const { name, value } = e.target;
     setFormData((prev) => {
@@ -725,18 +304,12 @@ const ManageBookingClient = () => {
         [name]: value,
       };
       // Reset selected color when car changes
-      if (name === "selectedCar") {
-        // For Ford Taurus: always set to black (#1A1A1A) as default
-        // For other vehicles: reset to empty
-        updated.selectedColor = value.toLowerCase().includes("ford taurus")
-          ? "agate-black"
-          : "";
+
+      if (name === "serviceType") {
+        updated.pickupLocation = prev.pickupLocation;
+        updated.destination = prev.destination;
       }
-      // Reset location fields when service type changes
-      // if (name === "serviceType") {
-      //   updated.pickupLocation = "";
-      //   updated.destination = "";
-      // }
+
       return updated;
     });
   };
@@ -925,368 +498,446 @@ const ManageBookingClient = () => {
     }
   };
 
-  const availableColors: ColorOption[] = [
-    {
-      id: "black",
-      name: "Black",
-      color: "#1A1A1A",
-      image: {
-        src: "/_next/static/media/bmwblack1.2ddcfe47.png",
-        width: 1344,
-        height: 806,
-        blurWidth: 8,
-        blurHeight: 5,
-        blurDataURL:
-          "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAFCAYAAAB4ka1VAAAAg0lEQVR42o1MPQqDMBg1zVehXdpIWodAJRjqIOgYQQ8QN3XxKp7Bgzh6EK8g6Alcnf0U3H3wePD+LOsqKKU2c5zw67r5m7EEAJ5HQAihvq8qY0xXVOWUZumqtV6UUg3Gt71g/zyvlVKOURzPQoiBc97jW73vz5cX8g9wD1A/aD2ONWIDgw8QaoRGAusAAAAASUVORK5CYII=",
-      },
-    },
-  ];
-
   // Get the selected color image from formData
-  const formSelectedColorImage = useMemo(() => {
-    if (formData.selectedCar && formData.selectedColor) {
-      return getColorImage(formData.selectedCar, formData.selectedColor);
-    }
-    return null;
-  }, [formData.selectedCar, formData.selectedColor]);
 
   const displayCar = useMemo(() => {
     let car = null;
-    if (formData.selectedCar) {
+
+    if (formData.selectedCar)
       car =
         fleet.find((c) => c.name === formData.selectedCar) ||
         selectedCar ||
         fleet[0];
-    } else {
-      car = selectedCar || fleet[0];
+    else car = selectedCar || fleet[0];
+
+    return car;
+  }, [formData.selectedCar, selectedCar]);
+
+  const isAirportOnlyVehicle = useMemo(() => {
+    const name = formData.selectedCar?.toLowerCase() || "";
+
+    return (
+      name.includes("toyota hiace") ||
+      name.includes("toyota coaster") ||
+      name.includes("coach 49")
+    );
+  }, [formData.selectedCar]);
+  // ✅ Service options (NO Fragment, MUI safe)
+  const serviceOptions = useMemo(() => {
+    if (isAirportOnlyVehicle) {
+      return [
+        {
+          value: "airport-pickup",
+          label: t("service.airport"),
+        },
+      ];
     }
 
-    // For Ford Taurus: Always use black image (#1A1A1A) as default - force black always
-    if (car?.name.toLowerCase().includes("ford taurus")) {
-      return {
-        ...car,
-        image: MeTrendAgateBlack01, // Always black, no exceptions
-      };
+    return [
+      {
+        value: "airport-pickup",
+        label: t("service.airport"),
+      },
+      {
+        value: "downtown",
+        label: t("service.downtown"),
+      },
+      {
+        value: "inter-city",
+        label: t("service.intercity"),
+      },
+      {
+        value: "hourly",
+        label: t("service.hourly"),
+      },
+      {
+        value: "8-hours",
+        label: t("service.8hours"),
+      },
+      {
+        value: "12-hours",
+        label: t("service.12hours"),
+      },
+    ];
+  }, [isAirportOnlyVehicle, t]);
+
+  // 🔁 Auto-force airport service for those vehicles
+  useEffect(() => {
+    if (isAirportOnlyVehicle) {
+      setFormData((prev) => ({
+        ...prev,
+        serviceType: "airport-pickup",
+      }));
     }
+  }, [isAirportOnlyVehicle]);
 
-    // For other vehicles: Priority: formData.selectedColor > URL color > default car image
-    let imageToUse = car?.image;
-    if (formSelectedColorImage) {
-      imageToUse = formSelectedColorImage;
-    } else if (selectedColorImage) {
-      imageToUse = selectedColorImage;
-    }
+  // Pricing data from spreadsheet
+  const pricing: any = {
+    // Airport Pickup / Drop
+    "riyadh-airport-city": {
+      fordTaurus: 150,
+      yukon: 300,
+      bmw5: 250,
+      bmw7Mercedes: 450,
+      hiace12: 500,
+      coaster23: 800,
+      bus49: 1200,
+    },
+    "dammam-airport-city": {
+      fordTaurus: 150,
+      yukon: 300,
+      bmw5: 250,
+      bmw7Mercedes: 450,
+      hiace12: 500,
+      coaster23: 800,
+      bus49: 1200,
+    },
+    "jeddah-airport-city": {
+      fordTaurus: 150,
+      yukon: 300,
+      bmw5: 250,
+      bmw7Mercedes: 400,
+      hiace12: 500,
+      coaster23: 800,
+      bus49: 1200,
+    },
+    "madina-airport-city": {
+      fordTaurus: 150,
+      yukon: 250,
+      bmw5: 250,
+      bmw7Mercedes: 450,
+      hiace12: 300,
+      coaster23: 800,
+      bus49: 1200,
+    },
 
-    return {
-      ...car,
-      image: imageToUse || car?.image,
-    };
-  }, [
-    formData.selectedCar,
-    selectedCar,
-    formSelectedColorImage,
-    selectedColorImage,
-  ]);
+    // Downtown
+    "riyadh-downtown-city": {
+      fordTaurus: 125,
+      yukon: 250,
+      bmw5: 225,
+      bmw7Mercedes: 350,
+      hiace12: 400,
+      coaster23: 600,
+      bus49: 1000,
+    },
+    "dammam-downtown-city": {
+      fordTaurus: 125,
+      yukon: 250,
+      bmw5: 225,
+      bmw7Mercedes: 350,
+      hiace12: 400,
+      coaster23: 600,
+      bus49: 1000,
+    },
+    "jeddah-downtown-city": {
+      fordTaurus: 125,
+      yukon: 250,
+      bmw5: 225,
+      bmw7Mercedes: 350,
+      hiace12: 400,
+      coaster23: 600,
+      bus49: 1000,
+    },
+    "madina-downtown-city": {
+      fordTaurus: 125,
+      yukon: 225,
+      bmw5: 225,
+      bmw7Mercedes: 800,
+      hiace12: 400,
+      coaster23: 600,
+      bus49: 1000,
+    },
 
+    // Intercity
+    "jeddah-kaust": {
+      fordTaurus: 225,
+      yukon: 400,
+      bmw5: 400,
+      bmw7Mercedes: 1250,
+      hiace12: 600,
+      coaster23: 1000,
+      bus49: 1500,
+    },
+    "jeddah-kaec": {
+      fordTaurus: 300,
+      yukon: 500,
+      bmw5: 500,
+      bmw7Mercedes: 1400,
+      hiace12: 750,
+      coaster23: 1200,
+      bus49: 2000,
+    },
+    "jeddah-yanbu": {
+      fordTaurus: 600,
+      yukon: 1000,
+      bmw5: 1000,
+      bmw7Mercedes: 3000,
+      hiace12: 1200,
+      coaster23: 2000,
+      bus49: 2500,
+    },
+    "jeddah-red-sea-umluj": {
+      fordTaurus: 1500,
+      yukon: 2500,
+      bmw5: 2500,
+      bmw7Mercedes: 4500,
+      hiace12: 1600,
+      coaster23: 3000,
+      bus49: 3500,
+    },
+    "jeddah-neom": {
+      fordTaurus: 2500,
+      yukon: 3500,
+      bmw5: 3500,
+      bmw7Mercedes: 5000,
+      hiace12: 2000,
+      coaster23: 3500,
+      bus49: 4000,
+    },
+    "jeddah-airport-makkah": {
+      fordTaurus: 300,
+      yukon: 500,
+      bmw5: 500,
+      bmw7Mercedes: 1250,
+      hiace12: 600,
+      coaster23: 1000,
+      bus49: 1000,
+    },
+    "jeddah-makkah-medina": {
+      fordTaurus: 900,
+      yukon: 1500,
+      bmw5: 1500,
+      bmw7Mercedes: 3000,
+      hiace12: 1400,
+      coaster23: 1800,
+      bus49: 2000,
+    },
+
+    // Hourly
+    hourly: {
+      fordTaurus: 125,
+      yukon: 150,
+      bmw5: 150,
+      bmw7Mercedes: 400,
+      hiace12: null,
+      coaster23: null,
+      bus49: null,
+    },
+
+    "8-hours": {
+      fordTaurus: 750,
+      yukon: 1200,
+      bmw5: 1200,
+      bmw7Mercedes: 2000,
+      hiace12: 850,
+      coaster23: 1200,
+      bus49: 1500,
+    },
+
+    "12-hours": {
+      fordTaurus: 1000,
+      yukon: 1500,
+      bmw5: 1500,
+      bmw7Mercedes: 2400,
+      hiace12: 1000,
+      coaster23: 1500,
+      bus49: 2000,
+    },
+
+    "extra-hour": {
+      fordTaurus: 125,
+      yukon: 150,
+      bmw5: 150,
+      bmw7Mercedes: 300,
+      hiace12: 125,
+      coaster23: 150,
+      bus49: 250,
+    },
+  };
   // Pricing calculation based on spreadsheet
+  // const calculatePrice = useMemo(() => {
+  //   if (!formData.selectedCar || !formData.serviceType) return null;
+
+  //   const vehicleKey = getVehicleKey(formData.selectedCar);
+
+  //   if (!vehicleKey) return null;
+
+  //   const service = formData.serviceType;
+
+  //   const pickup = formData.pickupLocation?.toLowerCase() || "";
+  //   const dest = formData.destination?.toLowerCase() || "";
+
+  //   // ✅ HOURLY
+  //   if (service === "hourly")
+  //     return pricing.hourly?.[vehicleKey] ?? displayCar?.price ?? null;
+
+  //   if (service === "8-hours")
+  //     return pricing["8-hours"]?.[vehicleKey] ?? displayCar?.price ?? null;
+
+  //   if (service === "12-hours")
+  //     return pricing["12-hours"]?.[vehicleKey] ?? displayCar?.price ?? null;
+
+  //   if (service === "extra-hour")
+  //     return pricing["extra-hour"]?.[vehicleKey] ?? displayCar?.price ?? null;
+
+  //   // If no pickup location yet → return base price
+  //   if (!pickup) {
+  //     return (
+  //       pricing.hourly?.[vehicleKey] ??
+  //       pricing["8-hours"]?.[vehicleKey] ??
+  //       pricing["12-hours"]?.[vehicleKey] ??
+  //       null
+  //     );
+  //   }
+
+  //   // AIRPORT
+  //   if (service === "airport-pickup") {
+  //     if (pickup.includes("riyadh"))
+  //       return pricing["riyadh-airport-city"]?.[vehicleKey] ?? null;
+
+  //     if (pickup.includes("jeddah"))
+  //       return pricing["jeddah-airport-city"]?.[vehicleKey] ?? null;
+
+  //     if (pickup.includes("dammam"))
+  //       return pricing["dammam-airport-city"]?.[vehicleKey] ?? null;
+
+  //     if (pickup.includes("madina"))
+  //       return pricing["madina-airport-city"]?.[vehicleKey] ?? null;
+  //   }
+
+  //   // DOWNTOWN
+  //   if (service === "downtown") {
+  //     if (pickup.includes("riyadh"))
+  //       return pricing["riyadh-downtown-city"]?.[vehicleKey] ?? null;
+
+  //     if (pickup.includes("jeddah"))
+  //       return pricing["jeddah-downtown-city"]?.[vehicleKey] ?? null;
+  //   }
+
+  //   // INTERCITY
+  //   if (service === "inter-city") {
+  //     if (pickup.includes("jeddah") && dest.includes("makkah"))
+  //       return pricing["jeddah-airport-makkah"]?.[vehicleKey] ?? null;
+  //   }
+
+  //   return null;
+  // }, [
+  //   formData.selectedCar,
+  //   formData.serviceType,
+  //   formData.pickupLocation,
+  //   formData.destination,
+  //   displayCar,
+  // ]);
+
+
+
   const calculatePrice = useMemo(() => {
-    if (!formData.selectedCar || !formData.serviceType) return null;
+  if (!formData.selectedCar || !formData.serviceType) return null;
 
-    const carName = formData.selectedCar.toLowerCase();
-    const serviceType = formData.serviceType;
-    const pickupLocation = formData.pickupLocation.toLowerCase();
-    const destination = formData.destination.toLowerCase();
+  const vehicleKey = getVehicleKey(formData.selectedCar);
+  if (!vehicleKey) return null;
 
-    // Map vehicle names to spreadsheet columns
-    const getVehicleKey = (name: string) => {
-      if (name.includes("ford taurus")) return "fordTaurus";
-      if (name.includes("gmc yukon") || name.includes("yukon")) return "yukon";
-      if (name.includes("bmw 5")) return "bmw5";
-      if (name.includes("bmw 7") || name.includes("mercedes s450"))
-        return "bmw7Mercedes";
-      if (name.includes("toyota hiace") || name.includes("hiace"))
-        return "hiace12";
-      if (name.includes("toyota coaster") || name.includes("coaster"))
-        return "coaster23";
-      if (
-        name.includes("chines bus 49") ||
-        name.includes("chinese bus 49") ||
-        name.includes("49 seater")
-      )
-        return "bus49";
-      return null;
-    };
+  const service = formData.serviceType;
+  const pickup = formData.pickupLocation?.toLowerCase() || "";
+  const dest = formData.destination?.toLowerCase() || "";
 
-    const vehicleKey = getVehicleKey(carName);
-    if (!vehicleKey) return null;
+  // -----------------------
+  // HOURLY / FIXED HOURS
+  // -----------------------
+  if (service === "hourly")
+    return pricing.hourly?.[vehicleKey] ?? null;
 
-    // Pricing data from spreadsheet
-    const pricing: any = {
-      // Airport Pickup/Drop to City
-      "riyadh-airport-city": {
-        fordTaurus: 150,
-        yukon: 300,
-        bmw5: 250,
-        bmw7Mercedes: 450,
-        hiace12: 500,
-        coaster23: 800,
-        bus49: 1200,
-      },
-      "dammam-airport-city": {
-        fordTaurus: 150,
-        yukon: 300,
-        bmw5: 250,
-        bmw7Mercedes: 450,
-        hiace12: 500,
-        coaster23: 800,
-        bus49: 1200,
-      },
-      "jeddah-airport-city": {
-        fordTaurus: 150,
-        yukon: 300,
-        bmw5: 250,
-        bmw7Mercedes: 400,
-        hiace12: 500,
-        coaster23: 800,
-        bus49: 1200,
-      },
-      "madina-airport-city": {
-        fordTaurus: 150,
-        yukon: 250,
-        bmw5: 250,
-        bmw7Mercedes: 450,
-        hiace12: 300,
-        coaster23: 800,
-        bus49: 1200,
-      },
-      // Downtown to Inside City
-      "riyadh-downtown-city": {
-        fordTaurus: 125,
-        yukon: 250,
-        bmw5: 225,
-        bmw7Mercedes: 350,
-        hiace12: 400,
-        coaster23: 600,
-        bus49: 1000,
-      },
-      "dammam-downtown-city": {
-        fordTaurus: 125,
-        yukon: 250,
-        bmw5: 225,
-        bmw7Mercedes: 350,
-        hiace12: 400,
-        coaster23: 600,
-        bus49: 1000,
-      },
-      "jeddah-downtown-city": {
-        fordTaurus: 125,
-        yukon: 250,
-        bmw5: 225,
-        bmw7Mercedes: 350,
-        hiace12: 400,
-        coaster23: 600,
-        bus49: 1000,
-      },
-      "madina-downtown-city": {
-        fordTaurus: 125,
-        yukon: 225,
-        bmw5: 225,
-        bmw7Mercedes: 800,
-        hiace12: 400,
-        coaster23: 600,
-        bus49: 1000,
-      },
-      // Inter-city routes
-      "jeddah-kaust": {
-        fordTaurus: 225,
-        yukon: 400,
-        bmw5: 400,
-        bmw7Mercedes: 1250,
-        hiace12: 600,
-        coaster23: 1000,
-        bus49: 1500,
-      },
-      "jeddah-kaec": {
-        fordTaurus: 300,
-        yukon: 500,
-        bmw5: 500,
-        bmw7Mercedes: 1400,
-        hiace12: 750,
-        coaster23: 1200,
-        bus49: 2000,
-      },
-      "jeddah-yanbu": {
-        fordTaurus: 600,
-        yukon: 1000,
-        bmw5: 1000,
-        bmw7Mercedes: 3000,
-        hiace12: 1200,
-        coaster23: 2000,
-        bus49: 2500,
-      },
-      "jeddah-red-sea-umluj": {
-        fordTaurus: 1500,
-        yukon: 2500,
-        bmw5: 2500,
-        bmw7Mercedes: 4500,
-        hiace12: 1600,
-        coaster23: 3000,
-        bus49: 3500,
-      },
-      "jeddah-neom": {
-        fordTaurus: 2500,
-        yukon: 3500,
-        bmw5: 3500,
-        bmw7Mercedes: 5000,
-        hiace12: 2000,
-        coaster23: 3500,
-        bus49: 4000,
-      },
-      "jeddah-airport-makkah": {
-        fordTaurus: 300,
-        yukon: 500,
-        bmw5: 500,
-        bmw7Mercedes: 1250,
-        hiace12: 600,
-        coaster23: 1000,
-        bus49: 1000,
-      },
-      "jeddah-makkah-medina": {
-        fordTaurus: 900,
-        yukon: 1500,
-        bmw5: 1500,
-        bmw7Mercedes: 3000,
-        hiace12: 1400,
-        coaster23: 1800,
-        bus49: 2000,
-      },
-      // Hourly rates
-      hourly: {
-        fordTaurus: 125,
-        yukon: 150,
-        bmw5: 150,
-        bmw7Mercedes: 400,
-        hiace12: null, // NA
-        coaster23: null, // NA
-        bus49: null, // NA
-      },
-      // Package rates
-      "8-hours": {
-        fordTaurus: 750,
-        yukon: 1200,
-        bmw5: 1200,
-        bmw7Mercedes: 2000, // Range: 2000-2500, using min
-        hiace12: 850,
-        coaster23: 1200,
-        bus49: 1500,
-      },
-      "12-hours": {
-        fordTaurus: 1000,
-        yukon: 1500,
-        bmw5: 1500,
-        bmw7Mercedes: 2400, // Range: 2400-3000, using min
-        hiace12: 1000,
-        coaster23: 1500,
-        bus49: 2000,
-      },
-      // Extra hour rate
-      "extra-hour": {
-        fordTaurus: 125,
-        yukon: 150,
-        bmw5: 150,
-        bmw7Mercedes: 300,
-        hiace12: 125,
-        coaster23: 150,
-        bus49: 250,
-      },
-    };
+  if (service === "8-hours")
+    return pricing["8-hours"]?.[vehicleKey] ?? null;
 
-    // Determine pricing key based on service type and locations
-    let pricingKey = "";
+  if (service === "12-hours")
+    return pricing["12-hours"]?.[vehicleKey] ?? null;
 
-    if (serviceType === "hourly") {
-      pricingKey = "hourly";
-    } else if (serviceType === "8-hours") {
-      pricingKey = "8-hours";
-    } else if (serviceType === "12-hours") {
-      pricingKey = "12-hours";
-    } else if (serviceType === "extra-hour") {
-      pricingKey = "extra-hour";
-    } else if (serviceType === "airport-pickup") {
-      // Airport pickup/drop to city
-      if (pickupLocation.includes("riyadh")) {
-        pricingKey = "riyadh-airport-city";
-      } else if (pickupLocation.includes("dammam")) {
-        pricingKey = "dammam-airport-city";
-      } else if (pickupLocation.includes("jeddah")) {
-        if (destination.includes("makkah")) {
-          pricingKey = "jeddah-airport-makkah";
-        } else {
-          pricingKey = "jeddah-airport-city";
-        }
-      } else if (
-        pickupLocation.includes("madina") ||
-        pickupLocation.includes("medina")
-      ) {
-        pricingKey = "madina-airport-city";
-      }
-    } else if (serviceType === "downtown") {
-      // Downtown to inside city
-      if (pickupLocation.includes("riyadh")) {
-        pricingKey = "riyadh-downtown-city";
-      } else if (pickupLocation.includes("dammam")) {
-        pricingKey = "dammam-downtown-city";
-      } else if (pickupLocation.includes("jeddah")) {
-        pricingKey = "jeddah-downtown-city";
-      } else if (
-        pickupLocation.includes("madina") ||
-        pickupLocation.includes("medina")
-      ) {
-        pricingKey = "madina-downtown-city";
-      }
-    } else if (serviceType === "inter-city") {
-      // Inter-city routes
-      if (pickupLocation.includes("jeddah")) {
-        if (destination.includes("kaust")) {
-          pricingKey = "jeddah-kaust";
-        } else if (destination.includes("kaec")) {
-          pricingKey = "jeddah-kaec";
-        } else if (destination.includes("yanbu")) {
-          pricingKey = "jeddah-yanbu";
-        } else if (
-          destination.includes("umluj") ||
-          destination.includes("red sea")
-        ) {
-          pricingKey = "jeddah-red-sea-umluj";
-        } else if (destination.includes("neom")) {
-          pricingKey = "jeddah-neom";
-        } else if (destination.includes("makkah")) {
-          pricingKey = "jeddah-airport-makkah";
-        } else if (
-          destination.includes("medina") ||
-          destination.includes("madina")
-        ) {
-          pricingKey = "jeddah-makkah-medina";
-        }
-      } else if (
-        (pickupLocation.includes("jeddah") ||
-          pickupLocation.includes("makkah")) &&
-        (destination.includes("medina") || destination.includes("madina"))
-      ) {
-        pricingKey = "jeddah-makkah-medina";
-      }
+  if (service === "extra-hour")
+    return pricing["extra-hour"]?.[vehicleKey] ?? null;
+
+  // -----------------------
+  // AIRPORT TRANSFERS
+  // -----------------------
+  if (service === "airport-pickup") {
+    if (pickup.includes("riyadh"))
+      return pricing["riyadh-airport-city"]?.[vehicleKey] ?? null;
+
+    if (pickup.includes("dammam"))
+      return pricing["dammam-airport-city"]?.[vehicleKey] ?? null;
+
+    if (pickup.includes("jeddah")) {
+      if (dest.includes("makkah"))
+        return pricing["jeddah-airport-makkah"]?.[vehicleKey] ?? null;
+
+      return pricing["jeddah-airport-city"]?.[vehicleKey] ?? null;
     }
 
-    if (!pricingKey || !pricing[pricingKey]) return null;
+    if (
+      pickup.includes("madinah") ||
+      pickup.includes("medina") ||
+      pickup.includes("madina")
+    )
+      return pricing["madina-airport-city"]?.[vehicleKey] ?? null;
+  }
 
-    const price = pricing[pricingKey][vehicleKey];
-    return price !== null && price !== undefined ? price : null;
-  }, [
-    formData.selectedCar,
-    formData.serviceType,
-    formData.pickupLocation,
-    formData.destination,
-  ]);
+  // -----------------------
+  // DOWNTOWN
+  // -----------------------
+  if (service === "downtown") {
+    if (pickup.includes("riyadh"))
+      return pricing["riyadh-downtown-city"]?.[vehicleKey] ?? null;
+
+    if (pickup.includes("dammam"))
+      return pricing["dammam-downtown-city"]?.[vehicleKey] ?? null;
+
+    if (pickup.includes("jeddah"))
+      return pricing["jeddah-downtown-city"]?.[vehicleKey] ?? null;
+
+    if (
+      pickup.includes("madinah") ||
+      pickup.includes("medina") ||
+      pickup.includes("madina")
+    )
+      return pricing["madina-downtown-city"]?.[vehicleKey] ?? null;
+  }
+
+  // -----------------------
+  // INTERCITY (Pickup + Destination REQUIRED)
+  // -----------------------
+  if (service === "inter-city") {
+    if (pickup.includes("jeddah")) {
+      if (dest.includes("kaust"))
+        return pricing["jeddah-kaust"]?.[vehicleKey] ?? null;
+
+      if (dest.includes("kaec"))
+        return pricing["jeddah-kaec"]?.[vehicleKey] ?? null;
+
+      if (dest.includes("yanbu"))
+        return pricing["jeddah-yanbu"]?.[vehicleKey] ?? null;
+
+      if (dest.includes("umluj") || dest.includes("red sea"))
+        return pricing["jeddah-red-sea-umluj"]?.[vehicleKey] ?? null;
+
+      if (dest.includes("neom"))
+        return pricing["jeddah-neom"]?.[vehicleKey] ?? null;
+
+      if (dest.includes("makkah"))
+        return pricing["jeddah-airport-makkah"]?.[vehicleKey] ?? null;
+
+      if (dest.includes("madinah") || dest.includes("medina"))
+        return pricing["jeddah-makkah-medina"]?.[vehicleKey] ?? null;
+    }
+  }
+
+  return null;
+}, [
+  formData.selectedCar,
+  formData.serviceType,
+  formData.pickupLocation,
+  formData.destination,
+]);
 
   if (!isMounted) {
     return (
@@ -1712,7 +1363,6 @@ const ManageBookingClient = () => {
                       />
                     </Box>
                   </Box>
-
                   <Typography
                     variant="h6"
                     sx={{
@@ -1723,7 +1373,24 @@ const ManageBookingClient = () => {
                   >
                     {calculatePrice !== null ? (
                       <>
-                        {t("booking.price")}: {calculatePrice} SAR
+                        {formData.serviceType === "hourly" &&
+                          `Rent: ${calculatePrice} SAR / Hour`}
+
+                        {formData.serviceType === "8-hours" &&
+                          `Rent: ${calculatePrice} SAR / 8 Hours`}
+
+                        {formData.serviceType === "12-hours" &&
+                          `Rent: ${calculatePrice} SAR / 12 Hours`}
+
+                        {formData.serviceType === "airport-pickup" &&
+                          `Airport Transfer: ${calculatePrice} SAR`}
+
+                        {formData.serviceType === "downtown" &&
+                          `City Ride: ${calculatePrice} SAR`}
+
+                        {formData.serviceType === "inter-city" &&
+                          `Intercity Ride: ${calculatePrice} SAR`}
+
                         <Typography
                           variant="caption"
                           sx={{
@@ -1733,11 +1400,11 @@ const ManageBookingClient = () => {
                             mt: 0.5,
                           }}
                         >
-                          {t("booking.excludesVAT")}
+                          Excluding VAT
                         </Typography>
                       </>
                     ) : (
-                      `${t("booking.rent")}: ${displayCar.price}/${displayCar.duration}`
+                      `Rent: ${displayCar.price} / ${displayCar.duration}`
                     )}
                   </Typography>
                 </CardContent>
@@ -1863,28 +1530,13 @@ const ManageBookingClient = () => {
                         }}
                       >
                         <Select
-                          name="selectedCar"
-                          value={formData.selectedCar}
-                          onChange={handleSelectChange}
-                          displayEmpty
-                          IconComponent={ArrowDropDown}
-                          MenuProps={{
-                            disableScrollLock: true,
-                            PaperProps: {
-                              sx: {
-                                zIndex: 9999,
-                                maxHeight: 300,
-                              },
-                            },
-                            anchorOrigin: {
-                              vertical: "bottom",
-                              horizontal: "left",
-                            },
-                            transformOrigin: {
-                              vertical: "top",
-                              horizontal: "left",
-                            },
-                          }}
+                          value={formData.selectedCar || ""}
+                          onChange={(e) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              selectedCar: e.target.value,
+                            }))
+                          }
                         >
                           <MenuItem value="" disabled>
                             {t("booking.selectCarPlaceholder")}
@@ -1922,51 +1574,26 @@ const ManageBookingClient = () => {
                         }}
                       >
                         <Select
-                          name="serviceType"
-                          value={formData.serviceType}
-                          onChange={handleSelectChange}
+                          value={formData.serviceType || ""}
+                          onChange={(e) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              serviceType: e.target.value,
+                            }))
+                          }
                           displayEmpty
                           required
                           IconComponent={ArrowDropDown}
-                          MenuProps={{
-                            disableScrollLock: true,
-                            PaperProps: {
-                              sx: {
-                                zIndex: 9999,
-                                maxHeight: 300,
-                              },
-                            },
-                            anchorOrigin: {
-                              vertical: "bottom",
-                              horizontal: "left",
-                            },
-                            transformOrigin: {
-                              vertical: "top",
-                              horizontal: "left",
-                            },
-                          }}
                         >
                           <MenuItem value="" disabled>
                             {t("booking.selectServiceType")}
                           </MenuItem>
-                          <MenuItem value="airport-pickup">
-                            {t("service.airport")}
-                          </MenuItem>
-                          <MenuItem value="downtown">
-                            {t("service.downtown")}
-                          </MenuItem>
-                          <MenuItem value="inter-city">
-                            {t("service.intercity")}
-                          </MenuItem>
-                          <MenuItem value="hourly">
-                            {t("service.hourly")}
-                          </MenuItem>
-                          <MenuItem value="8-hours">
-                            {t("service.8hours")}
-                          </MenuItem>
-                          <MenuItem value="12-hours">
-                            {t("service.12hours")}
-                          </MenuItem>
+
+                          {serviceOptions.map((option) => (
+                            <MenuItem key={option.value} value={option.value}>
+                              {option.label}
+                            </MenuItem>
+                          ))}
                         </Select>
                       </FormControl>
                     </Box>

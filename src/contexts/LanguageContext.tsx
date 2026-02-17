@@ -104,7 +104,7 @@ const translations: Record<Language, Record<string, string>> = {
     "booking.error": "Failed to submit booking. Please try again later.",
     "booking.minTime": "Minimum booking time: 2 hours in advance",
     "booking.price": "Price",
-    "booking.excludesVAT": "*Excludes VAT 15%",
+    "booking.excludesVAT": "Excludes VAT 15%",
     "booking.rent": "Rent",
 
     // Fleet

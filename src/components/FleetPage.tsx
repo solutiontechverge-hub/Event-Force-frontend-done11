@@ -398,31 +398,21 @@ const FleetPage = memo(() => {
                       >
                         {t("fleet.viewDetails")}
                       </Button>
-                      <Button
-                        variant="contained"
-                        fullWidth
-                        onClick={() => {
-                          if (!isAuthenticated) {
-                            router.push("/signup?redirect=/booking");
-                          } else {
-                            router.push("/manage-booking");
-                          }
-                        }}
-                        sx={{
-                          backgroundColor: "#52A4C1",
-                          color: "white",
-                          py: 1.2,
-                          fontWeight: "bold",
-                          textTransform: "none",
-                          borderRadius: "8px",
-                          fontSize: "0.9rem",
-                          "&:hover": {
-                            backgroundColor: "#4a94b1",
-                          },
-                        }}
-                      >
-                        {t("fleet.bookNow")}
-                      </Button>
+               <Button
+  variant="contained"
+  fullWidth
+  onClick={() => {
+    const vehicleId = car.name.toLowerCase().replace(/\s+/g, "-");
+
+    if (!isAuthenticated) {
+      router.push(`/signup?redirect=/manage-booking?car=${vehicleId}`);
+    } else {
+      router.push(`/manage-booking?car=${vehicleId}`);
+    }
+  }}
+>
+  {t("fleet.bookNow")}
+</Button>
                     </Box>
                   </CardContent>
                 </Card>
