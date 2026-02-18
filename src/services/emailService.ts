@@ -141,7 +141,8 @@ export const sendBookingEmail = async (
     to_email: "reservations@eventforce.sa.com",
 
     reply_to: formData.email,
-  });
+   });
+
 
   /* ===============================
      SEND EMAIL TO CLIENT
