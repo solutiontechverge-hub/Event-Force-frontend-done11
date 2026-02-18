@@ -156,9 +156,7 @@ const fleet: Car[] = [
 
 const ManageBookingClient = () => {
   const { user, updateUser } = useAuth();
-  const isValidEmail = (email: string) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  };
+
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -194,13 +192,10 @@ const ManageBookingClient = () => {
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
-    phone: "", // ← ONLY phone
+    phone: "",
     selectedCar: "",
-
-    serviceType: "",
     pickupLocation: "",
     destination: "",
-    tripType: "",
     photo: null as File | null,
     pickupDate: "",
     returnDate: "",
@@ -358,16 +353,6 @@ const ManageBookingClient = () => {
       return;
     }
 
-    /* ✅ EMAIL VALIDATION */
-    // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    // if (!emailRegex.test(formData.email)) {
-    //   setSnackbar({
-    //     open: true,
-    //     message: "Please enter a valid email address",
-    //     severity: "error",
-    //   });
-    //   return;
-    // }
     const userEmail = auth.currentUser?.email;
 
     if (!userEmail) {
@@ -379,16 +364,6 @@ const ManageBookingClient = () => {
       return;
     }
 
-    /* ✅ PHONE VALIDATION (country code + number) */
-    // const fullPhone = `${formData.phone}`;
-    // if (!isValidPhoneNumber(fullPhone)) {
-    //   setSnackbar({
-    //     open: true,
-    //     message: "Please enter a valid phone number",
-    //     severity: "error",
-    //   });
-    //   return;
-    // }
     const fullPhone = phone;
 
     if (!fullPhone || fullPhone.length < 8) {
@@ -427,7 +402,7 @@ const ManageBookingClient = () => {
 
         phone: fullPhone, // ✅ validated phone
         car: displayCar.name,
-        serviceType: formData.serviceType,
+  
         pickupLocation: formData.pickupLocation,
         destination: formData.destination,
         pickupDate: formData.pickupDate,
@@ -476,25 +451,25 @@ const ManageBookingClient = () => {
     router.push("/our-fleet");
   };
 
-const handleBackToDetails = () => {
-  const from = searchParams.get("from");
+  const handleBackToDetails = () => {
+    const from = searchParams.get("from");
 
-  // If came from fleet page
-  if (from === "fleet") {
+    // If came from fleet page
+    if (from === "fleet") {
+      router.push("/our-fleet");
+      return;
+    }
+
+    // If came from vehicle details page
+    if (from === "details" && displayCar) {
+      const vehicleId = displayCar.name.toLowerCase().replace(/\s+/g, "-");
+      router.push(`/our-fleet/${vehicleId}`);
+      return;
+    }
+
+    // fallback
     router.push("/our-fleet");
-    return;
-  }
-
-  // If came from vehicle details page
-  if (from === "details" && displayCar) {
-    const vehicleId = displayCar.name.toLowerCase().replace(/\s+/g, "-");
-    router.push(`/our-fleet/${vehicleId}`);
-    return;
-  }
-
-  // fallback
-  router.push("/our-fleet");
-};
+  };
 
   // Get the selected color image from formData
 
@@ -753,185 +728,110 @@ const handleBackToDetails = () => {
       bus49: 250,
     },
   };
-  // Pricing calculation based on spreadsheet
-  // const calculatePrice = useMemo(() => {
-  //   if (!formData.selectedCar || !formData.serviceType) return null;
 
-  //   const vehicleKey = getVehicleKey(formData.selectedCar);
+  const PRESET_LOCATIONS = [
+    "Riyadh Airport ",
+    "Riyadh Downtown to Inside City",
+    "Dammam Airport",
+    "Dammam Downtown to Inside City",
+    "Jeddah Airport",
+    "Jeddah Downtown to Inside City",
+    "Jeddah To KAUST",
+    "Jeddah To KAEC",
+    "Jeddah To Yanbu",
+    "Jeddah To Red Sea Umluj",
+    "Jeddah To NEOM",
+    "JED Airport to Makkah",
+    "Jeddah or Makkah To Madinah",
+    "Madinah Airport to City",
+    "Madina downtown to inside city",
+  ];
+const calculatePrice = useMemo(() => {
+  if (!formData.selectedCar) return null;
 
-  //   if (!vehicleKey) return null;
+  const vehicleKey = getVehicleKey(formData.selectedCar);
+  if (!vehicleKey) return null;
 
-  //   const service = formData.serviceType;
+  const pickup = formData.pickupLocation?.toLowerCase().trim() || "";
 
-  //   const pickup = formData.pickupLocation?.toLowerCase() || "";
-  //   const dest = formData.destination?.toLowerCase() || "";
+  if (!pickup) return null;
 
-  //   // ✅ HOURLY
-  //   if (service === "hourly")
-  //     return pricing.hourly?.[vehicleKey] ?? displayCar?.price ?? null;
+  // Airport-only vehicles restriction
+  if (isAirportOnlyVehicle) {
+    if (pickup.includes("riyadh"))
+      return pricing["riyadh-airport-city"]?.[vehicleKey] ?? null;
 
-  //   if (service === "8-hours")
-  //     return pricing["8-hours"]?.[vehicleKey] ?? displayCar?.price ?? null;
+    if (pickup.includes("jeddah"))
+      return pricing["jeddah-airport-city"]?.[vehicleKey] ?? null;
 
-  //   if (service === "12-hours")
-  //     return pricing["12-hours"]?.[vehicleKey] ?? displayCar?.price ?? null;
+    if (pickup.includes("dammam"))
+      return pricing["dammam-airport-city"]?.[vehicleKey] ?? null;
 
-  //   if (service === "extra-hour")
-  //     return pricing["extra-hour"]?.[vehicleKey] ?? displayCar?.price ?? null;
-
-  //   // If no pickup location yet → return base price
-  //   if (!pickup) {
-  //     return (
-  //       pricing.hourly?.[vehicleKey] ??
-  //       pricing["8-hours"]?.[vehicleKey] ??
-  //       pricing["12-hours"]?.[vehicleKey] ??
-  //       null
-  //     );
-  //   }
-
-  //   // AIRPORT
-  //   if (service === "airport-pickup") {
-  //     if (pickup.includes("riyadh"))
-  //       return pricing["riyadh-airport-city"]?.[vehicleKey] ?? null;
-
-  //     if (pickup.includes("jeddah"))
-  //       return pricing["jeddah-airport-city"]?.[vehicleKey] ?? null;
-
-  //     if (pickup.includes("dammam"))
-  //       return pricing["dammam-airport-city"]?.[vehicleKey] ?? null;
-
-  //     if (pickup.includes("madina"))
-  //       return pricing["madina-airport-city"]?.[vehicleKey] ?? null;
-  //   }
-
-  //   // DOWNTOWN
-  //   if (service === "downtown") {
-  //     if (pickup.includes("riyadh"))
-  //       return pricing["riyadh-downtown-city"]?.[vehicleKey] ?? null;
-
-  //     if (pickup.includes("jeddah"))
-  //       return pricing["jeddah-downtown-city"]?.[vehicleKey] ?? null;
-  //   }
-
-  //   // INTERCITY
-  //   if (service === "inter-city") {
-  //     if (pickup.includes("jeddah") && dest.includes("makkah"))
-  //       return pricing["jeddah-airport-makkah"]?.[vehicleKey] ?? null;
-  //   }
-
-  //   return null;
-  // }, [
-  //   formData.selectedCar,
-  //   formData.serviceType,
-  //   formData.pickupLocation,
-  //   formData.destination,
-  //   displayCar,
-  // ]);
-
-  const calculatePrice = useMemo(() => {
-    if (!formData.selectedCar || !formData.serviceType) return null;
-
-    const vehicleKey = getVehicleKey(formData.selectedCar);
-    if (!vehicleKey) return null;
-
-    const service = formData.serviceType;
-    const pickup = formData.pickupLocation?.toLowerCase() || "";
-    const dest = formData.destination?.toLowerCase() || "";
-
-    // -----------------------
-    // HOURLY / FIXED HOURS
-    // -----------------------
-    if (service === "hourly") return pricing.hourly?.[vehicleKey] ?? null;
-
-    if (service === "8-hours") return pricing["8-hours"]?.[vehicleKey] ?? null;
-
-    if (service === "12-hours")
-      return pricing["12-hours"]?.[vehicleKey] ?? null;
-
-    if (service === "extra-hour")
-      return pricing["extra-hour"]?.[vehicleKey] ?? null;
-
-    // -----------------------
-    // AIRPORT TRANSFERS
-    // -----------------------
-    if (service === "airport-pickup") {
-      if (pickup.includes("riyadh"))
-        return pricing["riyadh-airport-city"]?.[vehicleKey] ?? null;
-
-      if (pickup.includes("dammam"))
-        return pricing["dammam-airport-city"]?.[vehicleKey] ?? null;
-
-      if (pickup.includes("jeddah")) {
-        if (dest.includes("makkah"))
-          return pricing["jeddah-airport-makkah"]?.[vehicleKey] ?? null;
-
-        return pricing["jeddah-airport-city"]?.[vehicleKey] ?? null;
-      }
-
-      if (
-        pickup.includes("madinah") ||
-        pickup.includes("medina") ||
-        pickup.includes("madina")
-      )
-        return pricing["madina-airport-city"]?.[vehicleKey] ?? null;
-    }
-
-    // -----------------------
-    // DOWNTOWN
-    // -----------------------
-    if (service === "downtown") {
-      if (pickup.includes("riyadh"))
-        return pricing["riyadh-downtown-city"]?.[vehicleKey] ?? null;
-
-      if (pickup.includes("dammam"))
-        return pricing["dammam-downtown-city"]?.[vehicleKey] ?? null;
-
-      if (pickup.includes("jeddah"))
-        return pricing["jeddah-downtown-city"]?.[vehicleKey] ?? null;
-
-      if (
-        pickup.includes("madinah") ||
-        pickup.includes("medina") ||
-        pickup.includes("madina")
-      )
-        return pricing["madina-downtown-city"]?.[vehicleKey] ?? null;
-    }
-
-    // -----------------------
-    // INTERCITY (Pickup + Destination REQUIRED)
-    // -----------------------
-    if (service === "inter-city") {
-      if (pickup.includes("jeddah")) {
-        if (dest.includes("kaust"))
-          return pricing["jeddah-kaust"]?.[vehicleKey] ?? null;
-
-        if (dest.includes("kaec"))
-          return pricing["jeddah-kaec"]?.[vehicleKey] ?? null;
-
-        if (dest.includes("yanbu"))
-          return pricing["jeddah-yanbu"]?.[vehicleKey] ?? null;
-
-        if (dest.includes("umluj") || dest.includes("red sea"))
-          return pricing["jeddah-red-sea-umluj"]?.[vehicleKey] ?? null;
-
-        if (dest.includes("neom"))
-          return pricing["jeddah-neom"]?.[vehicleKey] ?? null;
-
-        if (dest.includes("makkah"))
-          return pricing["jeddah-airport-makkah"]?.[vehicleKey] ?? null;
-
-        if (dest.includes("madinah") || dest.includes("medina"))
-          return pricing["jeddah-makkah-medina"]?.[vehicleKey] ?? null;
-      }
-    }
+    if (
+      pickup.includes("madinah") ||
+      pickup.includes("medina") ||
+      pickup.includes("madina")
+    )
+      return pricing["madina-airport-city"]?.[vehicleKey] ?? null;
 
     return null;
-  }, [
-    formData.selectedCar,
-    formData.serviceType,
-    formData.pickupLocation,
-    formData.destination,
-  ]);
+  }
+
+  // Airport preset locations
+  if (pickup.includes("airport")) {
+    if (pickup.includes("riyadh"))
+      return pricing["riyadh-airport-city"]?.[vehicleKey] ?? null;
+
+    if (pickup.includes("jeddah"))
+      return pricing["jeddah-airport-city"]?.[vehicleKey] ?? null;
+
+    if (pickup.includes("dammam"))
+      return pricing["dammam-airport-city"]?.[vehicleKey] ?? null;
+
+    if (
+      pickup.includes("madinah") ||
+      pickup.includes("medina") ||
+      pickup.includes("madina")
+    )
+      return pricing["madina-airport-city"]?.[vehicleKey] ?? null;
+  }
+
+  // Preset downtown
+  if (pickup.includes("downtown")) {
+    if (pickup.includes("riyadh"))
+      return pricing["riyadh-downtown-city"]?.[vehicleKey] ?? null;
+
+    if (pickup.includes("jeddah"))
+      return pricing["jeddah-downtown-city"]?.[vehicleKey] ?? null;
+
+    if (pickup.includes("dammam"))
+      return pricing["dammam-downtown-city"]?.[vehicleKey] ?? null;
+
+    if (
+      pickup.includes("madinah") ||
+      pickup.includes("medina") ||
+      pickup.includes("madina")
+    )
+      return pricing["madina-downtown-city"]?.[vehicleKey] ?? null;
+  }
+
+  // Google Map or custom location → HOURLY PRICE
+  return pricing.hourly?.[vehicleKey] ?? null;
+}, [
+  formData.selectedCar,
+  formData.pickupLocation,
+  isAirportOnlyVehicle,
+]);
+
+const isAirport = formData.pickupLocation
+  ?.toLowerCase()
+  .includes("airport");
+
+const isPresetLocation = PRESET_LOCATIONS.some(
+  (loc) =>
+    loc.toLowerCase().trim() ===
+    formData.pickupLocation?.toLowerCase().trim()
+);
 
   if (!isMounted) {
     return (
@@ -1359,50 +1259,52 @@ const handleBackToDetails = () => {
                       />
                     </Box>
                   </Box>
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      fontWeight: "bold",
-                      color: "#52A4C1",
-                      mb: 1,
-                    }}
-                  >
-                    {calculatePrice !== null ? (
-                      <>
-                        {formData.serviceType === "hourly" &&
-                          `Rent: ${calculatePrice} SAR / Hour`}
+               <Typography
+  variant="h6"
+  sx={{
+    fontWeight: "bold",
+    color: "#52A4C1",
+    mb: 1,
+  }}
+>
+  {calculatePrice !== null ? (
+    <>
+      {isAirport
+        ? `Rent: ${calculatePrice} SAR`
+        : isPresetLocation
+        ? `Rent : ${calculatePrice} SAR`
+        : `Rent: ${calculatePrice} SAR / Hour`}
 
-                        {formData.serviceType === "8-hours" &&
-                          `Rent: ${calculatePrice} SAR / 8 Hours`}
+      <Typography
+        variant="caption"
+        sx={{
+          display: "block",
+          color: "#666",
+          fontSize: "0.75rem",
+          mt: 0.5,
+        }}
+      >
+        Excluding VAT
+      </Typography>
+    </>
+  ) : (
+    <>
+      Rent: {displayCar.price} / {displayCar.duration}
 
-                        {formData.serviceType === "12-hours" &&
-                          `Rent: ${calculatePrice} SAR / 12 Hours`}
-
-                        {formData.serviceType === "airport-pickup" &&
-                          `Airport Transfer: ${calculatePrice} SAR`}
-
-                        {formData.serviceType === "downtown" &&
-                          `City Ride: ${calculatePrice} SAR`}
-
-                        {formData.serviceType === "inter-city" &&
-                          `Intercity Ride: ${calculatePrice} SAR`}
-
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            display: "block",
-                            color: "#666",
-                            fontSize: "0.75rem",
-                            mt: 0.5,
-                          }}
-                        >
-                          Excluding VAT
-                        </Typography>
-                      </>
-                    ) : (
-                      `Rent: ${displayCar.price} / ${displayCar.duration}`
-                    )}
-                  </Typography>
+      <Typography
+        variant="caption"
+        sx={{
+          display: "block",
+          color: "#666",
+          fontSize: "0.75rem",
+          mt: 0.5,
+        }}
+      >
+        Excluding VAT
+      </Typography>
+    </>
+  )}
+</Typography>
                 </CardContent>
               </Card>
             </Grid>
@@ -1527,6 +1429,9 @@ const handleBackToDetails = () => {
                       >
                         <Select
                           value={formData.selectedCar || ""}
+                          MenuProps={{
+                            disableScrollLock: true, // ✅ FIX
+                          }}
                           onChange={(e) =>
                             setFormData((prev) => ({
                               ...prev,
@@ -1546,56 +1451,9 @@ const handleBackToDetails = () => {
                       </FormControl>
                     </Box>
 
-                    {/* Service Type */}
-                    <Box sx={{ mb: 3 }}>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          fontWeight: "bold",
-                          mb: 1,
-                          color: "#333",
-                          fontSize: "0.875rem",
-                        }}
-                      >
-                        {t("booking.serviceType")}*
-                      </Typography>
-                      <FormControl
-                        fullWidth
-                        size="small"
-                        sx={{
-                          "& .MuiOutlinedInput-root": {
-                            borderRadius: "8px",
-                            backgroundColor: "#F8F8F8",
-                          },
-                        }}
-                      >
-                        <Select
-                          value={formData.serviceType || ""}
-                          onChange={(e) =>
-                            setFormData((prev) => ({
-                              ...prev,
-                              serviceType: e.target.value,
-                            }))
-                          }
-                          displayEmpty
-                          required
-                          IconComponent={ArrowDropDown}
-                        >
-                          <MenuItem value="" disabled>
-                            {t("booking.selectServiceType")}
-                          </MenuItem>
-
-                          {serviceOptions.map((option) => (
-                            <MenuItem key={option.value} value={option.value}>
-                              {option.label}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Box>
-
                     {/* <PickupDropoffMap /> */}
                     <PickupDestinationSingleFlow
+                      airportOnly={isAirportOnlyVehicle}
                       setPickupLocation={(value) =>
                         setFormData((prev) => ({
                           ...prev,

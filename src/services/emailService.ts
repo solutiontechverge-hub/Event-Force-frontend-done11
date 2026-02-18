@@ -1,43 +1,43 @@
-import emailjs from '@emailjs/browser';
+import emailjs from "@emailjs/browser";
 
-// Helper function to get EmailJS configuration from environment variables
-// clint 
+/* =====================================================
+   EMAILJS CONFIG
+===================================================== */
+
 const getEmailJSConfig = () => {
   return {
-    serviceId: 'service_p81vwl5',
-    templateIdContact: 'template_x36w5vj',
-    templateIdBooking: 'template_m4d7mlk',
-    publicKey: '-mDuRKSIkk-3w_jOo',
+    serviceId: "service_p81vwl5",
+    templateIdContact: "template_x36w5vj",
+    templateIdBooking: "template_m4d7mlk",
+    publicKey: "-mDuRKSIkk-3w_jOo",
   };
 };
 
-// const getEmailJSConfig = () => {
-//   return {
-//     serviceId: 'service_u4he2zl',
-//     templateIdContact: 'template_8i9xoai',
-//     templateIdBooking: 'template_e1k0rs3',
-//     publicKey: 'nP_FvyDKuyE4gtfQe',
-//   };
-// };
+/* =====================================================
+   INITIALIZE EMAILJS
+===================================================== */
 
-// Initialize EmailJS only if configured and in browser
+let initialized = false;
+
 const initializeEmailJS = () => {
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
+
+  if (initialized) return;
 
   const { publicKey } = getEmailJSConfig();
-  if (publicKey && publicKey !== 'YOUR_PUBLIC_KEY_HERE') {
-    try {
-      emailjs.init(publicKey);
-    } catch (error) {
-      // EmailJS initialization failed
-    }
-  }
+
+  emailjs.init(publicKey);
+
+  initialized = true;
 };
 
-// Initialize on module load if in browser
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   initializeEmailJS();
 }
+
+/* =====================================================
+   TYPES
+===================================================== */
 
 export interface ContactFormData {
   name: string;
@@ -49,200 +49,110 @@ export interface BookingFormData {
   fullName: string;
   email: string;
   phone: string;
-  // : string;
   selectedCar: string;
-  selectedColor?: string;
-  serviceType: string;
   pickupLocation?: string;
   destination?: string;
   pickupDate?: string;
-  pickupTime?: string;
   returnDate?: string;
-  returnTime?: string;
   reservationNumber?: string;
 }
 
-export const sendContactEmail = async (formData: ContactFormData): Promise<void> => {
-  // Get EmailJS configuration from environment variables
-  const { serviceId, templateIdContact, publicKey } = getEmailJSConfig();
+/* =====================================================
+   HELPERS
+===================================================== */
 
-
-
-  // Check if EmailJS is configured
-  if (!serviceId || !publicKey || !templateIdContact || publicKey === 'YOUR_PUBLIC_KEY_HERE') {
-    const missingVars = [];
-    if (!serviceId) missingVars.push('NEXT_PUBLIC_EMAILJS_SERVICE_ID');
-    if (!templateIdContact) missingVars.push('NEXT_PUBLIC_EMAILJS_TEMPLATE_ID_CONTACT');
-    if (!publicKey || publicKey === 'YOUR_PUBLIC_KEY_HERE') missingVars.push('NEXT_PUBLIC_EMAILJS_PUBLIC_KEY');
-
-    throw new Error(
-      `EmailJS is not configured. Missing or invalid: ${missingVars.join(', ')}. ` +
-      `Please check your .env.local file and ensure all EmailJS environment variables are set. ` +
-      `Then restart your development server.`
-    );
-  }
-
-  // Initialize EmailJS if not already initialized
-  if (typeof window !== 'undefined') {
-    try {
-      emailjs.init(publicKey);
-    } catch (error) {
-      // EmailJS initialization warning
-    }
-  }
-
-  try {
-    const templateParams = {
-      title: 'New Contact Form Submission',
-      name: formData.name,
-      from_name: formData.name,
-      from_email: formData.email,
-      email: formData.email,
-      message: formData.message,
-      to_email: 'reservations@eventforce.sa.com',
-      reply_to: formData.email,
-    };
-
-    await emailjs.send(
-      serviceId,
-      templateIdContact,
-      templateParams
-    );
-
-  } catch (error: any) {
-    const errorMessage = error?.text || error?.message || 'Unknown error occurred';
-    throw new Error(`Failed to send message: ${errorMessage}. Please check your EmailJS configuration.`);
-  }
-};
-const getTimeFromDateTime = (dateTime: any) => {
-  if (!dateTime) return 'Not specified';
-  return dateTime.split('T')[1]; // 19:32
+const getTimeFromDateTime = (dateTime?: string) => {
+  if (!dateTime) return "";
+  return dateTime.split("T")[1] || "";
 };
 
-export const sendBookingEmail = async (formData: BookingFormData): Promise<void> => {
-  // Get EmailJS configuration from environment variables
-  const { serviceId, templateIdBooking, publicKey } = getEmailJSConfig();
-
-  // Check if EmailJS is configured
-  if (!serviceId || !publicKey || !templateIdBooking || publicKey === 'YOUR_PUBLIC_KEY_HERE') {
-    const missingVars = [];
-    if (!serviceId) missingVars.push('NEXT_PUBLIC_EMAILJS_SERVICE_ID');
-    if (!templateIdBooking) missingVars.push('NEXT_PUBLIC_EMAILJS_TEMPLATE_ID_BOOKING');
-    if (!publicKey || publicKey === 'YOUR_PUBLIC_KEY_HERE') missingVars.push('NEXT_PUBLIC_EMAILJS_PUBLIC_KEY');
-
-    throw new Error(
-      `EmailJS is not configured. Missing or invalid: ${missingVars.join(', ')}. ` +
-      `Please check your .env.local file and ensure all EmailJS environment variables are set. ` +
-      `Then restart your development server.`
-    );
-  }
-
-  // Initialize EmailJS if not already initialized
-  if (typeof window !== 'undefined') {
-    try {
-      emailjs.init(publicKey);
-    } catch (error) {
-      throw new Error(`EmailJS initialization failed: ${error}`);
-    }
-  } else {
-    throw new Error('EmailJS can only be used in browser environment');
-  }
-
-  try {
-    const reservationNumber = formData.reservationNumber || 'PENDING';
-const templateParams = {
-  full_name: formData.fullName,
-  email: formData.email,
-  phone: formData.phone,
-  car: formData.selectedCar,
-
-  service_type: formData.serviceType,
-  pickup_location: formData.pickupLocation || "",
-  destination: formData.destination || "",
-
-  pickup_date: formData.pickupDate
-    ? formData.pickupDate.split("T")[0]
-    : "",
-
-  pickup_time: formData.pickupDate
-    ? getTimeFromDateTime(formData.pickupDate)
-    : "",
-
-  flight_no: formData.returnDate || "",
-  reservation_number: reservationNumber,
-  to_email: 'reservations@eventforce.sa.com',
-  reply_to: formData.email,
+const getDateFromDateTime = (dateTime?: string) => {
+  if (!dateTime) return "";
+  return dateTime.split("T")[0] || "";
 };
 
+/* =====================================================
+   CONTACT EMAIL
+===================================================== */
 
-   const templateParamsUser = {
-  full_name: formData.fullName,
-  email: formData.email,
-  phone: formData.phone,
-  car: formData.selectedCar,
+export const sendContactEmail = async (
+  formData: ContactFormData
+): Promise<void> => {
+  initializeEmailJS();
 
-  service_type: formData.serviceType,
-  pickup_location: formData.pickupLocation || "",
-  destination: formData.destination || "",
+  const { serviceId, templateIdContact } = getEmailJSConfig();
 
-  pickup_date: formData.pickupDate
-    ? formData.pickupDate.split("T")[0]
-    : "",
+  const params = {
+    full_name: formData.name,
+    email: formData.email,
+    message: formData.message,
 
-  pickup_time: formData.pickupDate
-    ? getTimeFromDateTime(formData.pickupDate)
-    : "",
+    // IMPORTANT
+    to_email: "reservations@eventforce.sa.com",
+    reply_to: formData.email,
+  };
 
-  flight_no: formData.returnDate || "",
-  reservation_number: reservationNumber,
-  to_email: 'reservations@eventforce.sa.com',
-  reply_to: formData.email,
+  await emailjs.send(serviceId, templateIdContact, params);
 };
 
+/* =====================================================
+   BOOKING EMAIL
+===================================================== */
 
-    // Send admin email
-    let adminEmailSuccess = false;
-    let userEmailSuccess = false;
-    const errors: string[] = [];
+export const sendBookingEmail = async (
+  formData: BookingFormData
+): Promise<void> => {
+  initializeEmailJS();
 
-    try {
-      await emailjs.send(
-        serviceId,
-        templateIdBooking,
-        templateParams
-      );
-      adminEmailSuccess = true;
-    } catch (adminError: any) {
-      const adminErrorMessage = adminError?.text || adminError?.message || 'Unknown error occurred';
-      errors.push(`Admin email failed: ${adminErrorMessage}`);
-    }
+  const { serviceId, templateIdBooking } = getEmailJSConfig();
 
-    // Send user email (try even if admin email failed)
-    try {
-      await emailjs.send(
-        serviceId,
-        templateIdBooking,
-        templateParamsUser
-      );
-      userEmailSuccess = true;
-    } catch (userError: any) {
-      const userErrorMessage = userError?.text || userError?.message || 'Unknown error occurred';
-      errors.push(`User email failed: ${userErrorMessage}`);
-    }
+  const reservationNumber =
+    formData.reservationNumber || "PENDING";
 
-    // If both emails failed, throw error
-    if (!adminEmailSuccess && !userEmailSuccess) {
-      throw new Error(`Both emails failed. ${errors.join(' | ')}`);
-    }
+  /* ===============================
+     BASE PARAMS
+  =============================== */
 
-    // If at least one email succeeded, continue without failing
-    if (!adminEmailSuccess || !userEmailSuccess) {
-      // Partial email success
-    }
+  const baseParams = {
+    full_name: formData.fullName,
+    email: formData.email,
+    phone: formData.phone,
+    car: formData.selectedCar,
 
-  } catch (error: any) {
-    const errorMessage = error?.text || error?.message || error?.toString() || 'Unknown error occurred';
-    throw new Error(`Failed to submit booking: ${errorMessage}. Please check your EmailJS configuration.`);
-  }
+    pickup_location: formData.pickupLocation || "",
+    destination: formData.destination || "",
+
+    pickup_date: getDateFromDateTime(formData.pickupDate),
+    pickup_time: getTimeFromDateTime(formData.pickupDate),
+
+    flight_no: formData.returnDate || "",
+
+    reservation_number: reservationNumber,
+  };
+
+  /* ===============================
+     SEND EMAIL TO ADMIN
+  =============================== */
+
+  await emailjs.send(serviceId, templateIdBooking, {
+    ...baseParams,
+
+    // ADMIN RECEIVES
+    to_email: "reservations@eventforce.sa.com",
+
+    reply_to: formData.email,
+  });
+
+  /* ===============================
+     SEND EMAIL TO CLIENT
+  =============================== */
+
+  await emailjs.send(serviceId, templateIdBooking, {
+    ...baseParams,
+
+    // CLIENT RECEIVES
+    to_email: formData.email,
+
+    reply_to: "reservations@eventforce.sa.com",
+  });
 };
-

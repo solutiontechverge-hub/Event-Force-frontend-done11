@@ -22,6 +22,7 @@ type Location = BaseLocation | MapLocation;
 type LocationMode = "" | "map" | string;
 
 interface Props {
+  airportOnly?: boolean; // ✅ ADD THIS LINE
   setPickupLocation: (value: string) => void;
   setDestinationLocation: (value: string) => void;
 }
@@ -31,14 +32,29 @@ interface Props {
 const libraries: "places"[] = ["places"];
 
 const PRESET_LOCATIONS: string[] = [
-  "Riyadh",
-  "JED CITY",
-  "JED APT",
-  "Makkah City",
-  "Madinah City",
-  "Dammam City",
+  "Riyadh Airport ",
+  "Riyadh Downtown to Inside City",
+  "Dammam Airport",
+  "Dammam Downtown to Inside City",
+  "Jeddah Airport",
+  "Jeddah Downtown to Inside City",
+  "Jeddah To KAUST",
+  "Jeddah To KAEC",
+  "Jeddah To Yanbu",
+  "Jeddah To Red Sea Umluj",
+  "Jeddah To NEOM",
+  "JED Airport to Makkah",
+  "Jeddah or Makkah To Madinah",
+  "Madinah Airport to City",
+  "Madina downtown to inside city",
 ];
 
+const AIRPORT_LOCATIONS: string[] = [
+  "Riyadh Airport",
+  "Dammam Airport",
+  "Jeddah Airport",
+  "Madinah Airport to City",
+];
 /* ================= TYPE GUARD ================= */
 
 const isMapLocation = (loc: Location | null): loc is MapLocation =>
@@ -48,6 +64,7 @@ const isMapLocation = (loc: Location | null): loc is MapLocation =>
 
 const PickupDestinationSingleFlow: React.FC<Props> = ({
   setPickupLocation,
+  airportOnly,
   setDestinationLocation,
 }) => {
   const pickupRef = useRef<google.maps.places.Autocomplete | null>(null);
@@ -58,6 +75,8 @@ const PickupDestinationSingleFlow: React.FC<Props> = ({
 
   const [pickup, setPickup] = useState<Location | null>(null);
   const [destination, setDestination] = useState<Location | null>(null);
+
+  const filteredLocations = airportOnly ? AIRPORT_LOCATIONS : PRESET_LOCATIONS;
 
   /* ================= CURRENT LOCATION ================= */
 
@@ -82,7 +101,7 @@ const PickupDestinationSingleFlow: React.FC<Props> = ({
           }
         });
       },
-      () => alert("Location permission denied")
+      () => alert("Location permission denied"),
     );
   };
 
@@ -102,10 +121,7 @@ const PickupDestinationSingleFlow: React.FC<Props> = ({
     >
       {/* ================= PICKUP ================= */}
       <Box sx={{ mb: 3 }}>
-        <Typography
-          variant="body2"
-          sx={{ fontWeight: "bold", mb: 1 }}
-        >
+        <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
           Pickup Location *
         </Typography>
 
@@ -130,15 +146,15 @@ const PickupDestinationSingleFlow: React.FC<Props> = ({
             Select pickup
           </MenuItem>
 
-          {PRESET_LOCATIONS.map((loc) => (
+          {filteredLocations.map((loc) => (
             <MenuItem key={loc} value={loc}>
               {loc}
             </MenuItem>
           ))}
 
-          <MenuItem value="map">
-            🔍 Search on Google Map
-          </MenuItem>
+          {!airportOnly && (
+            <MenuItem value="map">🔍 Search on Google Map</MenuItem>
+          )}
         </TextField>
       </Box>
 
@@ -161,62 +177,46 @@ const PickupDestinationSingleFlow: React.FC<Props> = ({
               setPickupLocation(address); // ✅ parent update
             }}
           >
-            <TextField
-              fullWidth
-              size="small"
-              placeholder="Search pickup"
-            />
+            <TextField fullWidth size="small" placeholder="Search pickup" />
           </Autocomplete>
 
-          <Button onClick={getCurrentLocation}>
-            📍 Use my location
-          </Button>
+          <Button onClick={getCurrentLocation}>📍 Use my location</Button>
         </Box>
       )}
 
       {/* ================= DESTINATION ================= */}
-      <Box sx={{ mb: 3 }}>
-        <Typography
-          variant="body2"
-          sx={{ fontWeight: "bold", mb: 1 }}
-        >
+   {pickupMode === "map" && (
+  <Box sx={{ mb: 3 }}>
+        <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
           Destination *
         </Typography>
 
         <TextField
-          select
-          fullWidth
-          size="small"
-          value={destMode}
-          onChange={(e) => {
-            const value = e.target.value as LocationMode;
-            setDestMode(value);
+  select
+  fullWidth
+  size="small"
+  value={destMode}
+  onChange={(e) => {
+    const value = e.target.value as LocationMode;
+    setDestMode(value);
 
-            if (value !== "map") {
-              setDestination({ address: value });
-              setDestinationLocation(value); // ✅ FIXED
-            } else {
-              setDestination(null);
-            }
-          }}
-        >
-          <MenuItem value="" disabled>
-            Select destination
-          </MenuItem>
+    if (value === "map") {
+      setDestination(null);
+    }
+  }}
+>
+  <MenuItem value="" disabled>
+    Select destination
+  </MenuItem>
 
-          {PRESET_LOCATIONS.map((loc) => (
-            <MenuItem key={loc} value={loc}>
-              {loc}
-            </MenuItem>
-          ))}
+  {/* ONLY GOOGLE MAP OPTION */}
+  <MenuItem value="map">🔍 Search on Google Map</MenuItem>
 
-          <MenuItem value="map">
-            🔍 Search on Google Map
-          </MenuItem>
-        </TextField>
+</TextField>
       </Box>
+)}
 
-      {destMode === "map" && (
+      {pickupMode === "map" && destMode === "map" && (
         <Autocomplete
           onLoad={(ref) => (destRef.current = ref)}
           onPlaceChanged={() => {
@@ -234,11 +234,7 @@ const PickupDestinationSingleFlow: React.FC<Props> = ({
             setDestinationLocation(address); // ✅ FIXED
           }}
         >
-          <TextField
-            fullWidth
-            size="small"
-            placeholder="Search destination"
-          />
+          <TextField fullWidth size="small" placeholder="Search destination" />
         </Autocomplete>
       )}
 
@@ -253,10 +249,7 @@ const PickupDestinationSingleFlow: React.FC<Props> = ({
           }}
         >
           {isMapLocation(pickup) && (
-            <Marker
-              position={{ lat: pickup.lat, lng: pickup.lng }}
-              label="P"
-            />
+            <Marker position={{ lat: pickup.lat, lng: pickup.lng }} label="P" />
           )}
 
           {isMapLocation(destination) && (
