@@ -74,7 +74,6 @@ const getDateFromDateTime = (dateTime?: string) => {
 /* =====================================================
    CONTACT EMAIL
 ===================================================== */
-
 export const sendContactEmail = async (
   formData: ContactFormData
 ): Promise<void> => {
@@ -83,17 +82,24 @@ export const sendContactEmail = async (
   const { serviceId, templateIdContact } = getEmailJSConfig();
 
   const params = {
-    full_name: formData.name,
-    email: formData.email,
+    name: formData.name,          // ✅ REQUIRED
+    from_name: formData.name,     // ✅ BEST PRACTICE
+    email: formData.email,        // ✅ REQUIRED
+    reply_to: formData.email,     // ✅ so you can reply
     message: formData.message,
 
-    // IMPORTANT
     to_email: "reservations@eventforce.sa.com",
-    reply_to: formData.email,
   };
 
-  await emailjs.send(serviceId, templateIdContact, params);
+  console.log("Contact email params:", params); // optional debug
+
+  await emailjs.send(
+    serviceId,
+    templateIdContact,
+    params
+  );
 };
+
 
 /* =====================================================
    BOOKING EMAIL
