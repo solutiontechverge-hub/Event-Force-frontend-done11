@@ -114,7 +114,10 @@ const PickupDestinationSingleFlow: React.FC<Props> = ({
   })();
 
   return (
-    <LoadScript googleMapsApiKey="AIzaSyBZPM5OmCSG1s4BN7VI696m-ZMbvg3Yozk" libraries={libraries}>
+    <LoadScript
+      googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string}
+      libraries={libraries}
+    >
       {/* ================= PICKUP ================= */}
 
       <Box sx={{ mb: 3 }}>
@@ -235,8 +238,7 @@ const PickupDestinationSingleFlow: React.FC<Props> = ({
       </Box>
 
       {/* GOOGLE MAP DESTINATION */}
-{destMode === "map" && (
-
+      {destMode === "map" && (
         <Autocomplete
           onLoad={(ref) => (destRef.current = ref)}
           onPlaceChanged={() => {

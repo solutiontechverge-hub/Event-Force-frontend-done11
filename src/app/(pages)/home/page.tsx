@@ -12,10 +12,12 @@ import {
   SuspenseFleetSection, 
   SuspenseContactSection 
 } from '@/components/LazyComponents'
+import RamadanPopup from '@/components/RamadanPopup';
 
 const HomePage = () => {
   return (
     <>
+    <RamadanPopup />
       <Header />
       <HeroSection />
       <MissionVision />

@@ -122,3 +122,10 @@ export { default as HelpCenterBg } from './help-center.png';
 export { default as FaqBg } from './faq.png';
 export { default as TermServicesBg } from './term-services.png';
 export { default as ContactUsBg } from './contact-us.png';
+
+
+
+
+export { default as BackgroundPopUp } from './ramadan-bg.jpg';
+
+

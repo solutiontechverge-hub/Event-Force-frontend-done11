@@ -43,14 +43,13 @@ const FleetSection = () => {
   );
   const isMobile = useMediaQuery("(max-width:900px)");
   const { t, language } = useLanguage();
-  
+
   const nonPremiumCars = [
     "Ford Taurus",
     "Coach 49 Seats",
     "Toyota Coaster",
     "Toyota Hiace",
   ];
-
 
   const fleet = [
     {
@@ -309,30 +308,30 @@ const FleetSection = () => {
                               }}
                             />
                           </Box>
-                             {!nonPremiumCars.includes(car.name) && (
-                          <Chip
-                            label="Premium"
-                            size="small"
-                            sx={{
-                              position: "absolute",
-                              top: { xs: 14, md: 16 },
-                              right: { xs: 14, md: 16 },
-                              backgroundColor: "rgba(255, 255, 255, 0.98)",
-                              color: "#52A4C1",
-                              fontWeight: 700,
-                              fontSize: { xs: "0.7rem", md: "0.75rem" },
-                              height: { xs: "26px", md: "28px" },
-                              px: { xs: 1.8, md: 2 },
-                              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-                              zIndex: 10,
-                              border: "1px solid rgba(82, 164, 193, 0.2)",
-                              "& .MuiChip-label": {
-                                padding: { xs: "0 6px", md: "0 8px" },
-                                letterSpacing: "0.5px",
-                              },
-                            }}
-                          />
-                             )}
+                          {!nonPremiumCars.includes(car.name) && (
+                            <Chip
+                              label="Premium"
+                              size="small"
+                              sx={{
+                                position: "absolute",
+                                top: { xs: 14, md: 16 },
+                                right: { xs: 14, md: 16 },
+                                backgroundColor: "rgba(255, 255, 255, 0.98)",
+                                color: "#52A4C1",
+                                fontWeight: 700,
+                                fontSize: { xs: "0.7rem", md: "0.75rem" },
+                                height: { xs: "26px", md: "28px" },
+                                px: { xs: 1.8, md: 2 },
+                                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                                zIndex: 10,
+                                border: "1px solid rgba(82, 164, 193, 0.2)",
+                                "& .MuiChip-label": {
+                                  padding: { xs: "0 6px", md: "0 8px" },
+                                  letterSpacing: "0.5px",
+                                },
+                              }}
+                            />
+                          )}
                         </Box>
                       </CardMedia>
 
@@ -396,27 +395,29 @@ const FleetSection = () => {
                         </Box>
 
                         {/* Book Now Button */}
-<Button
-  variant="contained"
-  fullWidth
-  onClick={() => {
-    const vehicleId = car.name.toLowerCase().replace(/\s+/g, "-");
+                        <Button
+                          variant="contained"
+                          fullWidth
+                          onClick={() => {
+                            const vehicleId = car.name
+                              .toLowerCase()
+                              .replace(/\s+/g, "-");
 
-    window.location.href = `/manage-booking?car=${vehicleId}&from=fleet`;
-  }}
-  sx={{
-    backgroundColor: THEME.colors.primary,
-    borderRadius: 2,
-    py: 1.5,
-    fontWeight: "bold",
-    textTransform: "none",
-    "&:hover": {
-      backgroundColor: THEME.colors.primaryDark,
-    },
-  }}
->
-  {t("fleet.bookNow")}
-</Button>
+                            window.location.href = `/manage-booking?car=${vehicleId}&from=fleet`;
+                          }}
+                          sx={{
+                            backgroundColor: THEME.colors.primary,
+                            borderRadius: 2,
+                            py: 1.5,
+                            fontWeight: "bold",
+                            textTransform: "none",
+                            "&:hover": {
+                              backgroundColor: THEME.colors.primaryDark,
+                            },
+                          }}
+                        >
+                          {t("fleet.bookNow")}
+                        </Button>
                       </CardContent>
                     </Card>
                   </Box>
