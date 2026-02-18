@@ -157,7 +157,6 @@ const fleet: Car[] = [
 const ManageBookingClient = () => {
   const { user, updateUser } = useAuth();
 
-
   const searchParams = useSearchParams();
   const router = useRouter();
   const { t, isRTL } = useLanguage();
@@ -402,7 +401,7 @@ const ManageBookingClient = () => {
 
         phone: fullPhone, // ✅ validated phone
         car: displayCar.name,
-  
+
         pickupLocation: formData.pickupLocation,
         destination: formData.destination,
         pickupDate: formData.pickupDate,
@@ -730,11 +729,14 @@ const ManageBookingClient = () => {
   };
 
   const PRESET_LOCATIONS = [
-    "Riyadh Airport ",
+    "Riyadh Airport  ",
+    "Riyadh Airport to city ",
     "Riyadh Downtown to Inside City",
-    "Dammam Airport",
+    "Dammam Airport ",
+    "Dammam Airport to city",
     "Dammam Downtown to Inside City",
-    "Jeddah Airport",
+    "Jeddah Airport ",
+    "Jeddah Airport to city",
     "Jeddah Downtown to Inside City",
     "Jeddah To KAUST",
     "Jeddah To KAEC",
@@ -746,92 +748,94 @@ const ManageBookingClient = () => {
     "Madinah Airport to City",
     "Madina downtown to inside city",
   ];
-const calculatePrice = useMemo(() => {
-  if (!formData.selectedCar) return null;
+  const calculatePrice = useMemo(() => {
+    if (!formData.selectedCar) return null;
 
-  const vehicleKey = getVehicleKey(formData.selectedCar);
-  if (!vehicleKey) return null;
+    const vehicleKey = getVehicleKey(formData.selectedCar);
+    if (!vehicleKey) return null;
 
-  const pickup = formData.pickupLocation?.toLowerCase().trim() || "";
+    const pickup = formData.pickupLocation?.toLowerCase().trim() || "";
 
-  if (!pickup) return null;
+    if (!pickup) return null;
 
-  // Airport-only vehicles restriction
-  if (isAirportOnlyVehicle) {
-    if (pickup.includes("riyadh"))
-      return pricing["riyadh-airport-city"]?.[vehicleKey] ?? null;
+    // Airport-only vehicles restriction
+    if (isAirportOnlyVehicle) {
+      if (pickup.includes("riyadh"))
+        return pricing["riyadh-airport-city"]?.[vehicleKey] ?? null;
 
-    if (pickup.includes("jeddah"))
-      return pricing["jeddah-airport-city"]?.[vehicleKey] ?? null;
+      if (pickup.includes("jeddah"))
+        return pricing["jeddah-airport-city"]?.[vehicleKey] ?? null;
 
-    if (pickup.includes("dammam"))
-      return pricing["dammam-airport-city"]?.[vehicleKey] ?? null;
+      if (pickup.includes("dammam"))
+        return pricing["dammam-airport-city"]?.[vehicleKey] ?? null;
 
-    if (
-      pickup.includes("madinah") ||
-      pickup.includes("medina") ||
-      pickup.includes("madina")
-    )
-      return pricing["madina-airport-city"]?.[vehicleKey] ?? null;
+      if (
+        pickup.includes("madinah") ||
+        pickup.includes("medina") ||
+        pickup.includes("madina")
+      )
+        return pricing["madina-airport-city"]?.[vehicleKey] ?? null;
 
-    return null;
-  }
+      return null;
+    }
 
-  // Airport preset locations
-  if (pickup.includes("airport")) {
-    if (pickup.includes("riyadh"))
-      return pricing["riyadh-airport-city"]?.[vehicleKey] ?? null;
+    // Airport preset locations
+    if (pickup.includes("airport")) {
+      if (pickup.includes("riyadh"))
+        return pricing["riyadh-airport-city"]?.[vehicleKey] ?? null;
 
-    if (pickup.includes("jeddah"))
-      return pricing["jeddah-airport-city"]?.[vehicleKey] ?? null;
+      if (pickup.includes("jeddah"))
+        return pricing["jeddah-airport-city"]?.[vehicleKey] ?? null;
 
-    if (pickup.includes("dammam"))
-      return pricing["dammam-airport-city"]?.[vehicleKey] ?? null;
+      if (pickup.includes("dammam"))
+        return pricing["dammam-airport-city"]?.[vehicleKey] ?? null;
 
-    if (
-      pickup.includes("madinah") ||
-      pickup.includes("medina") ||
-      pickup.includes("madina")
-    )
-      return pricing["madina-airport-city"]?.[vehicleKey] ?? null;
-  }
+      if (
+        pickup.includes("madinah") ||
+        pickup.includes("medina") ||
+        pickup.includes("madina")
+      )
+        return pricing["madina-airport-city"]?.[vehicleKey] ?? null;
+    }
 
-  // Preset downtown
-  if (pickup.includes("downtown")) {
-    if (pickup.includes("riyadh"))
-      return pricing["riyadh-downtown-city"]?.[vehicleKey] ?? null;
+    // Preset downtown
+    if (pickup.includes("downtown")) {
+      if (pickup.includes("riyadh"))
+        return pricing["riyadh-downtown-city"]?.[vehicleKey] ?? null;
 
-    if (pickup.includes("jeddah"))
-      return pricing["jeddah-downtown-city"]?.[vehicleKey] ?? null;
+      if (pickup.includes("jeddah"))
+        return pricing["jeddah-downtown-city"]?.[vehicleKey] ?? null;
 
-    if (pickup.includes("dammam"))
-      return pricing["dammam-downtown-city"]?.[vehicleKey] ?? null;
+      if (pickup.includes("dammam"))
+        return pricing["dammam-downtown-city"]?.[vehicleKey] ?? null;
 
-    if (
-      pickup.includes("madinah") ||
-      pickup.includes("medina") ||
-      pickup.includes("madina")
-    )
-      return pricing["madina-downtown-city"]?.[vehicleKey] ?? null;
-  }
+      if (
+        pickup.includes("madinah") ||
+        pickup.includes("medina") ||
+        pickup.includes("madina")
+      )
+        return pricing["madina-downtown-city"]?.[vehicleKey] ?? null;
+    }
 
-  // Google Map or custom location → HOURLY PRICE
-  return pricing.hourly?.[vehicleKey] ?? null;
-}, [
-  formData.selectedCar,
-  formData.pickupLocation,
-  isAirportOnlyVehicle,
-]);
+    // Google Map or custom location → HOURLY PRICE
+    return pricing.hourly?.[vehicleKey] ?? null;
+  }, [formData.selectedCar, formData.pickupLocation, isAirportOnlyVehicle]);
 
-const isAirport = formData.pickupLocation
-  ?.toLowerCase()
-  .includes("airport");
+  const isAirportPickup = useMemo(() => {
+    const pickup = formData.pickupLocation?.toLowerCase() || "";
 
-const isPresetLocation = PRESET_LOCATIONS.some(
-  (loc) =>
-    loc.toLowerCase().trim() ===
-    formData.pickupLocation?.toLowerCase().trim()
-);
+    return (
+      pickup.includes("airport") ||
+      pickup.includes("airport to") ||
+      pickup.includes("apt")
+    );
+  }, [formData.pickupLocation]);
+
+  const isPresetLocation = PRESET_LOCATIONS.some(
+    (loc) =>
+      loc.toLowerCase().trim() ===
+      formData.pickupLocation?.toLowerCase().trim(),
+  );
 
   if (!isMounted) {
     return (
@@ -1259,52 +1263,51 @@ const isPresetLocation = PRESET_LOCATIONS.some(
                       />
                     </Box>
                   </Box>
-               <Typography
-  variant="h6"
-  sx={{
-    fontWeight: "bold",
-    color: "#52A4C1",
-    mb: 1,
-  }}
->
-  {calculatePrice !== null ? (
-    <>
-      {isAirport
-        ? `Rent: ${calculatePrice} SAR`
-        : isPresetLocation
-        ? `Rent : ${calculatePrice} SAR`
-        : `Rent: ${calculatePrice} SAR / Hour`}
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: "bold",
+                      color: "#52A4C1",
+                      mb: 1,
+                    }}
+                  >
+                    {calculatePrice !== null ? (
+                      <>
+                        {isAirportPickup
+                          ? `Rent: ${calculatePrice} SAR`
+                          : isPresetLocation
+                            ? `Rent : ${calculatePrice} SAR`
+                            : `Rent: ${calculatePrice} SAR / Hour`}
 
-      <Typography
-        variant="caption"
-        sx={{
-          display: "block",
-          color: "#666",
-          fontSize: "0.75rem",
-          mt: 0.5,
-        }}
-      >
-        Excluding VAT
-      </Typography>
-    </>
-  ) : (
-    <>
-      Rent: {displayCar.price} / {displayCar.duration}
-
-      <Typography
-        variant="caption"
-        sx={{
-          display: "block",
-          color: "#666",
-          fontSize: "0.75rem",
-          mt: 0.5,
-        }}
-      >
-        Excluding VAT
-      </Typography>
-    </>
-  )}
-</Typography>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            display: "block",
+                            color: "#666",
+                            fontSize: "0.75rem",
+                            mt: 0.5,
+                          }}
+                        >
+                          Excluding VAT
+                        </Typography>
+                      </>
+                    ) : (
+                      <>
+                        Rent: {displayCar.price} / {displayCar.duration}
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            display: "block",
+                            color: "#666",
+                            fontSize: "0.75rem",
+                            mt: 0.5,
+                          }}
+                        >
+                          Excluding VAT
+                        </Typography>
+                      </>
+                    )}
+                  </Typography>
                 </CardContent>
               </Card>
             </Grid>
