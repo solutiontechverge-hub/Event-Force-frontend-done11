@@ -293,17 +293,7 @@ export default function ProfileClient() {
                     </Typography>
                   </Box>
 
-                  <Chip
-                    label={booking.status}
-                    color={
-                      booking.status === "confirmed"
-                        ? "success"
-                        : booking.status === "pending"
-                        ? "warning"
-                        : "error"
-                    }
-                    sx={{ fontWeight: "bold" }}
-                  />
+               
                 </CardContent>
               </Card>
             ))
