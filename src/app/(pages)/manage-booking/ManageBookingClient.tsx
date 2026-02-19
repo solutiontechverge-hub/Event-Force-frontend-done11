@@ -885,35 +885,49 @@ const calculatePrice = useMemo(() => {
   if (!formData.selectedCar) return null;
 
   const vehicleKey = getVehicleKey(formData.selectedCar);
-
-  if (!vehicleKey) {
-    console.warn("Vehicle key not found for:", formData.selectedCar);
-    return null;
-  }
+  if (!vehicleKey) return null;
 
   const pickup = formData.pickupLocation?.toLowerCase().trim();
-
   if (!pickup) return null;
 
-  // Helper function
-  const getCityPricing = (
-    airportKey: string,
-    downtownKey: string
-  ) => {
-    if (pickup.includes("airport"))
-      return pricing[airportKey]?.[vehicleKey] ?? null;
+  // =========================
+  // INTERCITY ROUTES (FIX)
+  // =========================
 
-    if (pickup.includes("downtown"))
-      return pricing[downtownKey]?.[vehicleKey] ?? null;
+  if (pickup.includes("kaust"))
+    return pricing["jeddah-kaust"]?.[vehicleKey] ?? null;
 
-    return null;
-  };
+  if (pickup.includes("kaec"))
+    return pricing["jeddah-kaec"]?.[vehicleKey] ?? null;
 
+  if (pickup.includes("yanbu"))
+    return pricing["jeddah-yanbu"]?.[vehicleKey] ?? null;
 
-  // ==========================
-  // AIRPORT ONLY VEHICLES
-  // ==========================
-  if (isAirportOnlyVehicle) {
+  if (pickup.includes("red sea") || pickup.includes("umluj"))
+    return pricing["jeddah-red-sea-umluj"]?.[vehicleKey] ?? null;
+
+  if (pickup.includes("neom"))
+    return pricing["jeddah-neom"]?.[vehicleKey] ?? null;
+
+  if (
+    pickup.includes("airport to makkah") ||
+    pickup.includes("jed airport to makkah") ||
+    pickup.includes("jeddah airport to makkah")
+  )
+    return pricing["jeddah-airport-makkah"]?.[vehicleKey] ?? null;
+
+  if (
+    pickup.includes("makkah to madina") ||
+    pickup.includes("makkah to medina") ||
+    pickup.includes("jeddah or makkah to madinah")
+  )
+    return pricing["jeddah-makkah-medina"]?.[vehicleKey] ?? null;
+
+  // =========================
+  // AIRPORT ROUTES
+  // =========================
+
+  if (pickup.includes("airport")) {
     if (pickup.includes("riyadh"))
       return pricing["riyadh-airport-city"]?.[vehicleKey] ?? null;
 
@@ -929,54 +943,38 @@ const calculatePrice = useMemo(() => {
       pickup.includes("madina")
     )
       return pricing["madina-airport-city"]?.[vehicleKey] ?? null;
-
-    return null;
   }
 
+  // =========================
+  // DOWNTOWN ROUTES
+  // =========================
 
-  // ==========================
-  // NORMAL VEHICLES
-  // ==========================
+  if (pickup.includes("downtown")) {
+    if (pickup.includes("riyadh"))
+      return pricing["riyadh-downtown-city"]?.[vehicleKey] ?? null;
 
-  if (pickup.includes("riyadh"))
-    return getCityPricing(
-      "riyadh-airport-city",
-      "riyadh-downtown-city"
-    ) ?? pricing.hourly?.[vehicleKey] ?? null;
+    if (pickup.includes("jeddah"))
+      return pricing["jeddah-downtown-city"]?.[vehicleKey] ?? null;
 
-  if (pickup.includes("jeddah"))
-    return getCityPricing(
-      "jeddah-airport-city",
-      "jeddah-downtown-city"
-    ) ?? pricing.hourly?.[vehicleKey] ?? null;
+    if (pickup.includes("dammam"))
+      return pricing["dammam-downtown-city"]?.[vehicleKey] ?? null;
 
-  if (pickup.includes("dammam"))
-    return getCityPricing(
-      "dammam-airport-city",
-      "dammam-downtown-city"
-    ) ?? pricing.hourly?.[vehicleKey] ?? null;
+    if (
+      pickup.includes("madinah") ||
+      pickup.includes("medina") ||
+      pickup.includes("madina")
+    )
+      return pricing["madina-downtown-city"]?.[vehicleKey] ?? null;
+  }
 
-  if (
-    pickup.includes("madinah") ||
-    pickup.includes("medina") ||
-    pickup.includes("madina")
-  )
-    return getCityPricing(
-      "madina-airport-city",
-      "madina-downtown-city"
-    ) ?? pricing.hourly?.[vehicleKey] ?? null;
+  // =========================
+  // DEFAULT → HOURLY
+  // =========================
 
-
-  // ==========================
-  // GOOGLE MAP / CUSTOM LOCATION
-  // ==========================
   return pricing.hourly?.[vehicleKey] ?? null;
 
-}, [
-  formData.selectedCar,
-  formData.pickupLocation,
-  isAirportOnlyVehicle,
-]);
+}, [formData.selectedCar, formData.pickupLocation]);
+
 
   const isAirportPickup = useMemo(() => {
     const pickup = formData.pickupLocation?.toLowerCase() || "";
