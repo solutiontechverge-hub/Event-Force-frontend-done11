@@ -42,20 +42,28 @@ const AIRPORT_LOCATIONS = [
   "Madinah Airport to city",
 ];
 
-const ALL_LOCATIONS = [
-  "Riyadh Airport",
-  "Riyadh Downtown",
-  "Dammam Airport",
-  "Dammam Downtown",
-  "Jeddah Airport",
-  "Jeddah Downtown",
-  "Madinah Airport",
-  "Madinah Downtown",
-  "Jeddah To KAUST",
-  "Jeddah To KAEC",
-  "Jeddah To Yanbu",
-  "Jeddah To NEOM",
-];
+  const ALL_LOCATIONS = [
+    "Riyadh Airport  ",
+    "Riyadh Airport to city ",
+    "Riyadh Downtown to Inside City",
+    "Dammam Airport ",
+    "Dammam Airport to city",
+    "Dammam Downtown to Inside City",
+    "Jeddah Airport ",
+    "Jeddah Airport to city",
+    "Jeddah Downtown to Inside City",
+    "Jeddah To KAUST",
+    "Jeddah To KAEC",
+    "Jeddah To Yanbu",
+    "Jeddah To Red Sea Umluj",
+    "Jeddah To NEOM",
+    "JED Airport to Makkah",
+    "Jeddah or Makkah To Madinah",
+    "Jeddah to Makkah",
+    "Makkah Al-Mukarramah",
+    "Madinah Airport to City",
+    "Madina downtown to inside city",
+  ];
 
 /* ================= TYPE GUARD ================= */
 

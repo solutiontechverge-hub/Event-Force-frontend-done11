@@ -55,6 +55,7 @@ export interface BookingFormData {
   pickupDate?: string;
   returnDate?: string;
   reservationNumber?: string;
+  price?: number | string; 
 }
 
 /* =====================================================
@@ -124,16 +125,13 @@ export const sendBookingEmail = async (
     email: formData.email,
     phone: formData.phone,
     car: formData.selectedCar,
-
     pickup_location: formData.pickupLocation || "",
     destination: formData.destination || "",
-
     pickup_date: getDateFromDateTime(formData.pickupDate),
     pickup_time: getTimeFromDateTime(formData.pickupDate),
-
     flight_no: formData.returnDate || "",
-
     reservation_number: reservationNumber,
+    price: formData.price ? `${formData.price} SAR` : "Contact for price", // ✅ ADD THIS
   };
 
   /* ===============================
