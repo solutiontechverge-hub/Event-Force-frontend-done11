@@ -1,107 +1,88 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
   Box,
   Typography,
   Button,
-  useMediaQuery,
-  Fade,
 } from '@mui/material';
-import { Download as DownloadIcon } from '@mui/icons-material';
-import { SlideSidewayInView } from '@/components/animations';
+
+import DownloadIcon from '@mui/icons-material/Download';
 import { useLanguage } from '@/contexts/LanguageContext';
 
-const DownloadProfile = () => {
-  const [visible, setVisible] = useState(false);
-  const isMobile = useMediaQuery('(max-width:900px)');
-  const { t } = useLanguage();
+const PRIMARY = '#52A4C1';
 
-  useEffect(() => {
-    const timer = setTimeout(() => setVisible(true), 100);
-    return () => clearTimeout(timer);
-  }, []);
+const DownloadProfile = () => {
+  const { t } = useLanguage();
 
   return (
     <Box
       sx={{
-        minHeight: { xs: 'auto', sm: 92 },
-        height: { xs: 'auto', sm: 92 },
-        backgroundColor: '#F5F5F5',
-        display: 'flex',
-        alignItems: 'center',
-        px: 2,
-        py: { xs: 2, sm: 0 },
+        width: '100%',
+        py: 8,
+
+        px: {
+          xs: 2,
+          sm: 4,
+          md: 6,
+          lg: 10,
+          xl: 16,
+        },
+
+        background: `${PRIMARY}10`,
       }}
     >
-      <Fade in={visible} timeout={700}>
-        <Box
+
+      <Box
+        sx={{
+          borderRadius: 4,
+
+          border: `1px solid ${PRIMARY}40`,
+
+          p: 5,
+
+          display: 'flex',
+
+          flexDirection: {
+            xs: 'column',
+            md: 'row',
+          },
+
+          justifyContent: 'space-between',
+          alignItems: 'center',
+
+          gap: 3,
+        }}
+      >
+
+        <Typography fontSize={22} fontWeight={600}>
+          {t('download.title')}
+        </Typography>
+
+        <Button
+          href="/pdf/Company-Profile.pdf"
+          download
+
+          startIcon={<DownloadIcon />}
+
           sx={{
-            display: 'flex',
-            flexDirection: { xs: 'column', sm: 'row' },
-            alignItems: { xs: 'center', sm: 'center' },
-            justifyContent: 'space-between',
-            gap: { xs: 2, sm: 0 },
-            height: '100%',
-            minHeight: { xs: 'auto', sm: 92 },
-            width: '100%',
+            background: PRIMARY,
+            color: '#fff',
+
+            px: 4,
+            py: 1.5,
+
+            '&:hover': {
+              background: PRIMARY,
+              boxShadow: `0 10px 30px ${PRIMARY}50`,
+            },
           }}
         >
-          {/* Left Text */}
-          <SlideSidewayInView initialX={-30} duration={0.8}>
-            <Typography
-              variant="body1"
-              component="h3"
-              sx={{
-                fontFamily: 'Poppins, sans-serif',
-                fontWeight: 500,
-                fontSize: { xs: '16px', sm: '18px' },
-                color: '#333333',
-                textAlign: { xs: 'center', sm: 'left' },
-              }}
-            >
-              {t('download.title')}
-            </Typography>
-          </SlideSidewayInView>
+          {t('download.button')}
+        </Button>
 
-          {/* Download Button */}
-          <SlideSidewayInView initialX={30} duration={0.8} delay={0.2}>
-            <Button
-              component="a"
-              href="/pdf/Company-Profile.pdf"
-              download="Event-Force-Company-Profile.pdf"
-              variant="contained"
-              endIcon={
-                <DownloadIcon
-                  sx={{ fontSize: { xs: '18px', sm: '20px' } }}
-                />
-              }
-              sx={{
-                backgroundColor: '#52A4C1',
-                borderRadius: '8px',
-                width: { xs: '100%', sm: 212 },
-                height: 48,
-                fontFamily: 'Poppins, sans-serif',
-                fontWeight: 500,
-                fontSize: { xs: '12px', sm: '14px' },
-                color: '#FFFFFF',
-                textTransform: 'none',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 1,
-                '&:hover': {
-                  backgroundColor: '#4A8FA8',
-                  transform: 'scale(1.05)',
-                },
-                transition: 'all 0.3s',
-              }}
-            >
-              {t('download.button')}
-            </Button>
-          </SlideSidewayInView>
-        </Box>
-      </Fade>
+      </Box>
+
     </Box>
   );
 };

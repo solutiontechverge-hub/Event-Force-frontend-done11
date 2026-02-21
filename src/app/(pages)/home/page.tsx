@@ -13,6 +13,7 @@ import {
   SuspenseContactSection 
 } from '@/components/LazyComponents'
 import RamadanPopup from '@/components/RamadanPopup';
+import { Divider } from '@mui/material';
 
 const HomePage = () => {
   return (
@@ -22,6 +23,7 @@ const HomePage = () => {
       <HeroSection />
       <MissionVision />
       <SuspenseBenefitsSection />
+      <Divider sx={{ my: 8 }} />
       <DownloadProfile />
       <SuspenseTestimonialsSection />
       <SuspenseFleetSection />

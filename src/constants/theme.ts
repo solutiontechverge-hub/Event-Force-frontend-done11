@@ -30,11 +30,10 @@ export const THEME = {
       secondary: '#666666',
       disabled: '#999999',
     },
-    background: {
-      default: '#ffffff',
-      paper: '#f8f9fa',
-      dark: '#000000',
-    }
+background: {
+  default: '#f6fbfd',
+  paper: '#ffffff',
+}
   },
   
   gradients: {

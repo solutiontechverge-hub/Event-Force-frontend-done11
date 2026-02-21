@@ -1,79 +1,77 @@
 'use client';
 
-import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import EmotionRegistry from '@/components/EmotionRegistry';
-import { useEffect, useState } from 'react';
+import React from 'react';
+import {
+  ThemeProvider as MuiThemeProvider,
+  createTheme,
+  CssBaseline,
+} from '@mui/material';
 
-const theme = createTheme({
-  typography: {
-    fontFamily: 'var(--font-outfit), Arial, Helvetica, sans-serif',
-  },
+import { THEME } from '@/constants/theme';
+
+const muiTheme = createTheme({
+
   palette: {
+
     primary: {
-      main: '#52A4C1',
+      main: THEME.colors.primary,
     },
-    secondary: {
-      main: '#1976d2',
+
+    background: {
+
+      /* ⭐ THIS CONTROLS WHOLE WEBSITE BACKGROUND */
+      default: '#f6fbfd',
+
+      /* cards */
+      paper: '#ffffff',
     },
+
+    text: {
+      primary: THEME.colors.text.primary,
+      secondary: THEME.colors.text.secondary,
+    },
+
   },
+
+  typography: {
+    fontFamily: THEME.typography.fontFamily.primary,
+  },
+
   components: {
+
     MuiCssBaseline: {
+
       styleOverrides: {
+
         html: {
-          overflowY: 'scroll', // Prevent layout shift when scrollbar is hidden
+          backgroundColor: '#f6fbfd',
         },
+
         body: {
-          fontFamily: 'var(--font-outfit), Arial, Helvetica, sans-serif',
-          backgroundColor: '#000000',
-          color: '#ffffff',
+          backgroundColor: '#f6fbfd',
         },
+
+        '#__next': {
+          backgroundColor: '#f6fbfd',
+        },
+
       },
+
     },
+
   },
+
 });
 
-export default function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [mounted, setMounted] = useState(false);
-  const [direction, setDirection] = useState<'ltr' | 'rtl'>('ltr');
-
-  useEffect(() => {
-    setMounted(true);
-    // Signal that styles are loaded
-    document.body.classList.add('styles-loaded');
-    
-    // Hide initial loading screen (only add class, don't remove from DOM to avoid hydration issues)
-    const loadingScreen = document.getElementById('initial-loading-screen');
-    if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
-      loadingScreen.classList.add('hidden');
-    }
-
-    // Listen for direction changes from LanguageContext
-    const updateDirection = () => {
-      const dir = document.documentElement.dir || 'ltr';
-      setDirection(dir as 'ltr' | 'rtl');
-    };
-    
-    updateDirection();
-    const observer = new MutationObserver(updateDirection);
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['dir'] });
-    
-    return () => observer.disconnect();
-  }, []);
-
-  const themeWithDirection = createTheme({
-    ...theme,
-    direction,
-  });
-
+export default function ThemeProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <EmotionRegistry>
-      <MuiThemeProvider theme={themeWithDirection}>
-        <CssBaseline />
-        <div style={{ visibility: mounted ? 'visible' : 'hidden' }}>
-          {children}
-        </div>
-      </MuiThemeProvider>
-    </EmotionRegistry>
+    <MuiThemeProvider theme={muiTheme}>
+      <CssBaseline />
+      {children}
+    </MuiThemeProvider>
   );
 }

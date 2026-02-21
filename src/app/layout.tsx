@@ -113,7 +113,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body className={`${outfit.className}`} suppressHydrationWarning={true}>
+   <body className={`${outfit.className}`} suppressHydrationWarning={true}>
         {/* Initial Loading Screen - Shows while JS/CSS loads */}
         <div id="initial-loading-screen" className="initial-loading-screen">
           <img 

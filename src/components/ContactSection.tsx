@@ -10,42 +10,38 @@ import {
   TextField,
   Button,
   CircularProgress,
-  IconButton,
   Snackbar,
   Alert,
+  Stack,
 } from "@mui/material";
-import { MobileIcon, EmailIcon, LocationIcon, WhatsAppIcon } from "./icons";
-import {
-  ScaleInView,
-  SlideSidewayInView,
-  SlideUpInView,
-} from "@/components/animations";
+import { MobileIcon, EmailIcon, LocationIcon } from "./icons";
+import TelephoneIcon from "./icons/TelephoneIcon";
+import { SlideUpInView, SlideSidewayInView } from "@/components/animations";
 import { sendContactEmail } from "@/services/emailService";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Telephone } from "../../public/images";
-import Image from "next/image";
-import TelephoneIcon from "./icons/TelephoneIcon";
 
 const ContactSection = () => {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     message: "",
   });
+
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
-    severity: "success" as "success" | "error" | "info" | "warning",
+    severity: "success" as "success" | "error",
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -54,12 +50,18 @@ const ContactSection = () => {
 
     try {
       await sendContactEmail(formData);
+
       setSnackbar({
         open: true,
         message: t("contact.success"),
         severity: "success",
       });
-      setFormData({ name: "", email: "", message: "" });
+
+      setFormData({
+        name: "",
+        email: "",
+        message: "",
+      });
     } catch (error: any) {
       setSnackbar({
         open: true,
@@ -71,431 +73,142 @@ const ContactSection = () => {
     }
   };
 
-  const handleCloseSnackbar = (
-    event?: React.SyntheticEvent | Event,
-    reason?: string,
-  ) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setSnackbar((prev) => ({ ...prev, open: false }));
-  };
-
   return (
-    <Box sx={{ py: 10, backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
-      {/* Match booking page layout by centering content in a container */}
-      <Container maxWidth="lg">
-        <Grid
-          container
-          sx={{
-            position: "relative",
-            minHeight: { xs: "auto", lg: "500px" },
-            width: "100%",
-          }}
-        >
-          {/* Contact Us Card - Left side */}
-          <Grid
-            size={{ xs: 12, lg: 5 }}
-            sx={{
-              zIndex: 2,
-              position: { xs: "relative", lg: "absolute" },
-              top: { xs: 0, lg: 140 },
-              left: 0,
-              height: { xs: "auto", lg: "392px" },
-            }}
-          >
-            <SlideSidewayInView initialX={-50} duration={0.8}>
+    <Box
+      sx={{
+        py: { xs: 6, md: 10 },
+        background:
+          "linear-gradient(180deg, #f8fbfd 0%, #eef5f8 100%)",
+      }}
+    >
+      <Container maxWidth="xl">
+
+        <Grid container spacing={4} alignItems="stretch">
+
+          {/* LEFT CONTACT CARD */}
+          <Grid item xs={12} md={5}>
+            <SlideSidewayInView initialX={-60} duration={0.8}>
               <Card
                 sx={{
-                  backgroundColor: "#000000",
-                  color: "#FFFFFF",
-                  p: { xs: 3, sm: 4, lg: 6 },
                   height: "100%",
-                  boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                  borderRadius: 2,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  gap: 2,
+                  p: { xs: 4, md: 5 },
+                  borderRadius: 4,
+                  color: "white",
+                  background:
+                    "linear-gradient(145deg,#0f2027,#203a43,#2c5364)",
+                  boxShadow: "0 20px 50px rgba(0,0,0,0.25)",
                 }}
               >
-                <Box>
-                  <Typography
-                    variant="h5"
-                    component="h2"
-                    sx={{
-                      fontWeight: "bold",
-                      mb: { xs: 3, sm: 4 },
-                      fontFamily: "Poppins, sans-serif",
-                      fontSize: { xs: "1.25rem", sm: "1.5rem", md: "1.75rem" },
-                    }}
-                  >
-                    {t("contact.contactUs")}
-                  </Typography>
-                   <Typography
-                    variant="body2"
-                    // component="h2"
-                    sx={{
-                      // fontWeight: "bold",
-                      mb: { xs: 3, sm: 4 },
-                      fontFamily: "Poppins, sans-serif",
-                      fontSize: { xs: "1rem", sm: "1.25rem", md: "1.5rem" },
-                    }}
-                  >
-                     Event Force
-                  </Typography>
+                <Typography
+                  variant="h4"
+                  fontWeight="700"
+                  mb={3}
+                >
+                  {t("contact.contactUs")}
+                </Typography>
 
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      mb: { xs: 1.5, sm: 2 },
-                    }}
-                  >
-                    <IconButton
-                      size="small"
-                      rel="noopener noreferrer"
-                      sx={{ color: "#52A4C1", mr: { xs: 1.5, sm: 2 } }}
-                    >
-                      {/* <WhatsAppIcon /> */}
-                      <TelephoneIcon />
-                    </IconButton>
+                <Typography mb={4} opacity={0.8}>
+                  Event Force
+                </Typography>
 
-                    <Typography
-                      variant="body1"
-                      display={"flex"}
-                      component="a"
-                      href="https://wa.me/966125786869"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      sx={{
-                        fontSize: { xs: "0.875rem", sm: "1rem" },
-                        fontFamily: "Poppins, sans-serif",
-                        lineHeight: 1.6,
-                        textDecoration: "none",
-                      }}
-                    >
-                     +966125786869
+                <Stack spacing={3}>
+
+                  <Stack direction="row" spacing={2}>
+                    <TelephoneIcon />
+                    <Typography>
+                      +966125786869
                     </Typography>
-                  </Box>
-                  {/* </Box> */}
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      mb: { xs: 1.5, sm: 2 },
-                    }}
-                  >
-                    <IconButton
-                      size="small"
-                      sx={{ color: "#52A4C1", mr: { xs: 1.5, sm: 2 } }}
-                    >
-                      <MobileIcon />
-                    </IconButton>
-                    <Typography
-                      component="a"
-                      target="_blank"
-                      variant="body1"
-                      href="https://wa.me/966549454525"
-                      sx={{
-                        fontSize: { xs: "0.875rem", sm: "1rem" },
-                        fontFamily: "Poppins, sans-serif",
-                        lineHeight: 1.6,
-                        color: "inherit",
-                        "&:hover": {
-                          color: "#25D366",
-                        },
-                      }}
-                    >
+                  </Stack>
+
+                  <Stack direction="row" spacing={2}>
+                    <MobileIcon />
+                    <Typography>
                       +966549454525
                     </Typography>
-                  </Box>
+                  </Stack>
 
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      mb: { xs: 1.5, sm: 2 },
-                    }}
-                  >
-                    <IconButton
-                      size="small"
-                      sx={{ color: "#52A4C1", mr: { xs: 1.5, sm: 2 } }}
-                    >
-                      <EmailIcon />
-                    </IconButton>
-                    <Typography
-                      variant="body1"
-                      sx={{
-                        fontSize: { xs: "0.875rem", sm: "1rem" },
-                        fontFamily: "Poppins, sans-serif",
-                        lineHeight: 1.6,
-                        wordBreak: "break-word",
-                      }}
-                    >
-                      <a href="mailto:info@eventforce.sa.com">
-                        info@eventforce.sa.com
-                      </a>
+                  <Stack direction="row" spacing={2}>
+                    <EmailIcon />
+                    <Typography>
+                      info@eventforce.sa.com
                     </Typography>
-                  </Box>
+                  </Stack>
 
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "flex-start",
-                      mb: { xs: 3, sm: 4 },
-                    }}
-                  >
-                    <IconButton
-                      size="small"
-                      sx={{
-                        color: "#52A4C1",
-                        mr: { xs: 1.5, sm: 2 },
-                        mt: "2px",
-                      }}
-                    >
-                      <LocationIcon />
-                    </IconButton>
-                    <Typography
-                      variant="body1"
-                      sx={{
-                        fontSize: { xs: "0.875rem", sm: "1rem" },
-                        fontFamily: "Poppins, sans-serif",
-                        lineHeight: 1.7,
-                      }}
-                    >
-                      <Box
-                        component="span"
-                        sx={{ fontWeight: "bold", display: "block", mb: 0.5 }}
-                      >
-                        {t("contact.headquarters")}:
-                      </Box>
-                      8303 Al Ghamdi Center, 1st floor, Office #103, Oman
-                      Street, Al Baghdadiyah Al Gharbiyah Dist., Jeddah 22234,
-                      Kingdom of Saudi Arabia
-                      <Box
-                        component="span"
-                        sx={{
-                          fontWeight: "bold",
-                          display: "block",
-                          mt: 1.5,
-                          mb: 0.5,
-                        }}
-                      >
-                        {t("contact.branch")}:
-                      </Box>
-                      White Space, King Abdullah Dt. Riyadh 12211, Saudi Arabia
+                  <Stack direction="row" spacing={2}>
+                    <LocationIcon />
+                    <Typography fontSize="14px">
+                      8303 Al Ghamdi Center, Jeddah  
+                      <br />
+                      White Space, Riyadh, Saudi Arabia
                     </Typography>
-                  </Box>
-                </Box>
+                  </Stack>
 
-                {/* <Box sx={{ display: 'flex', gap: 2, mt: 'auto', p: 1 }}>
-                <IconButton sx={{ color: '#52A4C1' }}>
-                  <WhatsAppIcon />
-                </IconButton>
-                <IconButton sx={{ color: '#52A4C1' }}>
-                  <MobileIcon />
-                </IconButton>
-                <IconButton sx={{ color: '#52A4C1' }}>
-                  <EmailIcon />
-                </IconButton>
-              </Box> */}
+                </Stack>
               </Card>
             </SlideSidewayInView>
           </Grid>
 
-          {/* Contact Form Card - Right side with overlap */}
-          <Grid
-            size={{ xs: 12, lg: 10 }}
-            sx={{
-              ml: { xs: 0, lg: "auto" },
-              mt: { xs: 2, lg: 6 },
-              zIndex: 1,
-              position: "relative",
-            }}
-          >
-            <SlideUpInView initialY={60} duration={0.9} delay={0.3}>
+          {/* RIGHT FORM CARD */}
+          <Grid item xs={12} md={7}>
+            <SlideUpInView initialY={60} duration={0.8}>
               <Card
                 sx={{
-                  p: { xs: 4, lg: 6 },
-                  backgroundColor: "#FFFFFF",
-                  boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                  borderRadius: 2,
-                  height: "100%",
+                  p: { xs: 4, md: 6 },
+                  borderRadius: 4,
+                  background: "white",
+                  boxShadow: "0 20px 50px rgba(0,0,0,0.08)",
                 }}
               >
+                <Typography
+                  variant="h4"
+                  fontWeight="700"
+                  mb={1}
+                >
+                  {t("contact.getInTouch")}
+                </Typography>
+
+                <Typography
+                  mb={4}
+                  color="text.secondary"
+                >
+                  {t("contact.description")}
+                </Typography>
+
                 <Box
                   component="form"
                   onSubmit={handleSubmit}
-                  sx={{
-                    display: {
-                      xs: "block",
-                      lg: "none",
-                    },
-                  }}
                 >
-                  <Typography
-                    variant="h4"
-                    component="h2"
-                    sx={{
-                      fontWeight: "bold",
-                      mb: 1,
-                      fontFamily: "Poppins, sans-serif",
-                      color: "#333333",
-                    }}
-                  >
-                    Love to hear from you
-                  </Typography>
-                  <Typography
-                    variant="body1"
-                    sx={{
-                      color: "#666666",
-                      mb: 4,
-                      fontFamily: "Poppins, sans-serif",
-                    }}
-                  >
-                    {t("contact.getInTouch")}
-                  </Typography>
+                  <Stack spacing={3}>
 
-                  <Box
-                    sx={{ display: "flex", flexDirection: "column", gap: 3 }}
-                  >
-                    <Box>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          fontWeight: "bold",
-                          mb: 1,
-                          fontFamily: "Poppins, sans-serif",
-                          color: "#333333",
-                        }}
-                      >
-                        {t("contact.name")} *
-                      </Typography>
-                      <TextField
-                        fullWidth
-                        name="name"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        required
-                        placeholder={t("contact.namePlaceholder")}
-                        sx={{
-                          "& .MuiOutlinedInput-root": {
-                            backgroundColor: "#F5F5F5",
-                            borderRadius: 1,
-                            "& fieldset": {
-                              borderColor: "#E0E0E0",
-                            },
-                            "&:hover fieldset": {
-                              borderColor: "#BDBDBD",
-                            },
-                            "&.Mui-focused": {
-                              backgroundColor: "#F5F5F5",
-                              "& fieldset": {
-                                borderColor: "#52A4C1",
-                                borderWidth: 2,
-                              },
-                            },
-                          },
-                        }}
-                      />
-                    </Box>
+                    <TextField
+                      name="name"
+                      label={t("contact.name")}
+                      fullWidth
+                      required
+                      value={formData.name}
+                      onChange={handleInputChange}
+                    />
 
-                    <Box>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          fontWeight: "bold",
-                          mb: 1,
-                          fontFamily: "Poppins, sans-serif",
-                          color: "#333333",
-                          fontSize: { xs: "0.875rem", sm: "1rem" },
-                        }}
-                      >
-                        {t("contact.email")} *
-                      </Typography>
-                      <TextField
-                        fullWidth
-                        name="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        required
-                        placeholder={t("contact.emailPlaceholder")}
-                        inputProps={{
-                          inputMode: "email",
-                          autoComplete: "email",
-                        }}
-                        sx={{
-                          width: "100%",
-                          "& .MuiOutlinedInput-root": {
-                            backgroundColor: "#F5F5F5",
-                            borderRadius: 1,
-                            fontSize: { xs: "16px", sm: "1rem" },
-                            "& input": {
-                              fontSize: { xs: "16px", sm: "1rem" },
-                              padding: { xs: "12px 14px", sm: "14px" },
-                            },
-                            "& fieldset": {
-                              borderColor: "#E0E0E0",
-                            },
-                            "&:hover fieldset": {
-                              borderColor: "#BDBDBD",
-                            },
-                            "&.Mui-focused": {
-                              backgroundColor: "#F5F5F5",
-                              "& fieldset": {
-                                borderColor: "#52A4C1",
-                                borderWidth: 2,
-                              },
-                            },
-                          },
-                        }}
-                      />
-                    </Box>
+                    <TextField
+                      name="email"
+                      label={t("contact.email")}
+                      fullWidth
+                      required
+                      value={formData.email}
+                      onChange={handleInputChange}
+                    />
 
-                    <Box>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          fontWeight: "bold",
-                          mb: 1,
-                          fontFamily: "Poppins, sans-serif",
-                          color: "#333333",
-                        }}
-                      >
-                        {t("contact.message")} *
-                      </Typography>
-                      <TextField
-                        fullWidth
-                        name="message"
-                        multiline
-                        rows={5}
-                        value={formData.message}
-                        onChange={handleInputChange}
-                        required
-                        placeholder={t("contact.messagePlaceholder")}
-                        sx={{
-                          "& .MuiOutlinedInput-root": {
-                            backgroundColor: "#F5F5F5",
-                            borderRadius: 1,
-                            "& fieldset": {
-                              borderColor: "#E0E0E0",
-                            },
-                            "&:hover fieldset": {
-                              borderColor: "#BDBDBD",
-                            },
-                            "&.Mui-focused": {
-                              backgroundColor: "#F5F5F5",
-                              "& fieldset": {
-                                borderColor: "#52A4C1",
-                                borderWidth: 2,
-                              },
-                            },
-                          },
-                        }}
-                      />
-                    </Box>
+                    <TextField
+                      name="message"
+                      label={t("contact.message")}
+                      fullWidth
+                      required
+                      multiline
+                      rows={5}
+                      value={formData.message}
+                      onChange={handleInputChange}
+                    />
+
                     <Button
                       type="submit"
                       variant="contained"
@@ -503,273 +216,49 @@ const ContactSection = () => {
                       size="large"
                       disabled={isSubmitting}
                       sx={{
-                        backgroundColor: "#52A4C1",
-                        borderRadius: 1,
-                        py: 2,
-                        textTransform: "none",
-                        fontWeight: "bold",
-                        fontFamily: "Poppins, sans-serif",
-                        fontSize: "16px",
+                        height: 54,
+                        fontWeight: 600,
+                        fontSize: 16,
+                        borderRadius: 3,
+                        background:
+                          "linear-gradient(135deg,#52A4C1,#1976d2)",
+                        boxShadow:
+                          "0 10px 25px rgba(82,164,193,0.4)",
+
                         "&:hover": {
-                          backgroundColor: "#4A8FA8",
+                          transform: "translateY(-2px)",
                         },
                       }}
                     >
                       {isSubmitting ? (
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 1,
-                            justifyContent: "center",
-                          }}
-                        >
-                          <CircularProgress size={20} color="inherit" />
-                          <span>{t("common.loading")}</span>
-                        </Box>
+                        <CircularProgress size={24} color="inherit" />
                       ) : (
                         t("contact.sendMessage")
                       )}
                     </Button>
-                  </Box>
+
+                  </Stack>
                 </Box>
-
-                <Grid container sx={{ display: { xs: "none", lg: "flex" } }}>
-                  <Grid
-                    size={{ xs: 12, lg: 5 }}
-                    sx={{ display: language === "ar" ? "none" : "block" }}
-                  >
-                    <Box></Box>
-                  </Grid>
-                  <Grid size={{ xs: 12, lg: 7 }}>
-                    <Box component="form" onSubmit={handleSubmit}>
-                      <Typography
-                        variant="h4"
-                        component="h2"
-                        sx={{
-                          fontWeight: "bold",
-                          mb: 1,
-                          fontFamily: "Poppins, sans-serif",
-                          color: "#333333",
-                        }}
-                      >
-                        {t("contact.getInTouch")}
-                      </Typography>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          color: "#666666",
-                          mb: 4,
-                          fontFamily: "Poppins, sans-serif",
-                        }}
-                      >
-                        {t("contact.description")}
-                      </Typography>
-
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: 3,
-                        }}
-                      >
-                        <Box>
-                          <Typography
-                            variant="body1"
-                            sx={{
-                              fontWeight: "bold",
-                              mb: 1,
-                              fontFamily: "Poppins, sans-serif",
-                              color: "#333333",
-                            }}
-                          >
-                            {t("contact.name")} *
-                          </Typography>
-                          <TextField
-                            fullWidth
-                            name="name"
-                            value={formData.name}
-                            onChange={handleInputChange}
-                            required
-                            placeholder={t("contact.namePlaceholder")}
-                            sx={{
-                              "& .MuiOutlinedInput-root": {
-                                backgroundColor: "#F5F5F5",
-                                borderRadius: 1,
-                                "& fieldset": {
-                                  borderColor: "#E0E0E0",
-                                },
-                                "&:hover fieldset": {
-                                  borderColor: "#BDBDBD",
-                                },
-                                "&.Mui-focused": {
-                                  backgroundColor: "#F5F5F5",
-                                  "& fieldset": {
-                                    borderColor: "#52A4C1",
-                                    borderWidth: 2,
-                                  },
-                                },
-                              },
-                            }}
-                          />
-                        </Box>
-
-                        <Box>
-                          <Typography
-                            variant="body1"
-                            sx={{
-                              fontWeight: "bold",
-                              mb: 1,
-                              fontFamily: "Poppins, sans-serif",
-                              color: "#333333",
-                              fontSize: { xs: "0.875rem", sm: "1rem" },
-                            }}
-                          >
-                            {t("contact.email")} *
-                          </Typography>
-                          <TextField
-                            fullWidth
-                            name="email"
-                            type="email"
-                            value={formData.email}
-                            onChange={handleInputChange}
-                            required
-                            placeholder="Enter your email address"
-                            inputProps={{
-                              inputMode: "email",
-                              autoComplete: "email",
-                            }}
-                            sx={{
-                              width: "100%",
-                              "& .MuiOutlinedInput-root": {
-                                backgroundColor: "#F5F5F5",
-                                borderRadius: 1,
-                                fontSize: { xs: "16px", sm: "1rem" },
-                                "& input": {
-                                  fontSize: { xs: "16px", sm: "1rem" },
-                                  padding: { xs: "12px 14px", sm: "14px" },
-                                },
-                                "& fieldset": {
-                                  borderColor: "#E0E0E0",
-                                },
-                                "&:hover fieldset": {
-                                  borderColor: "#BDBDBD",
-                                },
-                                "&.Mui-focused": {
-                                  backgroundColor: "#F5F5F5",
-                                  "& fieldset": {
-                                    borderColor: "#52A4C1",
-                                    borderWidth: 2,
-                                  },
-                                },
-                              },
-                            }}
-                          />
-                        </Box>
-
-                        <Box>
-                          <Typography
-                            variant="body1"
-                            sx={{
-                              fontWeight: "bold",
-                              mb: 1,
-                              fontFamily: "Poppins, sans-serif",
-                              color: "#333333",
-                            }}
-                          >
-                            {t("contact.message")} *
-                          </Typography>
-                          <TextField
-                            fullWidth
-                            name="message"
-                            multiline
-                            rows={5}
-                            value={formData.message}
-                            onChange={handleInputChange}
-                            required
-                            placeholder={t("contact.messagePlaceholder")}
-                            sx={{
-                              "& .MuiOutlinedInput-root": {
-                                backgroundColor: "#F5F5F5",
-                                borderRadius: 1,
-                                "& fieldset": {
-                                  borderColor: "#E0E0E0",
-                                },
-                                "&:hover fieldset": {
-                                  borderColor: "#BDBDBD",
-                                },
-                                "&.Mui-focused": {
-                                  backgroundColor: "#F5F5F5",
-                                  "& fieldset": {
-                                    borderColor: "#52A4C1",
-                                    borderWidth: 2,
-                                  },
-                                },
-                              },
-                            }}
-                          />
-                        </Box>
-                        <Button
-                          type="submit"
-                          variant="contained"
-                          fullWidth
-                          size="large"
-                          disabled={isSubmitting}
-                          sx={{
-                            backgroundColor: "#52A4C1",
-                            borderRadius: 1,
-                            py: 2,
-                            textTransform: "none",
-                            fontWeight: "bold",
-                            fontFamily: "Poppins, sans-serif",
-                            fontSize: "16px",
-                            "&:hover": {
-                              backgroundColor: "#4A8FA8",
-                            },
-                          }}
-                        >
-                          {isSubmitting ? (
-                            <Box
-                              sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 1,
-                                justifyContent: "center",
-                              }}
-                            >
-                              <CircularProgress size={20} color="inherit" />
-                              <span>Sending Message...</span>
-                            </Box>
-                          ) : (
-                            t("contact.sendMessage")
-                          )}
-                        </Button>
-                      </Box>
-                    </Box>
-                  </Grid>
-                </Grid>
               </Card>
             </SlideUpInView>
           </Grid>
+
         </Grid>
       </Container>
 
-      {/* Toast Notification */}
+      {/* SNACKBAR */}
       <Snackbar
         open={snackbar.open}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        autoHideDuration={4000}
+        onClose={() =>
+          setSnackbar({ ...snackbar, open: false })
+        }
       >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={snackbar.severity}
-          variant="filled"
-          sx={{ width: "100%" }}
-        >
+        <Alert severity={snackbar.severity}>
           {snackbar.message}
         </Alert>
       </Snackbar>
+
     </Box>
   );
 };

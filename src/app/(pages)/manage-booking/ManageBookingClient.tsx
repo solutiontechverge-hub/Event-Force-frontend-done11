@@ -220,6 +220,23 @@ const ManageBookingClient = () => {
 
   // Get car from URL params
   const carParam = searchParams?.get("car") || "";
+
+  useEffect(() => {
+    if (!carParam) return;
+
+    const carName = carParam.replace(/-/g, " ");
+
+    const foundCar = fleet.find(
+      (car) => car.name.toLowerCase() === carName.toLowerCase(),
+    );
+
+    if (foundCar) {
+      setFormData((prev) => ({
+        ...prev,
+        selectedCar: foundCar.name,
+      }));
+    }
+  }, [carParam]);
   const colorIdParam = searchParams?.get("colorId") || "";
   const colorIndexParam = searchParams?.get("colorIndex") || "";
 
@@ -281,41 +298,6 @@ const ManageBookingClient = () => {
     "toyota hiace": "hiace12",
     "toyota coaster": "coaster23",
     "coach 49 seats": "bus49",
-  };
-
-  // const getVehicleKey = (name: string) => {
-  //   if (!name) return null;
-
-  //   const lower = name.toLowerCase().trim();
-
-  //   return vehicleKeyMap[lower] || null;
-  // };
-  const handleSelectChange = (e: any) => {
-    const { name, value } = e.target;
-    setFormData((prev) => {
-      const updated = {
-        ...prev,
-        [name]: value,
-      };
-      // Reset selected color when car changes
-
-      if (name === "serviceType") {
-        updated.pickupLocation = prev.pickupLocation;
-        updated.destination = prev.destination;
-      }
-
-      return updated;
-    });
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setFormData((prev) => ({
-        ...prev,
-        photo: file,
-      }));
-    }
   };
 
   // Get minimum datetime (2 hours from now) for pickup date
@@ -418,7 +400,7 @@ const ManageBookingClient = () => {
         phone: phone,
         fullName: name,
         selectedCar: displayCar.name,
-         price: calculatePrice, // ✅ ADD THIS
+        price: calculatePrice, // ✅ ADD THIS
       });
 
       setSnackbar({
@@ -495,44 +477,6 @@ const ManageBookingClient = () => {
       name.includes("coach 49")
     );
   }, [formData.selectedCar]);
-  // ✅ Service options (NO Fragment, MUI safe)
-  // const serviceOptions = useMemo(() => {
-  //   if (isAirportOnlyVehicle) {
-  //     return [
-  //       {
-  //         value: "airport-pickup",
-  //         label: t("service.airport"),
-  //       },
-  //     ];
-  //   }
-
-  //   return [
-  //     {
-  //       value: "airport-pickup",
-  //       label: t("service.airport"),
-  //     },
-  //     {
-  //       value: "downtown",
-  //       label: t("service.downtown"),
-  //     },
-  //     {
-  //       value: "inter-city",
-  //       label: t("service.intercity"),
-  //     },
-  //     {
-  //       value: "hourly",
-  //       label: t("service.hourly"),
-  //     },
-  //     {
-  //       value: "8-hours",
-  //       label: t("service.8hours"),
-  //     },
-  //     {
-  //       value: "12-hours",
-  //       label: t("service.12hours"),
-  //     },
-  //   ];
-  // }, [isAirportOnlyVehicle, t]);
 
   // 🔁 Auto-force airport service for those vehicles
   useEffect(() => {
@@ -545,274 +489,270 @@ const ManageBookingClient = () => {
   }, [isAirportOnlyVehicle]);
 
   // Pricing data from spreadsheet
-const pricing: any = {
+  const pricing: any = {
+    // =========================
+    // AIRPORT TO CITY
+    // =========================
 
-  // =========================
-  // AIRPORT TO CITY
-  // =========================
+    "riyadh-airport-city": {
+      fordTaurus: 150,
+      yukon: 250,
+      bmw5: 250,
+      bmw7: 450,
+      mercedesS450: 450,
+      mercedesVClass: 800,
+      sprinter12: 1200,
+      hiace12: 500,
+      coaster23: 800,
+      bus49: 1200,
+    },
 
-  "riyadh-airport-city": {
-    fordTaurus: 150,
-    yukon: 250,
-    bmw5: 250,
-    bmw7: 450,
-    mercedesS450: 450,
-    mercedesVClass: 800,
-    sprinter12: 1200,
-    hiace12: 500,
-    coaster23: 800,
-    bus49: 1200,
-  },
+    "dammam-airport-city": {
+      fordTaurus: 150,
+      yukon: 300,
+      bmw5: 250,
+      bmw7: 450,
+      mercedesS450: 450,
+      mercedesVClass: 1000,
+      sprinter12: 1500,
+      hiace12: 500,
+      coaster23: 800,
+      bus49: 1200,
+    },
 
-  "dammam-airport-city": {
-    fordTaurus: 150,
-    yukon: 300,
-    bmw5: 250,
-    bmw7: 450,
-    mercedesS450: 450,
-    mercedesVClass: 1000,
-    sprinter12: 1500,
-    hiace12: 500,
-    coaster23: 800,
-    bus49: 1200,
-  },
+    "jeddah-airport-city": {
+      fordTaurus: 150,
+      yukon: 250,
+      bmw5: 250,
+      bmw7: 400,
+      mercedesS450: 400,
+      mercedesVClass: 1000,
+      sprinter12: 1500,
+      hiace12: 500,
+      coaster23: 800,
+      bus49: 1200,
+    },
 
-  "jeddah-airport-city": {
-    fordTaurus: 150,
-    yukon: 250,
-    bmw5: 250,
-    bmw7: 400,
-    mercedesS450: 400,
-    mercedesVClass: 1000,
-    sprinter12: 1500,
-    hiace12: 500,
-    coaster23: 800,
-    bus49: 1200,
-  },
+    "madina-airport-city": {
+      fordTaurus: 150,
+      yukon: 250,
+      bmw5: 250,
+      bmw7: 450,
+      mercedesS450: 450,
+      mercedesVClass: null,
+      sprinter12: null,
+      hiace12: 300,
+      coaster23: 800,
+      bus49: 1200,
+    },
 
-  "madina-airport-city": {
-    fordTaurus: 150,
-    yukon: 250,
-    bmw5: 250,
-    bmw7: 450,
-    mercedesS450: 450,
-    mercedesVClass: null,
-    sprinter12: null,
-    hiace12: 300,
-    coaster23: 800,
-    bus49: 1200,
-  },
+    // =========================
+    // DOWNTOWN
+    // =========================
 
-  // =========================
-  // DOWNTOWN
-  // =========================
+    "riyadh-downtown-city": {
+      fordTaurus: 125,
+      yukon: 200,
+      bmw5: 225,
+      bmw7: 350,
+      mercedesS450: 350,
+      mercedesVClass: 800,
+      sprinter12: 1200,
+      hiace12: 400,
+      coaster23: 600,
+      bus49: 1000,
+    },
 
-  "riyadh-downtown-city": {
-    fordTaurus: 125,
-    yukon: 200,
-    bmw5: 225,
-    bmw7: 350,
-    mercedesS450: 350,
-    mercedesVClass: 800,
-    sprinter12: 1200,
-    hiace12: 400,
-    coaster23: 600,
-    bus49: 1000,
-  },
+    "dammam-downtown-city": {
+      fordTaurus: 125,
+      yukon: 250,
+      bmw5: 225,
+      bmw7: 350,
+      mercedesS450: 350,
+      mercedesVClass: 1000,
+      sprinter12: 1500,
+      hiace12: 400,
+      coaster23: 600,
+      bus49: 1000,
+    },
 
-  "dammam-downtown-city": {
-    fordTaurus: 125,
-    yukon: 250,
-    bmw5: 225,
-    bmw7: 350,
-    mercedesS450: 350,
-    mercedesVClass: 1000,
-    sprinter12: 1500,
-    hiace12: 400,
-    coaster23: 600,
-    bus49: 1000,
-  },
+    "jeddah-downtown-city": {
+      fordTaurus: 125,
+      yukon: 200,
+      bmw5: 225,
+      bmw7: 350,
+      mercedesS450: 350,
+      mercedesVClass: 1000,
+      sprinter12: 1500,
+      hiace12: 400,
+      coaster23: 600,
+      bus49: 1000,
+    },
 
-  "jeddah-downtown-city": {
-    fordTaurus: 125,
-    yukon: 200,
-    bmw5: 225,
-    bmw7: 350,
-    mercedesS450: 350,
-    mercedesVClass: 1000,
-    sprinter12: 1500,
-    hiace12: 400,
-    coaster23: 600,
-    bus49: 1000,
-  },
+    "madina-downtown-city": {
+      fordTaurus: 125,
+      yukon: 225,
+      bmw5: 225,
+      bmw7: 800,
+      mercedesS450: 800,
+      mercedesVClass: null,
+      sprinter12: null,
+      hiace12: 400,
+      coaster23: 600,
+      bus49: 1000,
+    },
 
-  "madina-downtown-city": {
-    fordTaurus: 125,
-    yukon: 225,
-    bmw5: 225,
-    bmw7: 800,
-    mercedesS450: 800,
-    mercedesVClass: null,
-    sprinter12: null,
-    hiace12: 400,
-    coaster23: 600,
-    bus49: 1000,
-  },
+    // =========================
+    // INTERCITY
+    // =========================
 
-  // =========================
-  // INTERCITY
-  // =========================
+    "jeddah-kaust": {
+      fordTaurus: 225,
+      yukon: 400,
+      bmw5: 400,
+      bmw7: 1250,
+      mercedesS450: 1250,
+      mercedesVClass: 1400,
+      sprinter12: 2200,
+      hiace12: 600,
+      coaster23: 1000,
+      bus49: 1500,
+    },
 
-  "jeddah-kaust": {
-    fordTaurus: 225,
-    yukon: 400,
-    bmw5: 400,
-    bmw7: 1250,
-    mercedesS450: 1250,
-    mercedesVClass: 1400,
-    sprinter12: 2200,
-    hiace12: 600,
-    coaster23: 1000,
-    bus49: 1500,
-  },
+    "jeddah-kaec": {
+      fordTaurus: 300,
+      yukon: 500,
+      bmw5: 500,
+      bmw7: 1400,
+      mercedesS450: 1400,
+      mercedesVClass: 1500,
+      sprinter12: 2500,
+      hiace12: 750,
+      coaster23: 1200,
+      bus49: 2000,
+    },
 
-  "jeddah-kaec": {
-    fordTaurus: 300,
-    yukon: 500,
-    bmw5: 500,
-    bmw7: 1400,
-    mercedesS450: 1400,
-    mercedesVClass: 1500,
-    sprinter12: 2500,
-    hiace12: 750,
-    coaster23: 1200,
-    bus49: 2000,
-  },
+    "jeddah-yanbu": {
+      fordTaurus: 600,
+      yukon: 1000,
+      bmw5: 1000,
+      bmw7: 3000,
+      mercedesS450: 3000,
+      mercedesVClass: 2500,
+      sprinter12: 3500,
+      hiace12: 1200,
+      coaster23: 2000,
+      bus49: 2500,
+    },
 
-  "jeddah-yanbu": {
-    fordTaurus: 600,
-    yukon: 1000,
-    bmw5: 1000,
-    bmw7: 3000,
-    mercedesS450: 3000,
-    mercedesVClass: 2500,
-    sprinter12: 3500,
-    hiace12: 1200,
-    coaster23: 2000,
-    bus49: 2500,
-  },
+    "jeddah-red-sea-umluj": {
+      fordTaurus: 1500,
+      yukon: 2500,
+      bmw5: 2500,
+      bmw7: 4500,
+      mercedesS450: 4500,
+      mercedesVClass: 3000,
+      sprinter12: 4000,
+      hiace12: 1600,
+      coaster23: 3000,
+      bus49: 3500,
+    },
 
-  "jeddah-red-sea-umluj": {
-    fordTaurus: 1500,
-    yukon: 2500,
-    bmw5: 2500,
-    bmw7: 4500,
-    mercedesS450: 4500,
-    mercedesVClass: 3000,
-    sprinter12: 4000,
-    hiace12: 1600,
-    coaster23: 3000,
-    bus49: 3500,
-  },
+    "jeddah-neom": {
+      fordTaurus: 2500,
+      yukon: 3500,
+      bmw5: 3500,
+      bmw7: 5000,
+      mercedesS450: 5000,
+      mercedesVClass: 3500,
+      sprinter12: 5000,
+      hiace12: 2000,
+      coaster23: 3500,
+      bus49: 4000,
+    },
 
-  "jeddah-neom": {
-    fordTaurus: 2500,
-    yukon: 3500,
-    bmw5: 3500,
-    bmw7: 5000,
-    mercedesS450: 5000,
-    mercedesVClass: 3500,
-    sprinter12: 5000,
-    hiace12: 2000,
-    coaster23: 3500,
-    bus49: 4000,
-  },
+    "jeddah-airport-makkah": {
+      fordTaurus: 300,
+      yukon: 500,
+      bmw5: 700,
+      bmw7: 1250,
+      mercedesS450: 1250,
+      mercedesVClass: 1250,
+      sprinter12: 1500,
+      hiace12: 600,
+      coaster23: 1000,
+      bus49: 1000,
+    },
 
-  "jeddah-airport-makkah": {
-    fordTaurus: 300,
-    yukon: 500,
-    bmw5: 700,
-    bmw7: 1250,
-    mercedesS450: 1250,
-    mercedesVClass: 1250,
-    sprinter12: 1500,
-    hiace12: 600,
-    coaster23: 1000,
-    bus49: 1000,
-  },
+    "jeddah-makkah-medina": {
+      fordTaurus: 600,
+      yukon: 1000,
+      bmw5: 1500,
+      bmw7: 3000,
+      mercedesS450: 3000,
+      mercedesVClass: 2500,
+      sprinter12: 3500,
+      hiace12: 1000,
+      coaster23: 1800,
+      bus49: 2000,
+    },
 
-  "jeddah-makkah-medina": {
-    fordTaurus: 600,
-    yukon: 1000,
-    bmw5: 1500,
-    bmw7: 3000,
-    mercedesS450: 3000,
-    mercedesVClass: 2500,
-    sprinter12: 3500,
-    hiace12: 1000,
-    coaster23: 1800,
-    bus49: 2000,
-  },
+    // =========================
+    // HOURLY
+    // =========================
 
-  // =========================
-  // HOURLY
-  // =========================
+    hourly: {
+      fordTaurus: 100,
+      yukon: 150,
+      bmw5: 150,
+      bmw7: 400,
+      mercedesS450: 400,
+      mercedesVClass: null,
+      sprinter12: null,
+      hiace12: null,
+      coaster23: null,
+      bus49: null,
+    },
 
-  hourly: {
-    fordTaurus: 100,
-    yukon: 150,
-    bmw5: 150,
-    bmw7: 400,
-    mercedesS450: 400,
-    mercedesVClass: null,
-    sprinter12: null,
-    hiace12: null,
-    coaster23: null,
-    bus49: null,
-  },
+    "8-hours": {
+      fordTaurus: 600,
+      yukon: 1000,
+      bmw5: 1200,
+      bmw7: 2000,
+      mercedesS450: 2500,
+      mercedesVClass: 2000,
+      sprinter12: 2500,
+      hiace12: 850,
+      coaster23: 1200,
+      bus49: 1500,
+    },
 
-  "8-hours": {
-    fordTaurus: 600,
-    yukon: 1000,
-    bmw5: 1200,
-    bmw7: 2000,
-    mercedesS450: 2500,
-    mercedesVClass: 2000,
-    sprinter12: 2500,
-    hiace12: 850,
-    coaster23: 1200,
-    bus49: 1500,
-  },
+    "12-hours": {
+      fordTaurus: 900,
+      yukon: 1250,
+      bmw5: 1500,
+      bmw7: 2400,
+      mercedesS450: 3000,
+      mercedesVClass: 2500,
+      sprinter12: 3000,
+      hiace12: 1000,
+      coaster23: 1500,
+      bus49: 2000,
+    },
 
-  "12-hours": {
-    fordTaurus: 900,
-    yukon: 1250,
-    bmw5: 1500,
-    bmw7: 2400,
-    mercedesS450: 3000,
-    mercedesVClass: 2500,
-    sprinter12: 3000,
-    hiace12: 1000,
-    coaster23: 1500,
-    bus49: 2000,
-  },
-
-  "extra-hour": {
-    fordTaurus: 100,
-    yukon: 150,
-    bmw5: 150,
-    bmw7: 300,
-    mercedesS450: 300,
-    mercedesVClass: 300,
-    sprinter12: 350,
-    hiace12: 125,
-    coaster23: 150,
-    bus49: 250,
-  },
-
-};
-
-
+    "extra-hour": {
+      fordTaurus: 100,
+      yukon: 150,
+      bmw5: 150,
+      bmw7: 300,
+      mercedesS450: 300,
+      mercedesVClass: 300,
+      sprinter12: 350,
+      hiace12: 125,
+      coaster23: 150,
+      bus49: 250,
+    },
+  };
 
   const PRESET_LOCATIONS = [
     "Riyadh Airport  ",
@@ -834,147 +774,144 @@ const pricing: any = {
     "Madinah Airport to City",
     "Madina downtown to inside city",
   ];
-// ==========================
-// VEHICLE KEY MAPPER
-// ==========================
-const getVehicleKey = (carName: string | undefined | null) => {
-  if (!carName) return null;
+  // ==========================
+  // VEHICLE KEY MAPPER
+  // ==========================
+  const getVehicleKey = (carName: string | undefined | null) => {
+    if (!carName) return null;
 
-  const name = carName.toLowerCase().trim();
+    const name = carName.toLowerCase().trim();
 
-  if (name.includes("taurus")) return "fordTaurus";
+    if (name.includes("taurus")) return "fordTaurus";
 
-  if (name.includes("yukon")) return "yukon";
+    if (name.includes("yukon")) return "yukon";
 
-  if (name.includes("bmw") && name.includes("5")) return "bmw5";
+    if (name.includes("bmw") && name.includes("5")) return "bmw5";
 
-  if (name.includes("bmw") && name.includes("7")) return "bmw7";
-
-  if (
-    name.includes("s450") ||
-    name.includes("mercedes s") ||
-    name.includes("s class")
-  )
-    return "mercedesS450";
-
-  // ✅ FULL V CLASS SUPPORT
-  if (
-    name.includes("v class") ||
-    name.includes("v-class") ||
-    name.includes("vclass") ||
-    name.includes("mercedes v")
-  )
-    return "mercedesVClass";
-
-  if (name.includes("sprinter")) return "sprinter12";
-
-  if (name.includes("hiace")) return "hiace12";
-
-  if (name.includes("coaster")) return "coaster23";
-
-  if (name.includes("bus")) return "bus49";
-
-  return null;
-};
-
-
-// ==========================
-// PRICE CALCULATOR
-// ==========================
-const calculatePrice = useMemo(() => {
-  if (!formData.selectedCar) return null;
-
-  const vehicleKey = getVehicleKey(formData.selectedCar);
-  if (!vehicleKey) return null;
-
-  const pickup = formData.pickupLocation?.toLowerCase().trim();
-  if (!pickup) return null;
-
-  // =========================
-  // INTERCITY ROUTES (FIX)
-  // =========================
-
-  if (pickup.includes("kaust"))
-    return pricing["jeddah-kaust"]?.[vehicleKey] ?? null;
-
-  if (pickup.includes("kaec"))
-    return pricing["jeddah-kaec"]?.[vehicleKey] ?? null;
-
-  if (pickup.includes("yanbu"))
-    return pricing["jeddah-yanbu"]?.[vehicleKey] ?? null;
-
-  if (pickup.includes("red sea") || pickup.includes("umluj"))
-    return pricing["jeddah-red-sea-umluj"]?.[vehicleKey] ?? null;
-
-  if (pickup.includes("neom"))
-    return pricing["jeddah-neom"]?.[vehicleKey] ?? null;
-
-  if (
-    pickup.includes("airport to makkah") ||
-    pickup.includes("jed airport to makkah") ||
-    pickup.includes("jeddah airport to makkah")
-  )
-    return pricing["jeddah-airport-makkah"]?.[vehicleKey] ?? null;
-
-  if (
-    pickup.includes("makkah to madina") ||
-    pickup.includes("makkah to medina") ||
-    pickup.includes("jeddah or makkah to madinah")
-  )
-    return pricing["jeddah-makkah-medina"]?.[vehicleKey] ?? null;
-
-  // =========================
-  // AIRPORT ROUTES
-  // =========================
-
-  if (pickup.includes("airport")) {
-    if (pickup.includes("riyadh"))
-      return pricing["riyadh-airport-city"]?.[vehicleKey] ?? null;
-
-    if (pickup.includes("jeddah"))
-      return pricing["jeddah-airport-city"]?.[vehicleKey] ?? null;
-
-    if (pickup.includes("dammam"))
-      return pricing["dammam-airport-city"]?.[vehicleKey] ?? null;
+    if (name.includes("bmw") && name.includes("7")) return "bmw7";
 
     if (
-      pickup.includes("madinah") ||
-      pickup.includes("medina") ||
-      pickup.includes("madina")
+      name.includes("s450") ||
+      name.includes("mercedes s") ||
+      name.includes("s class")
     )
-      return pricing["madina-airport-city"]?.[vehicleKey] ?? null;
-  }
+      return "mercedesS450";
 
-  // =========================
-  // DOWNTOWN ROUTES
-  // =========================
+    // ✅ FULL V CLASS SUPPORT
+    if (
+      name.includes("v class") ||
+      name.includes("v-class") ||
+      name.includes("vclass") ||
+      name.includes("mercedes v")
+    )
+      return "mercedesVClass";
 
-  if (pickup.includes("downtown")) {
-    if (pickup.includes("riyadh"))
-      return pricing["riyadh-downtown-city"]?.[vehicleKey] ?? null;
+    if (name.includes("sprinter")) return "sprinter12";
 
-    if (pickup.includes("jeddah"))
-      return pricing["jeddah-downtown-city"]?.[vehicleKey] ?? null;
+    if (name.includes("hiace")) return "hiace12";
 
-    if (pickup.includes("dammam"))
-      return pricing["dammam-downtown-city"]?.[vehicleKey] ?? null;
+    if (name.includes("coaster")) return "coaster23";
+
+    if (name.includes("bus")) return "bus49";
+
+    return null;
+  };
+
+  // ==========================
+  // PRICE CALCULATOR
+  // ==========================
+  const calculatePrice = useMemo(() => {
+    if (!formData.selectedCar) return null;
+
+    const vehicleKey = getVehicleKey(formData.selectedCar);
+    if (!vehicleKey) return null;
+
+    const pickup = formData.pickupLocation?.toLowerCase().trim();
+    if (!pickup) return null;
+
+    // =========================
+    // INTERCITY ROUTES (FIX)
+    // =========================
+
+    if (pickup.includes("kaust"))
+      return pricing["jeddah-kaust"]?.[vehicleKey] ?? null;
+
+    if (pickup.includes("kaec"))
+      return pricing["jeddah-kaec"]?.[vehicleKey] ?? null;
+
+    if (pickup.includes("yanbu"))
+      return pricing["jeddah-yanbu"]?.[vehicleKey] ?? null;
+
+    if (pickup.includes("red sea") || pickup.includes("umluj"))
+      return pricing["jeddah-red-sea-umluj"]?.[vehicleKey] ?? null;
+
+    if (pickup.includes("neom"))
+      return pricing["jeddah-neom"]?.[vehicleKey] ?? null;
 
     if (
-      pickup.includes("madinah") ||
-      pickup.includes("medina") ||
-      pickup.includes("madina")
+      pickup.includes("airport to makkah") ||
+      pickup.includes("jed airport to makkah") ||
+      pickup.includes("jeddah airport to makkah")
     )
-      return pricing["madina-downtown-city"]?.[vehicleKey] ?? null;
-  }
+      return pricing["jeddah-airport-makkah"]?.[vehicleKey] ?? null;
 
-  // =========================
-  // DEFAULT → HOURLY
-  // =========================
+    if (
+      pickup.includes("makkah to madina") ||
+      pickup.includes("makkah to medina") ||
+      pickup.includes("jeddah or makkah to madinah")
+    )
+      return pricing["jeddah-makkah-medina"]?.[vehicleKey] ?? null;
 
-  return pricing.hourly?.[vehicleKey] ?? null;
+    // =========================
+    // AIRPORT ROUTES
+    // =========================
 
-}, [formData.selectedCar, formData.pickupLocation]);
+    if (pickup.includes("airport")) {
+      if (pickup.includes("riyadh"))
+        return pricing["riyadh-airport-city"]?.[vehicleKey] ?? null;
 
+      if (pickup.includes("jeddah"))
+        return pricing["jeddah-airport-city"]?.[vehicleKey] ?? null;
+
+      if (pickup.includes("dammam"))
+        return pricing["dammam-airport-city"]?.[vehicleKey] ?? null;
+
+      if (
+        pickup.includes("madinah") ||
+        pickup.includes("medina") ||
+        pickup.includes("madina")
+      )
+        return pricing["madina-airport-city"]?.[vehicleKey] ?? null;
+    }
+
+    // =========================
+    // DOWNTOWN ROUTES
+    // =========================
+
+    if (pickup.includes("downtown")) {
+      if (pickup.includes("riyadh"))
+        return pricing["riyadh-downtown-city"]?.[vehicleKey] ?? null;
+
+      if (pickup.includes("jeddah"))
+        return pricing["jeddah-downtown-city"]?.[vehicleKey] ?? null;
+
+      if (pickup.includes("dammam"))
+        return pricing["dammam-downtown-city"]?.[vehicleKey] ?? null;
+
+      if (
+        pickup.includes("madinah") ||
+        pickup.includes("medina") ||
+        pickup.includes("madina")
+      )
+        return pricing["madina-downtown-city"]?.[vehicleKey] ?? null;
+    }
+
+    // =========================
+    // DEFAULT → HOURLY
+    // =========================
+
+    return pricing.hourly?.[vehicleKey] ?? null;
+  }, [formData.selectedCar, formData.pickupLocation]);
 
   const isAirportPickup = useMemo(() => {
     const pickup = formData.pickupLocation?.toLowerCase() || "";
@@ -991,6 +928,47 @@ const calculatePrice = useMemo(() => {
       loc.toLowerCase().trim() ===
       formData.pickupLocation?.toLowerCase().trim(),
   );
+  const handlePayment = async () => {
+    try {
+      if (!displayCar || !calculatePrice) {
+        alert("Car or price not found");
+        return;
+      }
+
+      // ✅ get current car slug from URL
+      const carSlug = searchParams.get("car");
+
+      // ✅ get from param (fleet or details)
+      const fromParam = searchParams.get("from") || "fleet";
+
+      const res = await fetch("/api/create-checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          carName: displayCar.name,
+          price: calculatePrice,
+          email: user?.email,
+          customerName: name,
+          carSlug: carSlug,
+          from: fromParam,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        console.error(data);
+        alert("Payment initialization failed");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Payment error");
+    }
+  };
 
   if (!isMounted) {
     return (
@@ -1588,7 +1566,8 @@ const calculatePrice = useMemo(() => {
                         <Select
                           value={formData.selectedCar || ""}
                           MenuProps={{
-                            disableScrollLock: true, // ✅ FIX
+                            disablePortal: true,
+                            disableScrollLock: true,
                           }}
                           onChange={(e) =>
                             setFormData((prev) => ({
@@ -1761,9 +1740,11 @@ const calculatePrice = useMemo(() => {
                         {t("booking.cancel")}
                       </Button>
                       <Button
-                        type="submit"
+                        // type="submit"
+                        // type="button "
                         variant="contained"
                         fullWidth
+                        onClick={handlePayment}
                         disabled={isSubmitting}
                         sx={{
                           py: 1.5,
@@ -1776,7 +1757,8 @@ const calculatePrice = useMemo(() => {
                           },
                         }}
                       >
-                        {isSubmitting ? "Submitting..." : "Confirm"}
+                        {/* {isSubmitting ? "Submitting..." : "Confirm"} */}
+                        Pay Securely
                       </Button>
                     </Box>
                   </Box>

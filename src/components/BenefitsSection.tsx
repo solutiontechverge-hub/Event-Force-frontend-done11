@@ -1,17 +1,12 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import {
   Box,
   Typography,
-  Container,
-  Grid,
   Card,
-  CardContent,
-  useMediaQuery,
-  Fade,
-  Grow,
 } from '@mui/material';
+
 import {
   OnTimeGuaranteeIcon,
   LuxuryFleetIcon,
@@ -22,160 +17,124 @@ import {
   EasyOnlineBookingIcon,
   TrainedDriversIcon,
 } from './icons';
-import { ScaleInView, SlideSidewayInView, SlideUpInView } from '@/components/animations';
+
+import { SlideUpInView, ScaleInView } from '@/components/animations';
 import { useLanguage } from '@/contexts/LanguageContext';
 
+const PRIMARY = '#52A4C1';
+
 const BenefitsSection = () => {
-  const [visible, setVisible] = useState(false);
-  const isMobile = useMediaQuery('(max-width:900px)');
   const { t, language } = useLanguage();
 
   const benefits = useMemo(() => [
-    {
-      icon: <OnTimeGuaranteeIcon />,
-      title: t('benefits.onTime'),
-      backgroundColor: '#FEF3E6'
-    },
-    {
-      icon: <LuxuryFleetIcon />,
-      title: t('benefits.luxuryFleet'),
-      backgroundColor: '#EEF7F7'
-    },
-    {
-      icon: <RealTimeGPSTrackingIcon />,
-      title: t('benefits.gpsTracking'),
-      backgroundColor: '#FEF3E6'
-    },
-    {
-      icon: <InCarWiFiIcon />,
-      title: t('benefits.wifi'),
-      backgroundColor: '#EEF7F7'
-    },
-    {
-      icon: <CleanComfyIcon />,
-      title: t('benefits.clean'),
-      backgroundColor: '#FEF3E6'
-    },
-    {
-      icon: <CustomerSupportIcon />,
-      title: t('benefits.support'),
-      backgroundColor: '#EEF7F7'
-    },
-    {
-      icon: <EasyOnlineBookingIcon />,
-      title: t('benefits.booking'),
-      backgroundColor: '#FEF3E6'
-    },
-    {
-      icon: <TrainedDriversIcon />,
-      title: t('benefits.drivers'),
-      backgroundColor: '#EEF7F7'
-    }
+    { icon: <OnTimeGuaranteeIcon />, title: t('benefits.onTime') },
+    { icon: <LuxuryFleetIcon />, title: t('benefits.luxuryFleet') },
+    { icon: <RealTimeGPSTrackingIcon />, title: t('benefits.gpsTracking') },
+    { icon: <InCarWiFiIcon />, title: t('benefits.wifi') },
+    { icon: <CleanComfyIcon />, title: t('benefits.clean') },
+    { icon: <CustomerSupportIcon />, title: t('benefits.support') },
+    { icon: <EasyOnlineBookingIcon />, title: t('benefits.booking') },
+    { icon: <TrainedDriversIcon />, title: t('benefits.drivers') },
   ], [t, language]);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setVisible(true), 100);
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
-    <Box sx={{ my: 4, px: 2, backgroundColor: '#FFFFFF' }}>
-      {/* <Container> */}
-      <SlideUpInView initialY={60} duration={0.8}>
-        <Box sx={{ textAlign: 'center', mb: 8 }}>
-          <Typography
-            variant={isMobile ? 'h4' : 'h3'}
-            component="h2"
-            sx={{
-              fontFamily: 'Poppins, sans-serif',
-              fontWeight: 'bold',
-              fontSize: '36px',
-              color: '#525252',
-              mb: 2,
-              position: 'relative',
-              display: 'inline-block',
-              '&::after': {
-                content: '""',
-                position: 'absolute',
-                bottom: '-8px',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                width: '60px',
-                height: '4px',
-                backgroundColor: '#52A4C1',
-                borderRadius: '2px',
-              },
-            }}
-          >
-            {t('benefits.title')}
-          </Typography>
-        </Box>
+    <Box
+      sx={{
+        width: '100%',
+        py: { xs: 8, md: 14 },
+
+        px: {
+          xs: 2,
+          sm: 4,
+          md: 6,
+          lg: 10,
+          xl: 16,
+        },
+
+        background: `${PRIMARY}10`,
+      }}
+    >
+
+      <SlideUpInView>
+        <Typography
+          textAlign="center"
+          fontSize={{ xs: 28, md: 42 }}
+          fontWeight={700}
+          color={PRIMARY}
+          mb={8}
+        >
+          {t('benefits.title')}
+        </Typography>
       </SlideUpInView>
 
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }, gap: 3 }}>
-        {benefits.map((benefit, index) => (
-          <ScaleInView key={index} initialScale={0.8} duration={0.6} delay={index * 0.1}>
-            <Box>
-              <Grow
-                in={visible}
-                timeout={700 + index * 100}
-                style={{ transformOrigin: '0 0 0' }}
+
+      <Box
+        sx={{
+          display: 'grid',
+
+          gridTemplateColumns: {
+            xs: '1fr',
+            sm: '1fr 1fr',
+            md: 'repeat(4,1fr)',
+          },
+
+          gap: 4,
+        }}
+      >
+
+        {benefits.map((item, index) => (
+          <ScaleInView key={index}>
+            <Card
+              sx={{
+                height: 180,
+
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+
+                borderRadius: 4,
+
+                border: `1px solid ${PRIMARY}40`,
+
+                transition: '0.3s',
+
+                '&:hover': {
+                  transform: 'translateY(-6px)',
+                  boxShadow: `0 15px 40px ${PRIMARY}40`,
+                },
+              }}
+            >
+
+              <Box
+                sx={{
+                  width: 60,
+                  height: 60,
+
+                  background: PRIMARY,
+
+                  borderRadius: 3,
+
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+
+                  mb: 2,
+                }}
               >
-                <Card
-                  sx={{
-                    width: '100%',
-                    height: 120,
-                    textAlign: 'center',
-                    backgroundColor: benefit.backgroundColor,
-                    transition: 'transform 0.3s, box-shadow 0.3s',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: 2,
-                    '&:hover': {
-                      transform: 'scale(1.05)',
-                      boxShadow: 8,
-                    },
-                  }}
-                >
-                  <CardContent sx={{ p: 0, width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                    <Box
-                      sx={{
-                        width: 60,
-                        height: 60,
-                        borderRadius: '50%',
-                        backgroundColor: 'white',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        mb: 2,
-                        mt: 2,
-                      }}
-                    >
-                      {benefit.icon}
-                    </Box>
-                    <Typography
-                      variant="subtitle1"
-                      component="h3"
-                      sx={{
-                        fontFamily: 'Poppins, sans-serif',
-                        fontWeight: 400,
-                        color: '#000000',
-                        fontSize: '14px',
-                        textAlign: 'center',
-                        lineHeight: 1.2,
-                      }}
-                    >
-                      {benefit.title}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grow>
-            </Box>
+                {item.icon}
+              </Box>
+
+              <Typography fontWeight={600}>
+                {item.title}
+              </Typography>
+
+            </Card>
           </ScaleInView>
         ))}
+
       </Box>
-      {/* </Container> */}
+
     </Box>
   );
 };

@@ -42,28 +42,28 @@ const AIRPORT_LOCATIONS = [
   "Madinah Airport to city",
 ];
 
-  const ALL_LOCATIONS = [
-    "Riyadh Airport  ",
-    "Riyadh Airport to city ",
-    "Riyadh Downtown to Inside City",
-    "Dammam Airport ",
-    "Dammam Airport to city",
-    "Dammam Downtown to Inside City",
-    "Jeddah Airport ",
-    "Jeddah Airport to city",
-    "Jeddah Downtown to Inside City",
-    "Jeddah To KAUST",
-    "Jeddah To KAEC",
-    "Jeddah To Yanbu",
-    "Jeddah To Red Sea Umluj",
-    "Jeddah To NEOM",
-    "JED Airport to Makkah",
-    "Jeddah or Makkah To Madinah",
-    "Jeddah to Makkah",
-    "Makkah Al-Mukarramah",
-    "Madinah Airport to City",
-    "Madina downtown to inside city",
-  ];
+const ALL_LOCATIONS = [
+  "Riyadh Airport  ",
+  "Riyadh Airport to city ",
+  "Riyadh Downtown to Inside City",
+  "Dammam Airport ",
+  "Dammam Airport to city",
+  "Dammam Downtown to Inside City",
+  "Jeddah Airport ",
+  "Jeddah Airport to city",
+  "Jeddah Downtown to Inside City",
+  "Jeddah To KAUST",
+  "Jeddah To KAEC",
+  "Jeddah To Yanbu",
+  "Jeddah To Red Sea Umluj",
+  "Jeddah To NEOM",
+  "JED Airport to Makkah",
+  "Jeddah or Makkah To Madinah",
+  "Jeddah to Makkah",
+  "Makkah Al-Mukarramah",
+  "Madinah Airport to City",
+  "Madina downtown to inside city",
+];
 
 /* ================= TYPE GUARD ================= */
 
@@ -138,6 +138,12 @@ const PickupDestinationSingleFlow: React.FC<Props> = ({
           fullWidth
           size="small"
           value={pickupMode}
+          SelectProps={{
+            MenuProps: {
+              disablePortal: true,
+              disableScrollLock: true,
+            },
+          }}
           onChange={(e) => {
             const value = e.target.value as LocationMode;
 
@@ -212,6 +218,12 @@ const PickupDestinationSingleFlow: React.FC<Props> = ({
           fullWidth
           size="small"
           value={destMode}
+          SelectProps={{
+            MenuProps: {
+              disablePortal: true,
+              disableScrollLock: true,
+            },
+          }}
           onChange={(e) => {
             const value = e.target.value as LocationMode;
 

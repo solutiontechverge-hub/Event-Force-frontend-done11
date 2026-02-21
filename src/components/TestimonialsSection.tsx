@@ -75,7 +75,7 @@ const TestimonialsSection = () => {
 
 
   return (
-    <Box sx={{ py: 10, backgroundColor: '#FFFFFF' }}>
+   <Box sx={{ py: 10 }}>
       <Container maxWidth="lg">
         <Fade in={visible} timeout={700}>
           <Box>

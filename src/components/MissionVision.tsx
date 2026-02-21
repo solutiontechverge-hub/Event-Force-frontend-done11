@@ -1,160 +1,140 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import {
   Box,
   Typography,
-  Container,
   Grid,
-  Fade,
-  Slide,
+  Paper,
 } from '@mui/material';
-import { useMediaQuery } from '@/hooks/useMediaQuery';
-import { ScaleInView, SlideSidewayInView, SlideUpInView } from '@/components/animations';
+
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+
 import { useLanguage } from '@/contexts/LanguageContext';
 
-const MissionVision = () => {
-  const missionRef = useRef<HTMLDivElement>(null);
-  const visionRef = useRef<HTMLDivElement>(null);
-  const [missionVisible, setMissionVisible] = React.useState(false);
-  const [visionVisible, setVisionVisible] = React.useState(false);
-  const isMobile = useMediaQuery('(max-width:900px)');
+const PRIMARY = '#52A4C1';
+
+export default function MissionVision() {
   const { t } = useLanguage();
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            if (entry.target === missionRef.current) {
-              setMissionVisible(true);
-            } else if (entry.target === visionRef.current) {
-              setVisionVisible(true);
-            }
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    if (missionRef.current) observer.observe(missionRef.current);
-    if (visionRef.current) observer.observe(visionRef.current);
-
-    return () => observer.disconnect();
-  }, []);
-
   return (
-    <Box sx={{ 
-      mt: { xs: 4, sm: 6 }, 
-      px: 2,
-      position: 'relative',
-      zIndex: 1,
-      backgroundColor: '#FFFFFF',
-      py: { xs: 4, sm: 0 },
-    }}>
-      {/* <Container maxWidth="lg"> */}
-        {/* Mission Section */}
-        <Fade in={missionVisible} timeout={700}>
-          <Box ref={missionRef} sx={{ mb: 8 }}>
-            <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 3 }}>
-              <SlideSidewayInView initialX={-30} duration={0.8}>
-                <Box
-                  sx={{
-                    width: 23,
-                    height: 92,
-                    backgroundColor: '#52A4C1',
-                    borderRadius: '3px',
-                    flexShrink: 0,
-                  }}
-                />
-              </SlideSidewayInView>
-              <Box sx={{ flex: 1 }}>
-                <SlideUpInView initialY={40} duration={0.8} delay={0.2}>
-                  <Typography
-                    variant={isMobile ? 'h4' : 'h3'}
-                    component="h2"
-                    sx={{
-                      fontFamily: 'Poppins, sans-serif',
-                      fontWeight: 'bold',
-                      color: 'text.primary',
-                      mb: 3,
-                      fontSize: { xs: '1.75rem', sm: '2rem', md: '2.25rem' },
-                    }}
-                  >
-                    {t('mission.title')}
-                  </Typography>
-                </SlideUpInView>
-                <SlideUpInView initialY={30} duration={0.9} delay={0.4}>
-                  <Typography
-                    variant="body1"
-                    sx={{
-                      fontFamily: 'Poppins, sans-serif',
-                      color: 'text.secondary',
-                      lineHeight: 1.7,
-                      fontWeight: 400,
-                      fontSize: '16px',
-                    }}
-                  >
-                    {t('mission.text')}
-                  </Typography>
-                </SlideUpInView>
-              </Box>
-            </Box>
-          </Box>
-        </Fade>
+    <Box
+      sx={{
+        width: '100%',
+        py: 10,
+        px: { xs: 2, sm: 4, md: 6, lg: 10 },
+        background: '#f6fbfd',
+      }}
+    >
 
-        {/* Vision Section */}
-        <Fade in={visionVisible} timeout={700}>
-          <Box ref={visionRef} sx={{ mb: 8 }}>
-            <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 3 }}>
-              <SlideSidewayInView initialX={-30} duration={0.8} delay={0.2}>
-                <Box
-                  sx={{
-                    width: 23,
-                    height: 92,
-                    backgroundColor: '#52A4C1',
-                    borderRadius: '3px',
-                    flexShrink: 0,
-                  }}
-                />
-              </SlideSidewayInView>
-              <Box sx={{ flex: 1 }}>
-                <SlideUpInView initialY={40} duration={0.8} delay={0.4}>
-                  <Typography
-                    variant={isMobile ? 'h4' : 'h3'}
-                    component="h2"
-                    sx={{
-                      fontFamily: 'Poppins, sans-serif',
-                      fontWeight: 'bold',
-                      color: 'text.primary',
-                      mb: 3,
-                      fontSize: { xs: '1.75rem', sm: '2rem', md: '2.25rem' },
-                    }}
-                  >
-                    {t('vision.title')}
-                  </Typography>
-                </SlideUpInView>
-                <SlideUpInView initialY={30} duration={0.9} delay={0.6}>
-                  <Typography
-                    variant="body1"
-                    sx={{
-                      fontFamily: 'Poppins, sans-serif',
-                      color: 'text.secondary',
-                      lineHeight: 1.7,
-                      fontWeight: 400,
-                      fontSize: '16px',
-                    }}
-                  >
-                    {t('vision.text')}
-                  </Typography>
-                </SlideUpInView>
-              </Box>
+      {/* THIS GRID MAKES THEM EQUAL */}
+      <Grid
+        container
+        spacing={4}
+      >
+
+        {/* Mission */}
+        <Grid item xs={12} md={6}>
+          <Paper
+            sx={{
+              height: 280, // ⭐ FORCE SAME HEIGHT
+
+              display: 'flex',
+              flexDirection: 'column',
+
+              justifyContent: 'flex-start',
+
+              p: 4,
+
+              borderRadius: 3,
+
+              border: `1px solid ${PRIMARY}40`,
+
+              boxShadow: `0 5px 20px ${PRIMARY}20`,
+            }}
+          >
+
+            <Box
+              sx={{
+                width: 60,
+                height: 60,
+                borderRadius: 2,
+                background: PRIMARY,
+
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+
+                mb: 2,
+              }}
+            >
+              <RocketLaunchIcon sx={{ color: '#fff' }} />
             </Box>
-          </Box>
-        </Fade>
-      {/* </Container> */}
+
+            <Typography fontWeight={600} fontSize={22} mb={1}>
+              {t('mission.title')}
+            </Typography>
+
+            <Typography color="text.secondary">
+              {t('mission.text')}
+            </Typography>
+
+          </Paper>
+        </Grid>
+
+
+        {/* Vision */}
+        <Grid item xs={12} md={6}>
+          <Paper
+            sx={{
+              height: 280, // ⭐ SAME HEIGHT
+
+              display: 'flex',
+              flexDirection: 'column',
+
+              justifyContent: 'flex-start',
+
+              p: 4,
+
+              borderRadius: 3,
+
+              border: `1px solid ${PRIMARY}40`,
+
+              boxShadow: `0 5px 20px ${PRIMARY}20`,
+            }}
+          >
+
+            <Box
+              sx={{
+                width: 60,
+                height: 60,
+                borderRadius: 2,
+                background: PRIMARY,
+
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+
+                mb: 2,
+              }}
+            >
+              <VisibilityIcon sx={{ color: '#fff' }} />
+            </Box>
+
+            <Typography fontWeight={600} fontSize={22} mb={1}>
+              {t('vision.title')}
+            </Typography>
+
+            <Typography color="text.secondary">
+              {t('vision.text')}
+            </Typography>
+
+          </Paper>
+        </Grid>
+
+      </Grid>
+
     </Box>
   );
-};
-
-export default MissionVision;
+}
