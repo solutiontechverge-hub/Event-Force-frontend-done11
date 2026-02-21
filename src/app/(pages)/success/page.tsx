@@ -1,22 +1,32 @@
-'use client';
+"use client";
 
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useEffect } from "react";
 
-useEffect(() => {
+export default function SuccessPage() {
+  useEffect(() => {
+    const saveBooking = async () => {
+      try {
+        await addDoc(collection(db, "bookings"), {
+          customerName: "Nick",
+          car: "Mercedes S Class",
+          status: "paid",
+          createdAt: new Date(),
+        });
+        console.log("Booking saved successfully");
+      } catch (error) {
+        console.error("Error saving booking:", error);
+      }
+    };
 
-  const saveBooking = async () => {
+    saveBooking();
+  }, []);
 
-    await addDoc(collection(db, "bookings"), {
-      customerName: "Nick",
-      car: "Mercedes S Class",
-      status: "paid",
-      createdAt: new Date(),
-    });
-
-  };
-
-  saveBooking();
-
-}, []);
+  return (
+    <div style={{ padding: "40px", textAlign: "center" }}>
+      <h1>Payment Successful 🎉</h1>
+      <p>Your booking has been confirmed.</p>
+    </div>
+  );
+}
