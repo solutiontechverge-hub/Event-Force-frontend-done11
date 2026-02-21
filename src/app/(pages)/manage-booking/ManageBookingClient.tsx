@@ -930,36 +930,38 @@ const ManageBookingClient = () => {
   );
 const handlePayment = async () => {
   try {
-    // =========================
-    // BASIC VALIDATIONS
-    // =========================
-const firebaseUser = auth.currentUser;
 
-if (!firebaseUser) {
-  setSnackbar({
-    open: true,
-    message: "Please login first",
-    severity: "error",
-  });
-  return;
-}
+    // =============================
+    // FIREBASE USER CHECK
+    // =============================
+
+    const firebaseUser = auth.currentUser;
+
+    if (!firebaseUser) {
+      setSnackbar({
+        open: true,
+        message: "Please login first",
+        severity: "error",
+      });
+      return;
+    }
+
+    // =============================
+    // NAME CHECK
+    // =============================
+
     if (!name || name.trim().length < 3) {
       setSnackbar({
         open: true,
-        message: "Please enter full name",
+        message: "Please enter valid full name",
         severity: "error",
       });
       return;
     }
 
-    if (!user?.email) {
-      setSnackbar({
-        open: true,
-        message: "Please login again",
-        severity: "error",
-      });
-      return;
-    }
+    // =============================
+    // PHONE CHECK
+    // =============================
 
     if (!phone || phone.trim().length < 8) {
       setSnackbar({
@@ -970,6 +972,23 @@ if (!firebaseUser) {
       return;
     }
 
+    // =============================
+    // VEHICLE CHECK
+    // =============================
+
+    if (!displayCar) {
+      setSnackbar({
+        open: true,
+        message: "Please select vehicle",
+        severity: "error",
+      });
+      return;
+    }
+
+    // =============================
+    // PICKUP LOCATION CHECK
+    // =============================
+
     if (!formData.pickupLocation || formData.pickupLocation.trim() === "") {
       setSnackbar({
         open: true,
@@ -979,18 +998,25 @@ if (!firebaseUser) {
       return;
     }
 
-    // ✅ DESTINATION VALIDATION
+    // =============================
+    // DESTINATION CHECK
+    // =============================
+
     if (
       !isAirportOnlyVehicle &&
       (!formData.destination || formData.destination.trim() === "")
     ) {
       setSnackbar({
         open: true,
-        message: "Please select destination",
+        message: "Please select destination location",
         severity: "error",
       });
       return;
     }
+
+    // =============================
+    // DATE CHECK
+    // =============================
 
     if (!formData.pickupDate) {
       setSnackbar({
@@ -1001,9 +1027,9 @@ if (!firebaseUser) {
       return;
     }
 
-    // =========================
-    // ✅ 2 HOUR TIME LIMIT VALIDATION
-    // =========================
+    // =============================
+    // 2 HOUR LIMIT CHECK
+    // =============================
 
     const selectedTime = new Date(formData.pickupDate);
     const minAllowedTime = new Date(Date.now() + 2 * 60 * 60 * 1000);
@@ -1017,39 +1043,33 @@ if (!firebaseUser) {
       return;
     }
 
-    // =========================
-    // VEHICLE VALIDATION
-    // =========================
+    // =============================
+    // PRICE CHECK
+    // =============================
 
-    if (!displayCar) {
+    if (calculatePrice === null || calculatePrice === undefined) {
       setSnackbar({
         open: true,
-        message: "Please select vehicle",
+        message: "Unable to calculate price. Please select valid route.",
         severity: "error",
       });
       return;
     }
 
-    if (!calculatePrice) {
-      setSnackbar({
-        open: true,
-        message: "Invalid route or price not available",
-        severity: "error",
-      });
-      return;
-    }
+    // =============================
+    // ALL CHECKS PASSED ✅
+    // =============================
 
     setIsSubmitting(true);
 
-    // =========================
-    // SAVE BOOKING TO FIRESTORE
-    // =========================
+    // =============================
+    // SAVE BOOKING
+    // =============================
 
-  await addDoc(collection(db, "bookings"), {
-  userId: firebaseUser.uid,
-  email: firebaseUser.email,
+    await addDoc(collection(db, "bookings"), {
+      userId: firebaseUser.uid,
+      email: firebaseUser.email,
       fullName: name,
-      // email: user.email,
       phone: phone,
       car: displayCar.name,
       pickupLocation: formData.pickupLocation,
@@ -1060,13 +1080,13 @@ if (!firebaseUser) {
       createdAt: serverTimestamp(),
     });
 
-    // =========================
+    // =============================
     // SEND EMAIL
-    // =========================
+    // =============================
 
     await sendBookingEmail({
       fullName: name,
-      email: user.email,
+      email: firebaseUser.email || "",
       phone: phone,
       selectedCar: displayCar.name,
       pickupLocation: formData.pickupLocation,
@@ -1076,9 +1096,9 @@ if (!firebaseUser) {
       price: calculatePrice,
     });
 
-    // =========================
+    // =============================
     // CREATE STRIPE SESSION
-    // =========================
+    // =============================
 
     const carSlug = searchParams.get("car");
     const fromParam = searchParams.get("from") || "fleet";
@@ -1091,7 +1111,7 @@ if (!firebaseUser) {
       body: JSON.stringify({
         carName: displayCar.name,
         price: calculatePrice,
-        email: user.email,
+        email: firebaseUser.email,
         customerName: name,
         carSlug,
         from: fromParam,
@@ -1100,19 +1120,28 @@ if (!firebaseUser) {
 
     const data = await res.json();
 
-    if (data.url) {
-      window.location.href = data.url;
-    } else {
-      throw new Error("Stripe session failed");
+    if (!data.url) {
+      throw new Error("Payment initialization failed");
     }
+
+    // =============================
+    // REDIRECT TO STRIPE
+    // =============================
+
+    window.location.href = data.url;
+
   } catch (error: any) {
+
     setSnackbar({
       open: true,
       message: error.message || "Something went wrong",
       severity: "error",
     });
+
   } finally {
+
     setIsSubmitting(false);
+
   }
 };
 
