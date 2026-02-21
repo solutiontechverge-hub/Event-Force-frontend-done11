@@ -35,7 +35,7 @@ export default function MissionVision() {
       >
 
         {/* Mission */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Paper
             sx={{
               height: 280, // ⭐ FORCE SAME HEIGHT
@@ -85,7 +85,7 @@ export default function MissionVision() {
 
 
         {/* Vision */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Paper
             sx={{
               height: 280, // ⭐ SAME HEIGHT
