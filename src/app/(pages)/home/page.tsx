@@ -22,11 +22,15 @@ const HomePage = () => {
       <Header />
       <HeroSection />
       <MissionVision />
+          <Divider sx={{ my: 8 }} />
       <SuspenseBenefitsSection />
       <Divider sx={{ my: 8 }} />
       <DownloadProfile />
+          <Divider sx={{ my: 8 }} />
       <SuspenseTestimonialsSection />
+          <Divider sx={{ my: 8 }} />
       <SuspenseFleetSection />
+          <Divider sx={{ my: 8 }} />
       <SuspenseContactSection />
       <Footer />
     </>
