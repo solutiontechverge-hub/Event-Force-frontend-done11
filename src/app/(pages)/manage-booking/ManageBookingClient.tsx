@@ -826,7 +826,10 @@ const ManageBookingClient = () => {
     const vehicleKey = getVehicleKey(formData.selectedCar);
     if (!vehicleKey) return null;
 
-    const pickup = formData.pickupLocation?.toLowerCase().trim();
+    const pickup = formData.pickupLocation
+  ?.toLowerCase()
+  .trim()
+  .replace(/\s+/g, " ");
     if (!pickup) return null;
 
     // =========================
@@ -910,7 +913,9 @@ const ManageBookingClient = () => {
     // DEFAULT → HOURLY
     // =========================
 
-    return pricing.hourly?.[vehicleKey] ?? null;
+    const fallbackPrice = pricing.hourly?.[vehicleKey];
+
+return fallbackPrice ?? 100;
   }, [formData.selectedCar, formData.pickupLocation]);
 
   const isAirportPickup = useMemo(() => {
@@ -930,7 +935,6 @@ const ManageBookingClient = () => {
   );
 const handlePayment = async () => {
   try {
-
     // =============================
     // FIREBASE USER CHECK
     // =============================
@@ -945,6 +949,25 @@ const handlePayment = async () => {
       });
       return;
     }
+
+    if (!firebaseUser.email) {
+      setSnackbar({
+        open: true,
+        message: "User email not found. Please login again.",
+        severity: "error",
+      });
+      return;
+    }
+
+    // =============================
+    // NORMALIZE VALUES
+    // =============================
+
+    const normalizedPickup =
+      formData.pickupLocation?.toLowerCase().trim().replace(/\s+/g, " ") || "";
+
+    const normalizedDestination =
+      formData.destination?.toLowerCase().trim().replace(/\s+/g, " ") || "";
 
     // =============================
     // NAME CHECK
@@ -986,10 +1009,10 @@ const handlePayment = async () => {
     }
 
     // =============================
-    // PICKUP LOCATION CHECK
+    // PICKUP CHECK
     // =============================
 
-    if (!formData.pickupLocation || formData.pickupLocation.trim() === "") {
+    if (!normalizedPickup) {
       setSnackbar({
         open: true,
         message: "Please select pickup location",
@@ -1002,10 +1025,7 @@ const handlePayment = async () => {
     // DESTINATION CHECK
     // =============================
 
-    if (
-      !isAirportOnlyVehicle &&
-      (!formData.destination || formData.destination.trim() === "")
-    ) {
+    if (!isAirportOnlyVehicle && !normalizedDestination) {
       setSnackbar({
         open: true,
         message: "Please select destination location",
@@ -1028,7 +1048,7 @@ const handlePayment = async () => {
     }
 
     // =============================
-    // 2 HOUR LIMIT CHECK
+    // TIME LIMIT CHECK (2 HOURS)
     // =============================
 
     const selectedTime = new Date(formData.pickupDate);
@@ -1047,33 +1067,33 @@ const handlePayment = async () => {
     // PRICE CHECK
     // =============================
 
-    if (calculatePrice === null || calculatePrice === undefined) {
+    if (calculatePrice === null || calculatePrice === undefined || calculatePrice <= 0) {
       setSnackbar({
         open: true,
-        message: "Unable to calculate price. Please select valid route.",
+        message: "Unable to calculate price. Please select valid pickup location.",
         severity: "error",
       });
       return;
     }
 
     // =============================
-    // ALL CHECKS PASSED ✅
+    // START PROCESS
     // =============================
 
     setIsSubmitting(true);
 
     // =============================
-    // SAVE BOOKING
+    // SAVE BOOKING TO FIRESTORE
     // =============================
 
     await addDoc(collection(db, "bookings"), {
       userId: firebaseUser.uid,
       email: firebaseUser.email,
-      fullName: name,
-      phone: phone,
+      fullName: name.trim(),
+      phone: phone.trim(),
       car: displayCar.name,
-      pickupLocation: formData.pickupLocation,
-      destination: formData.destination,
+      pickupLocation: normalizedPickup,
+      destination: normalizedDestination,
       pickupDate: formData.pickupDate,
       flightNumber: formData.returnDate || "",
       estimatedPrice: calculatePrice,
@@ -1084,23 +1104,27 @@ const handlePayment = async () => {
     // SEND EMAIL
     // =============================
 
-    await sendBookingEmail({
-      fullName: name,
-      email: firebaseUser.email || "",
-      phone: phone,
-      selectedCar: displayCar.name,
-      pickupLocation: formData.pickupLocation,
-      destination: formData.destination,
-      pickupDate: formData.pickupDate,
-      returnDate: formData.returnDate,
-      price: calculatePrice,
-    });
+    try {
+      await sendBookingEmail({
+        fullName: name.trim(),
+        email: firebaseUser.email,
+        phone: phone.trim(),
+        selectedCar: displayCar.name,
+        pickupLocation: normalizedPickup,
+        destination: normalizedDestination,
+        pickupDate: formData.pickupDate,
+        returnDate: formData.returnDate,
+        price: calculatePrice,
+      });
+    } catch (emailError) {
+      console.error("Email failed:", emailError);
+    }
 
     // =============================
     // CREATE STRIPE SESSION
     // =============================
 
-    const carSlug = searchParams.get("car");
+    const carSlug = searchParams.get("car") || "";
     const fromParam = searchParams.get("from") || "fleet";
 
     const res = await fetch("/api/create-checkout", {
@@ -1112,7 +1136,7 @@ const handlePayment = async () => {
         carName: displayCar.name,
         price: calculatePrice,
         email: firebaseUser.email,
-        customerName: name,
+        customerName: name.trim(),
         carSlug,
         from: fromParam,
       }),
@@ -1120,7 +1144,7 @@ const handlePayment = async () => {
 
     const data = await res.json();
 
-    if (!data.url) {
+    if (!data?.url) {
       throw new Error("Payment initialization failed");
     }
 
@@ -1131,17 +1155,16 @@ const handlePayment = async () => {
     window.location.href = data.url;
 
   } catch (error: any) {
+    console.error(error);
 
     setSnackbar({
       open: true,
-      message: error.message || "Something went wrong",
+      message: error.message || "Payment failed. Please try again.",
       severity: "error",
     });
 
   } finally {
-
     setIsSubmitting(false);
-
   }
 };
 
