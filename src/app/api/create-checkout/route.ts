@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
 export async function POST(req: NextRequest) {
   try {
+    const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 
-    // ✅ Get data from frontend
+    if (!stripeSecretKey) {
+      throw new Error("STRIPE_SECRET_KEY is missing");
+    }
+
+    const stripe = new Stripe(stripeSecretKey);
+
     const body = await req.json();
 
     const {
@@ -38,11 +42,10 @@ export async function POST(req: NextRequest) {
 
       customer_email: email,
 
-      // ✅ Dynamic redirect URL
       success_url:
 `${process.env.NEXT_PUBLIC_DOMAIN}/manage-booking?car=${carSlug}&from=${from}&payment=success`,
 
-cancel_url:
+      cancel_url:
 `${process.env.NEXT_PUBLIC_DOMAIN}/manage-booking?car=${carSlug}&from=${from}&payment=cancel`,
     });
 
