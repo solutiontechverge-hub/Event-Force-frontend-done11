@@ -928,47 +928,193 @@ const ManageBookingClient = () => {
       loc.toLowerCase().trim() ===
       formData.pickupLocation?.toLowerCase().trim(),
   );
-  const handlePayment = async () => {
-    try {
-      if (!displayCar || !calculatePrice) {
-        alert("Car or price not found");
-        return;
-      }
+const handlePayment = async () => {
+  try {
+    // =========================
+    // BASIC VALIDATIONS
+    // =========================
+const firebaseUser = auth.currentUser;
 
-      // ✅ get current car slug from URL
-      const carSlug = searchParams.get("car");
-
-      // ✅ get from param (fleet or details)
-      const fromParam = searchParams.get("from") || "fleet";
-
-      const res = await fetch("/api/create-checkout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          carName: displayCar.name,
-          price: calculatePrice,
-          email: user?.email,
-          customerName: name,
-          carSlug: carSlug,
-          from: fromParam,
-        }),
+if (!firebaseUser) {
+  setSnackbar({
+    open: true,
+    message: "Please login first",
+    severity: "error",
+  });
+  return;
+}
+    if (!name || name.trim().length < 3) {
+      setSnackbar({
+        open: true,
+        message: "Please enter full name",
+        severity: "error",
       });
-
-      const data = await res.json();
-
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        console.error(data);
-        alert("Payment initialization failed");
-      }
-    } catch (error) {
-      console.error(error);
-      alert("Payment error");
+      return;
     }
-  };
+
+    if (!user?.email) {
+      setSnackbar({
+        open: true,
+        message: "Please login again",
+        severity: "error",
+      });
+      return;
+    }
+
+    if (!phone || phone.trim().length < 8) {
+      setSnackbar({
+        open: true,
+        message: "Please enter valid phone number",
+        severity: "error",
+      });
+      return;
+    }
+
+    if (!formData.pickupLocation || formData.pickupLocation.trim() === "") {
+      setSnackbar({
+        open: true,
+        message: "Please select pickup location",
+        severity: "error",
+      });
+      return;
+    }
+
+    // ✅ DESTINATION VALIDATION
+    if (
+      !isAirportOnlyVehicle &&
+      (!formData.destination || formData.destination.trim() === "")
+    ) {
+      setSnackbar({
+        open: true,
+        message: "Please select destination",
+        severity: "error",
+      });
+      return;
+    }
+
+    if (!formData.pickupDate) {
+      setSnackbar({
+        open: true,
+        message: "Please select pickup date and time",
+        severity: "error",
+      });
+      return;
+    }
+
+    // =========================
+    // ✅ 2 HOUR TIME LIMIT VALIDATION
+    // =========================
+
+    const selectedTime = new Date(formData.pickupDate);
+    const minAllowedTime = new Date(Date.now() + 2 * 60 * 60 * 1000);
+
+    if (selectedTime < minAllowedTime) {
+      setSnackbar({
+        open: true,
+        message: "Pickup time must be at least 2 hours from now",
+        severity: "error",
+      });
+      return;
+    }
+
+    // =========================
+    // VEHICLE VALIDATION
+    // =========================
+
+    if (!displayCar) {
+      setSnackbar({
+        open: true,
+        message: "Please select vehicle",
+        severity: "error",
+      });
+      return;
+    }
+
+    if (!calculatePrice) {
+      setSnackbar({
+        open: true,
+        message: "Invalid route or price not available",
+        severity: "error",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    // =========================
+    // SAVE BOOKING TO FIRESTORE
+    // =========================
+
+  await addDoc(collection(db, "bookings"), {
+  userId: firebaseUser.uid,
+  email: firebaseUser.email,
+      fullName: name,
+      // email: user.email,
+      phone: phone,
+      car: displayCar.name,
+      pickupLocation: formData.pickupLocation,
+      destination: formData.destination,
+      pickupDate: formData.pickupDate,
+      flightNumber: formData.returnDate || "",
+      estimatedPrice: calculatePrice,
+      createdAt: serverTimestamp(),
+    });
+
+    // =========================
+    // SEND EMAIL
+    // =========================
+
+    await sendBookingEmail({
+      fullName: name,
+      email: user.email,
+      phone: phone,
+      selectedCar: displayCar.name,
+      pickupLocation: formData.pickupLocation,
+      destination: formData.destination,
+      pickupDate: formData.pickupDate,
+      returnDate: formData.returnDate,
+      price: calculatePrice,
+    });
+
+    // =========================
+    // CREATE STRIPE SESSION
+    // =========================
+
+    const carSlug = searchParams.get("car");
+    const fromParam = searchParams.get("from") || "fleet";
+
+    const res = await fetch("/api/create-checkout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        carName: displayCar.name,
+        price: calculatePrice,
+        email: user.email,
+        customerName: name,
+        carSlug,
+        from: fromParam,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      throw new Error("Stripe session failed");
+    }
+  } catch (error: any) {
+    setSnackbar({
+      open: true,
+      message: error.message || "Something went wrong",
+      severity: "error",
+    });
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   if (!isMounted) {
     return (
