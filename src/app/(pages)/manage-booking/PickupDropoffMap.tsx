@@ -89,6 +89,15 @@ const PickupDestinationSingleFlow: React.FC<Props> = ({
   const [pickup, setPickup] = useState<Location | null>(null);
   const [destination, setDestination] = useState<Location | null>(null);
 
+  // Simple runtime check to verify env is loaded in production
+  if (typeof window !== "undefined") {
+    // This logs only whether the key exists, not the key itself
+    console.debug(
+      "Maps API key present:",
+      !!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+    );
+  }
+
   /* ================= CURRENT LOCATION ================= */
 
   const getCurrentLocation = () => {
