@@ -149,10 +149,19 @@ export const IMAGE_CONFIG = {
 // SEO constants
 export const SEO = {
   siteName: 'Event Force',
-  siteUrl: 'https://eventforcesa.netlify.app',
+  // IMPORTANT: this must match your production domain for correct canonical URLs, sitemap, and social previews
+  siteUrl: 'https://eventforce.sa.com',
+  // Public assets used by metadata / structured data (must exist in `public/`)
+  logoPath: '/logo-event-force.svg',
+  ogImagePath: '/og.svg',
   defaultTitle: 'Event Force - Premium Transportation & Event Logistics',
   defaultDescription: 'From luxury VIP vehicles to large-scale event logistics, we provide seamless, reliable, and premium transportation solutions that elevate every occasion across Saudi Arabia.',
   keywords: [
+    'eventforce',
+    'event force',
+    'eventforce.sa',
+    'eventforce saudi',
+    'eventforce saudi arabia',
     'transportation',
     'luxury cars',
     'event logistics',
@@ -164,14 +173,15 @@ export const SEO = {
     'premium transportation'
   ] as string[],
   social: {
-    twitter: '@eventforce_sa',
+    // handles only (no leading '@') so URLs build correctly
+    twitter: 'eventforce_sa',
     facebook: 'eventforce.sa',
     instagram: 'eventforce_sa',
   },
   contact: {
     phone: '+966125786869',
     landline: '+966125786869',
-    email: 'Reservations@eventforce.sa.com',
+    email: 'reservations@eventforce.sa.com',
     address: 'Saudi Arabia',
   }
 } as const;

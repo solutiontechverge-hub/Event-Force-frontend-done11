@@ -19,7 +19,7 @@ const SEOHead: React.FC<SEOHeadProps> = ({
   title = SEO.defaultTitle,
   description = SEO.defaultDescription,
   keywords = SEO.keywords,
-  image = `${SEO.siteUrl}/og.png`,
+  image = `${SEO.siteUrl}${SEO.ogImagePath}`,
   url = SEO.siteUrl,
   type = 'website',
   structuredData,
@@ -35,7 +35,7 @@ const SEOHead: React.FC<SEOHeadProps> = ({
     '@type': 'Organization',
     name: SEO.siteName,
     url: SEO.siteUrl,
-    logo: `${SEO.siteUrl}/logo-event-force.png`,
+    logo: `${SEO.siteUrl}${SEO.logoPath}`,
     description: SEO.defaultDescription,
     contactPoint: {
       '@type': 'ContactPoint',

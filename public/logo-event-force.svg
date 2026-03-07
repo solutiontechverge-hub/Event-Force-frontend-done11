@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Event Force logo">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#52A4C1"/>
+      <stop offset="1" stop-color="#1976d2"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#g)"/>
+  <g fill="#fff" font-family="Outfit, Arial, Helvetica, sans-serif" text-anchor="middle">
+    <text x="256" y="248" font-size="68" font-weight="700" letter-spacing="1">Event</text>
+    <text x="256" y="322" font-size="68" font-weight="700" letter-spacing="1">Force</text>
+    <text x="256" y="382" font-size="22" font-weight="500" opacity="0.9">Premium Transportation</text>
+  </g>
+</svg>

@@ -19,12 +19,6 @@ body {
   background-color: var(--background) !important;
 }
 
-/* Next.js root wrapper */
-body > div {
-  background-color: var(--background) !important;
-}
-
-
 /* ========================================
    Prevent Flash of Unstyled Content (FOUC)
    ======================================== */

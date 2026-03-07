@@ -16,6 +16,7 @@ export const metadata: Metadata = {
     'premium transportation',
     'Event Force'
   ],
+  metadataBase: new URL(SEO.siteUrl),
   openGraph: {
     title: 'Event Force - Premium Transportation & Event Logistics',
     description: 'From luxury VIP vehicles to large-scale event logistics, we provide seamless, reliable, and premium transportation solutions that elevate every occasion across Saudi Arabia.',
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
     siteName: SEO.siteName,
     images: [
       {
-        url: `${SEO.siteUrl}/logo-event-force.png`,
+        url: SEO.ogImagePath,
         width: 1200,
         height: 630,
         alt: 'Event Force Logo',
@@ -36,7 +37,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Event Force - Premium Transportation & Event Logistics',
     description: 'From luxury VIP vehicles to large-scale event logistics, we provide seamless, reliable, and premium transportation solutions that elevate every occasion across Saudi Arabia.',
-    images: [`${SEO.siteUrl}/logo-event-force.png`],
+    images: [SEO.ogImagePath],
   },
   alternates: {
     canonical: SEO.siteUrl,

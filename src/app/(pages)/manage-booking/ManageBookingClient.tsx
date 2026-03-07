@@ -933,7 +933,7 @@ return fallbackPrice ?? 100;
       loc.toLowerCase().trim() ===
       formData.pickupLocation?.toLowerCase().trim(),
   );
-const handlePayment = async () => {
+const handleBookNow = async () => {
   try {
     // =============================
     // FIREBASE USER CHECK
@@ -1104,62 +1104,30 @@ const handlePayment = async () => {
     // SEND EMAIL
     // =============================
 
-    try {
-      await sendBookingEmail({
-        fullName: name.trim(),
-        email: firebaseUser.email,
-        phone: phone.trim(),
-        selectedCar: displayCar.name,
-        pickupLocation: normalizedPickup,
-        destination: normalizedDestination,
-        pickupDate: formData.pickupDate,
-        returnDate: formData.returnDate,
-        price: calculatePrice,
-      });
-    } catch (emailError) {
-      console.error("Email failed:", emailError);
-    }
-
-    // =============================
-    // CREATE STRIPE SESSION
-    // =============================
-
-    const carSlug = searchParams.get("car") || "";
-    const fromParam = searchParams.get("from") || "fleet";
-
-    const res = await fetch("/api/create-checkout", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        carName: displayCar.name,
-        price: calculatePrice,
-        email: firebaseUser.email,
-        customerName: name.trim(),
-        carSlug,
-        from: fromParam,
-      }),
+    await sendBookingEmail({
+      fullName: name.trim(),
+      email: firebaseUser.email,
+      phone: phone.trim(),
+      selectedCar: displayCar.name,
+      pickupLocation: normalizedPickup,
+      destination: normalizedDestination,
+      pickupDate: formData.pickupDate,
+      returnDate: formData.returnDate,
+      price: calculatePrice,
     });
 
-    const data = await res.json();
-
-    if (!data?.url) {
-      throw new Error("Payment initialization failed");
-    }
-
-    // =============================
-    // REDIRECT TO STRIPE
-    // =============================
-
-    window.location.href = data.url;
+    setSnackbar({
+      open: true,
+      message: `${t("booking.success")} Please check spam folder as well.`,
+      severity: "success",
+    });
 
   } catch (error: any) {
     console.error(error);
 
     setSnackbar({
       open: true,
-      message: error.message || "Payment failed. Please try again.",
+      message: error?.message || t("booking.error"),
       severity: "error",
     });
 
@@ -1942,7 +1910,7 @@ const handlePayment = async () => {
                         // type="button "
                         variant="contained"
                         fullWidth
-                        onClick={handlePayment}
+                        onClick={handleBookNow}
                         disabled={isSubmitting}
                         sx={{
                           py: 1.5,
@@ -1956,7 +1924,7 @@ const handlePayment = async () => {
                         }}
                       >
                         {/* {isSubmitting ? "Submitting..." : "Confirm"} */}
-                        Pay Securely
+                        {isSubmitting ? "Booking..." : "Book Now"}
                       </Button>
                     </Box>
                   </Box>

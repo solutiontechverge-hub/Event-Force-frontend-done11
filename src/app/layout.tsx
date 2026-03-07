@@ -3,7 +3,6 @@ import { Outfit } from "next/font/google";
 import ThemeProvider from '@/components/ThemeProvider';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { LanguageProvider } from '@/contexts/LanguageContext';
-import SEOHead from '@/components/SEOHead';
 import PerformanceMonitor from '@/components/PerformanceMonitor';
 import { SEO } from '@/constants/theme';
 import "./globals.css";
@@ -15,6 +14,7 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SEO.siteUrl),
   title: SEO.defaultTitle,
   description: SEO.defaultDescription,
   keywords: SEO.keywords,
@@ -64,7 +64,7 @@ export const metadata: Metadata = {
     siteName: SEO.siteName,
     images: [
       {
-        url: `${SEO.siteUrl}/og.png`,
+        url: SEO.ogImagePath,
         type: "image/png",
         width: 1200,
         height: 630,
@@ -76,7 +76,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: SEO.defaultTitle,
     description: SEO.defaultDescription,
-    images: [`${SEO.siteUrl}/og.png`],
+    images: [SEO.ogImagePath],
   },
   alternates: {
     canonical: SEO.siteUrl,
@@ -95,6 +95,46 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const organizationJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: SEO.siteName,
+    url: SEO.siteUrl,
+    logo: `${SEO.siteUrl}${SEO.logoPath}`,
+    description: SEO.defaultDescription,
+    contactPoint: [
+      {
+        "@type": "ContactPoint",
+        telephone: SEO.contact.phone,
+        contactType: "customer service",
+        availableLanguage: ["English", "Arabic"],
+      },
+    ],
+    address: {
+      "@type": "PostalAddress",
+      addressCountry: "SA",
+      addressLocality: SEO.contact.address,
+    },
+    sameAs: [
+      SEO.social.twitter ? `https://twitter.com/${SEO.social.twitter}` : null,
+      SEO.social.facebook ? `https://facebook.com/${SEO.social.facebook}` : null,
+      SEO.social.instagram ? `https://instagram.com/${SEO.social.instagram}` : null,
+    ].filter(Boolean),
+  };
+
+  const websiteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: SEO.siteName,
+    url: SEO.siteUrl,
+    inLanguage: ["en", "ar"],
+    potentialAction: {
+      "@type": "SearchAction",
+      target: `${SEO.siteUrl}/search?q={search_term_string}`,
+      "query-input": "required name=search_term_string",
+    },
+  };
+
   return (
     <html lang="en" dir="ltr">
       <head>
@@ -112,6 +152,14 @@ export default function RootLayout({
         {/* Preload critical fonts */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
       </head>
    <body className={`${outfit.className}`} suppressHydrationWarning={true}>
         {/* Initial Loading Screen - Shows while JS/CSS loads */}

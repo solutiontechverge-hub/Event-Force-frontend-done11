@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Event Force - Premium Transportation & Event Logistics">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#000000"/>
+      <stop offset="0.55" stop-color="#1a1a2e"/>
+      <stop offset="1" stop-color="#1976d2"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#52A4C1"/>
+      <stop offset="1" stop-color="#1976d2"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="72" y="72" width="1056" height="486" rx="44" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.10)"/>
+  <g font-family="Outfit, Arial, Helvetica, sans-serif" fill="#fff">
+    <text x="140" y="240" font-size="78" font-weight="700">Event Force</text>
+    <text x="140" y="310" font-size="34" font-weight="500" opacity="0.92">Premium Transportation &amp; Event Logistics</text>
+    <text x="140" y="372" font-size="26" font-weight="400" opacity="0.85">Luxury VIP vehicles " Chauffeur service " Fleet rentals across Saudi Arabia</text>
+  </g>
+  <g>
+    <rect x="140" y="418" width="360" height="10" rx="5" fill="url(#accent)"/>
+  </g>
+  <g fill="#fff" opacity="0.65" font-family="Outfit, Arial, Helvetica, sans-serif">
+    <text x="140" y="505" font-size="22">eventforce.sa.com</text>
+  </g>
+</svg>
