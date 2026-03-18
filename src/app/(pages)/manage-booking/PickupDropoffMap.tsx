@@ -1,4 +1,6 @@
-import React, { useRef, useState } from "react";
+"use client";
+
+import React, { useState, useRef } from "react";
 import { Box, TextField, Typography, MenuItem, Button } from "@mui/material";
 import {
   LoadScript,
@@ -7,192 +9,155 @@ import {
   Marker,
 } from "@react-google-maps/api";
 
-/* ================= TYPES ================= */
-
-interface BaseLocation {
-  address: string;
-}
-
-interface MapLocation extends BaseLocation {
-  lat: number;
-  lng: number;
-}
-
-type Location = BaseLocation | MapLocation;
-type LocationMode = "" | "map" | string;
-
 interface Props {
   airportOnly?: boolean;
   setPickupLocation: (value: string) => void;
   setDestinationLocation: (value: string) => void;
+  setSelectedRouteKey: (key: string | null) => void; // ✅ NEW
 }
 
-/* ================= CONSTANTS ================= */
+/* ================= ROUTES ================= */
+
+const ROUTES = [
+  { label: "Riyadh Airport → City", pickup: "Riyadh Airport", destination: "City", key: "riyadh-airport-city" },
+  { label: " City →  Riyadh Airport", pickup: "Riyadh Airport", destination: "City", key: "riyadh-airport-city1" },
+  { label: "Dammam Airport → City", pickup: "Dammam Airport", destination: "City", key: "dammam-airport-city" },
+  { label: "City  →  Dammam Airport", pickup: "Dammam Airport", destination: "City", key: "dammam-airport-city1" },
+  { label: "Jeddah Airport → City", pickup: "Jeddah Airport", destination: "City", key: "jeddah-airport-city" },
+  { label: "City  →  Jeddah Airport", pickup: "Jeddah Airport", destination: "City", key: "jeddah-airport-city1" },
+  { label: "Madinah Airport → City", pickup: "Madinah Airport", destination: "City", key: "madina-airport-city" },
+  { label: "City  →  Madinah Airport", pickup: "Madinah Airport", destination: "City", key: "madina-airport-city1" },
+
+  { label: "Riyadh Downtown → City", pickup: "Riyadh Downtown", destination: "City", key: "riyadh-downtown-city" },
+  { label: "City  →  Riyadh Downtown", pickup: "Riyadh Downtown", destination: "City", key: "riyadh-downtown-city1" },
+  { label: "Jeddah Downtown → City", pickup: "Jeddah Downtown", destination: "City", key: "jeddah-downtown-city" },
+  { label: "City  →  Jeddah Downtown", pickup: "Jeddah Downtown", destination: "City", key: "jeddah-downtown-city1" },
+
+  { label: "Jeddah → KAUST", pickup: "Jeddah", destination: "KAUST", key: "jeddah-kaust" },
+  { label: "KAUST → Jeddah", pickup: "KAUST", destination: "Jeddah", key: "kaust-jeddah1" },
+  { label: "Jeddah → KAEC", pickup: "Jeddah", destination: "KAEC", key: "jeddah-kaec" },
+  { label: "KAEC → Jeddah", pickup: "KAEC", destination: "Jeddah", key: "kaec-jeddah1" },
+  { label: "Jeddah → Yanbu", pickup: "Jeddah", destination: "Yanbu", key: "jeddah-yanbu" },
+  { label: "Yanbu → Jeddah", pickup: "Yanbu", destination: "Jeddah", key: "yanbu-jeddah1" },
+  { label: "Jeddah → NEOM", pickup: "Jeddah", destination: "NEOM", key: "jeddah-neom" },
+  { label: "NEOM → Jeddah", pickup: "NEOM", destination: "Jeddah", key: "neom-jeddah1" },
+  { label: "Red Sea Umluj → Jeddah", pickup: "Red Sea Umluj", destination: "Jeddah", key: "red-sea-umluj-jeddah" },
+    { label: "Jeddah → Red Sea Umluj", pickup: "Jeddah", destination: "Red Sea Umluj", key: "jeddah-red-sea-umluj1" },
+
+  { label: "Jeddah Airport → Makkah", pickup: "Jeddah Airport", destination: "Makkah", key: "jeddah-airport-makkah" },
+  { label: "Makkah → Jeddah Airport", pickup: "Makkah", destination: "Jeddah Airport", key: "makkah-jeddah-airport1" },
+  { label: "Makkah → Madinah", pickup: "Makkah", destination: "Madinah", key: "jeddah-makkah-medina" },
+  { label: "Madinah  → Makkah", pickup: "Makkah", destination: "Madinah", key: "jeddah-makkah-medina1" },
+  { label: "Jeddah  → Makkah", pickup: "Makkah", destination: "Madinah", key: "jeddah-makkah-medina" },
+  { label: " Makkah → Jeddah", pickup: "Makkah", destination: "Jeddah", key: "makkah-jeddah1" },
+  { label: " Madinah → Jeddah", pickup: "Makkah", destination: "Jeddah", key: "makkah-jeddah" },
+  { label: " Jeddah → Madinah", pickup: "Makkah", destination: "Jeddah", key: "makkah-jeddah1" },
+];
 
 const libraries: "places"[] = ["places"];
-
-const AIRPORT_LOCATIONS = [
-  "Riyadh Airport",
-  "Dammam Airport",
-  "Jeddah Airport",
-  "Madinah Airport",
-  "Riyadh Airport to city",
-  "Dammam Airport to city",
-  "Jeddah Airport to city",
-  "Madinah Airport to city",
-];
-
-const ALL_LOCATIONS = [
-  "Riyadh Airport  ",
-  "Riyadh Airport to city ",
-  "Riyadh Downtown to Inside City",
-  "Dammam Airport ",
-  "Dammam Airport to city",
-  "Dammam Downtown to Inside City",
-  "Jeddah Airport ",
-  "Jeddah Airport to city",
-  "Jeddah Downtown to Inside City",
-  "Jeddah To KAUST",
-  "Jeddah To KAEC",
-  "Jeddah To Yanbu",
-  "Jeddah To Red Sea Umluj",
-  "Jeddah To NEOM",
-  "JED Airport to Makkah",
-  "Jeddah or Makkah To Madinah",
-  "Jeddah to Makkah",
-  "Makkah Al-Mukarramah",
-  "Madinah Airport to City",
-  "Madina downtown to inside city",
-];
-
-/* ================= TYPE GUARD ================= */
-
-const isMapLocation = (loc: Location | null): loc is MapLocation =>
-  !!loc && typeof (loc as MapLocation).lat === "number";
-
-/* ================= COMPONENT ================= */
 
 const PickupDestinationSingleFlow: React.FC<Props> = ({
   airportOnly,
   setPickupLocation,
   setDestinationLocation,
+  setSelectedRouteKey,
 }) => {
-  /* ✅ FIX: define inside component */
-  const locationsToShow = airportOnly ? AIRPORT_LOCATIONS : ALL_LOCATIONS;
+  const [selectedRouteKeyLocal, setSelectedRouteKeyLocal] = useState("");
+  const [useMap, setUseMap] = useState(false);
 
   const pickupRef = useRef<google.maps.places.Autocomplete | null>(null);
   const destRef = useRef<google.maps.places.Autocomplete | null>(null);
 
-  const [pickupMode, setPickupMode] = useState<LocationMode>("");
-  const [destMode, setDestMode] = useState<LocationMode>("");
+  const [pickup, setPickup] = useState<any>(null);
+  const [destination, setDestination] = useState<any>(null);
 
-  const [pickup, setPickup] = useState<Location | null>(null);
-  const [destination, setDestination] = useState<Location | null>(null);
+  const filteredRoutes = airportOnly
+    ? ROUTES.filter((r) => r.pickup.toLowerCase().includes("airport"))
+    : ROUTES;
 
-  // Simple runtime check to verify env is loaded in production
-  if (typeof window !== "undefined") {
-    // This logs only whether the key exists, not the key itself
-    console.debug(
-      "Maps API key present:",
-      !!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
-    );
-  }
+  const handleRouteChange = (value: string) => {
+    if (value === "map") {
+      setUseMap(true);
+      setSelectedRouteKeyLocal("");
+      setSelectedRouteKey(null);
+      setPickupLocation("");
+      setDestinationLocation("");
+      return;
+    }
 
-  /* ================= CURRENT LOCATION ================= */
+    const route = ROUTES.find((r) => r.key === value);
 
-  const getCurrentLocation = () => {
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
+    setSelectedRouteKeyLocal(value);
+    setSelectedRouteKey(value);
+    setUseMap(false);
 
-        const geocoder = new window.google.maps.Geocoder();
-
-        geocoder.geocode({ location: { lat, lng } }, (results) => {
-          if (!results?.[0]) return;
-
-          const address = results[0].formatted_address;
-
-          setPickup({ address, lat, lng });
-          setPickupLocation(address);
-        });
-      },
-      () => alert("Location permission denied"),
-    );
+    if (route) {
+      setPickupLocation(route.pickup);
+      setDestinationLocation(route.destination);
+    }
   };
 
-  /* ================= MAP CENTER ================= */
+  const getCurrentLocation = () => {
+    navigator.geolocation.getCurrentPosition((pos) => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
 
-  const mapCenter = (() => {
-    if (isMapLocation(pickup)) return { lat: pickup.lat, lng: pickup.lng };
-    if (isMapLocation(destination))
-      return { lat: destination.lat, lng: destination.lng };
-    return null;
-  })();
+      const geocoder = new window.google.maps.Geocoder();
+
+      geocoder.geocode({ location: { lat, lng } }, (results) => {
+        if (!results?.[0]) return;
+
+        const address = results[0].formatted_address;
+
+        setPickup({ address, lat, lng });
+        setPickupLocation(address);
+      });
+    });
+  };
+
+  const mapCenter = pickup?.lat
+    ? { lat: pickup.lat, lng: pickup.lng }
+    : destination?.lat
+    ? { lat: destination.lat, lng: destination.lng }
+    : null;
 
   return (
     <LoadScript
       googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string}
       libraries={libraries}
     >
-      {/* ================= PICKUP ================= */}
-
       <Box sx={{ mb: 3 }}>
         <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
-          Pickup Location *
+          Select Route *
         </Typography>
 
         <TextField
           select
           fullWidth
           size="small"
-          value={pickupMode}
-          SelectProps={{
-            MenuProps: {
-              disablePortal: true,
-              disableScrollLock: true,
-            },
-          }}
-          onChange={(e) => {
-            const value = e.target.value as LocationMode;
-
-            setPickupMode(value);
-
-            if (value !== "map") {
-              setPickup({ address: value });
-              setPickupLocation(value);
-            } else {
-              setPickup(null);
-            }
-          }}
+          value={selectedRouteKeyLocal}
+          onChange={(e) => handleRouteChange(e.target.value)}
         >
           <MenuItem value="" disabled>
-            Select pickup
+            Select route
           </MenuItem>
 
-          {/* ✅ FIXED */}
-          {locationsToShow.map((loc) => (
-            <MenuItem key={loc} value={loc}>
-              {loc}
+          {filteredRoutes.map((route) => (
+            <MenuItem key={route.key} value={route.key}>
+              {route.label}
             </MenuItem>
           ))}
 
-          {/* show map option only if not airportOnly */}
-          {!airportOnly && (
-            <MenuItem value="map">🔍 Search on Google Map</MenuItem>
-          )}
+          <MenuItem value="map">🔍 Custom (Google Map)</MenuItem>
         </TextField>
       </Box>
 
-      {/* GOOGLE MAP PICKUP */}
-
-      {pickupMode === "map" && !airportOnly && (
-        <Box sx={{ mb: 3 }}>
+      {useMap && (
+        <>
           <Autocomplete
             onLoad={(ref) => (pickupRef.current = ref)}
             onPlaceChanged={() => {
               const place = pickupRef.current?.getPlace();
-
               if (!place?.geometry?.location) return;
 
               const address = place.formatted_address || "";
@@ -206,121 +171,42 @@ const PickupDestinationSingleFlow: React.FC<Props> = ({
               setPickupLocation(address);
             }}
           >
-            <TextField fullWidth size="small" placeholder="Search pickup" />
+            <TextField fullWidth size="small" placeholder="Pickup location" />
           </Autocomplete>
 
           <Button onClick={getCurrentLocation}>📍 Use my location</Button>
-        </Box>
-      )}
 
-      {/* ================= DESTINATION ================= */}
+          <Autocomplete
+            onLoad={(ref) => (destRef.current = ref)}
+            onPlaceChanged={() => {
+              const place = destRef.current?.getPlace();
+              if (!place?.geometry?.location) return;
 
-      {/* ================= DESTINATION ================= */}
+              const address = place.formatted_address || "";
 
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
-          Destination *
-        </Typography>
-
-        <TextField
-          select
-          fullWidth
-          size="small"
-          value={destMode}
-          SelectProps={{
-            MenuProps: {
-              disablePortal: true,
-              disableScrollLock: true,
-            },
-          }}
-          onChange={(e) => {
-            const value = e.target.value as LocationMode;
-
-            setDestMode(value);
-
-            if (value !== "map") {
               setDestination({
-                address: value,
+                address,
+                lat: place.geometry.location.lat(),
+                lng: place.geometry.location.lng(),
               });
 
-              setDestinationLocation(value);
-            } else {
-              setDestination(null);
-            }
-          }}
-        >
-          <MenuItem value="" disabled>
-            Select destination
-          </MenuItem>
+              setDestinationLocation(address);
+            }}
+          >
+            <TextField fullWidth size="small" placeholder="Destination" />
+          </Autocomplete>
 
-          {/* ✅ SAME OPTIONS AS PICKUP */}
-          {locationsToShow.map((loc) => (
-            <MenuItem key={loc} value={loc}>
-              {loc}
-            </MenuItem>
-          ))}
-
-          {/* Allow map search only if not airportOnly */}
-
-          <MenuItem value="map">🔍 Search on Google Map</MenuItem>
-        </TextField>
-      </Box>
-
-      {/* GOOGLE MAP DESTINATION */}
-      {destMode === "map" && (
-        <Autocomplete
-          onLoad={(ref) => (destRef.current = ref)}
-          onPlaceChanged={() => {
-            const place = destRef.current?.getPlace();
-
-            if (!place?.geometry?.location) return;
-
-            const address = place.formatted_address || "";
-
-            setDestination({
-              address,
-              lat: place.geometry.location.lat(),
-              lng: place.geometry.location.lng(),
-            });
-
-            setDestinationLocation(address);
-          }}
-        >
-          <TextField fullWidth size="small" placeholder="Search destination" />
-        </Autocomplete>
-      )}
-
-      {/* ================= MAP ================= */}
-
-      {mapCenter && (
-        <GoogleMap
-          zoom={12}
-          center={mapCenter}
-          mapContainerStyle={{
-            height: "280px",
-            width: "100%",
-          }}
-        >
-          {isMapLocation(pickup) && (
-            <Marker
-              position={{
-                lat: pickup.lat,
-                lng: pickup.lng,
-              }}
-              label="P"
-            />
+          {mapCenter && (
+            <GoogleMap
+              zoom={12}
+              center={mapCenter}
+              mapContainerStyle={{ height: "280px", width: "100%" }}
+            >
+              {pickup?.lat && <Marker position={pickup} label="P" />}
+              {destination?.lat && <Marker position={destination} label="D" />}
+            </GoogleMap>
           )}
-
-          {isMapLocation(destination) && (
-            <Marker
-              position={{
-                lat: destination.lat,
-                lng: destination.lng,
-              }}
-              label="D"
-            />
-          )}
-        </GoogleMap>
+        </>
       )}
     </LoadScript>
   );

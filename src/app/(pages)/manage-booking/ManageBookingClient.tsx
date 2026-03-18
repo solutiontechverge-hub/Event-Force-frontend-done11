@@ -156,7 +156,7 @@ const fleet: Car[] = [
 
 const ManageBookingClient = () => {
   const { user, updateUser } = useAuth();
-
+  const [selectedRouteKey, setSelectedRouteKey] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const router = useRouter();
   const { t, isRTL } = useLanguage();
@@ -818,105 +818,177 @@ const ManageBookingClient = () => {
   };
 
   // ==========================
+  // NORMALIZER
+  // ==========================
+  const normalize = (text: string = "") =>
+    text.toLowerCase().trim().replace(/\s+/g, " ");
+
+  // ==========================
+  // ROUTE DETECTOR (BOTH WAYS SUPPORT)
+  // ==========================
+  const getRouteKey = (pickup: string, destination: string) => {
+    const p = normalize(pickup);
+    const d = normalize(destination);
+
+    // =========================
+    // AIRPORT ↔ CITY
+    // =========================
+    if (
+      (p.includes("riyadh airport") && d.includes("city")) ||
+      (d.includes("riyadh airport") && p.includes("city"))
+    )
+      return "riyadh-airport-city";
+
+    if (
+      (p.includes("jeddah airport") && d.includes("city")) ||
+      (d.includes("jeddah airport") && p.includes("city"))
+    )
+      return "jeddah-airport-city";
+
+    if (
+      (p.includes("dammam airport") && d.includes("city")) ||
+      (d.includes("dammam airport") && p.includes("city"))
+    )
+      return "dammam-airport-city";
+
+    if (
+      (p.includes("madinah airport") && d.includes("city")) ||
+      (d.includes("madinah airport") && p.includes("city"))
+    )
+      return "madina-airport-city";
+
+    // =========================
+    // MAKKAH ↔ JEDDAH AIRPORT
+    // =========================
+    if (
+      (p.includes("makkah") && d.includes("airport")) ||
+      (d.includes("makkah") && p.includes("airport"))
+    )
+      return "jeddah-airport-makkah";
+
+    // =========================
+    // MAKKAH ↔ MEDINA
+    // =========================
+    if (
+      (p.includes("makkah") && d.includes("medina")) ||
+      (d.includes("makkah") && p.includes("medina"))
+    )
+      return "jeddah-makkah-medina";
+
+    // =========================
+    // INTERCITY ROUTES (JEDDAH BASE)
+    // =========================
+    if (p.includes("kaust") || d.includes("kaust")) return "jeddah-kaust";
+
+    if (p.includes("kaec") || d.includes("kaec")) return "jeddah-kaec";
+
+    if (p.includes("yanbu") || d.includes("yanbu")) return "jeddah-yanbu";
+
+    if (p.includes("neom") || d.includes("neom")) return "jeddah-neom";
+
+    if (p.includes("umluj") || d.includes("red sea"))
+      return "jeddah-red-sea-umluj";
+
+    // =========================
+    // DOWNTOWN ↔ INSIDE CITY
+    // =========================
+    if (
+      (p.includes("downtown") && d.includes("inside city")) ||
+      (d.includes("downtown") && p.includes("inside city"))
+    ) {
+      if (p.includes("riyadh") || d.includes("riyadh"))
+        return "riyadh-downtown-city";
+
+      if (p.includes("jeddah") || d.includes("jeddah"))
+        return "jeddah-downtown-city";
+
+      if (p.includes("dammam") || d.includes("dammam"))
+        return "dammam-downtown-city";
+
+      if (p.includes("madina") || d.includes("madina"))
+        return "madina-downtown-city";
+    }
+
+    return null;
+  };
+
+  // ==========================
   // PRICE CALCULATOR
   // ==========================
-  const calculatePrice = useMemo(() => {
-    if (!formData.selectedCar) return null;
 
-    const vehicleKey = getVehicleKey(formData.selectedCar);
-    if (!vehicleKey) return null;
+const calculatePrice = useMemo(() => {
+  if (!formData.selectedCar) return null;
 
-    const pickup = formData.pickupLocation
-  ?.toLowerCase()
-  .trim()
-  .replace(/\s+/g, " ");
-    if (!pickup) return null;
+  const vehicleKey = getVehicleKey(formData.selectedCar);
+  if (!vehicleKey) return null;
 
-    // =========================
-    // INTERCITY ROUTES (FIX)
-    // =========================
+  const pickup = formData.pickupLocation?.toLowerCase().trim();
+  const destination = formData.destination?.toLowerCase().trim();
 
-    if (pickup.includes("kaust"))
-      return pricing["jeddah-kaust"]?.[vehicleKey] ?? null;
+  if (!pickup || !destination) return null;
 
-    if (pickup.includes("kaec"))
-      return pricing["jeddah-kaec"]?.[vehicleKey] ?? null;
-
-    if (pickup.includes("yanbu"))
-      return pricing["jeddah-yanbu"]?.[vehicleKey] ?? null;
-
-    if (pickup.includes("red sea") || pickup.includes("umluj"))
-      return pricing["jeddah-red-sea-umluj"]?.[vehicleKey] ?? null;
-
-    if (pickup.includes("neom"))
-      return pricing["jeddah-neom"]?.[vehicleKey] ?? null;
-
+  // helper for BOTH directions
+  const matchRoute = (a: string, b: string, key: string) => {
     if (
-      pickup.includes("airport to makkah") ||
-      pickup.includes("jed airport to makkah") ||
-      pickup.includes("jeddah airport to makkah")
-    )
-      return pricing["jeddah-airport-makkah"]?.[vehicleKey] ?? null;
-
-    if (
-      pickup.includes("makkah to madina") ||
-      pickup.includes("makkah to medina") ||
-      pickup.includes("jeddah or makkah to madinah")
-    )
-      return pricing["jeddah-makkah-medina"]?.[vehicleKey] ?? null;
-
-    // =========================
-    // AIRPORT ROUTES
-    // =========================
-
-    if (pickup.includes("airport")) {
-      if (pickup.includes("riyadh"))
-        return pricing["riyadh-airport-city"]?.[vehicleKey] ?? null;
-
-      if (pickup.includes("jeddah"))
-        return pricing["jeddah-airport-city"]?.[vehicleKey] ?? null;
-
-      if (pickup.includes("dammam"))
-        return pricing["dammam-airport-city"]?.[vehicleKey] ?? null;
-
-      if (
-        pickup.includes("madinah") ||
-        pickup.includes("medina") ||
-        pickup.includes("madina")
-      )
-        return pricing["madina-airport-city"]?.[vehicleKey] ?? null;
+      (pickup.includes(a) && destination.includes(b)) ||
+      (pickup.includes(b) && destination.includes(a))
+    ) {
+      return pricing[key]?.[vehicleKey] ?? null;
     }
+    return null;
+  };
 
-    // =========================
-    // DOWNTOWN ROUTES
-    // =========================
+  // =========================
+  // AIRPORT ROUTES
+  // =========================
+  let price =
+    matchRoute("riyadh airport", "city", "riyadh-airport-city") ||
+    matchRoute("dammam airport", "city", "dammam-airport-city") ||
+    matchRoute("jeddah airport", "city", "jeddah-airport-city") ||
+    matchRoute("madinah airport", "city", "madina-airport-city");
 
-    if (pickup.includes("downtown")) {
-      if (pickup.includes("riyadh"))
-        return pricing["riyadh-downtown-city"]?.[vehicleKey] ?? null;
+  if (price) return price;
 
-      if (pickup.includes("jeddah"))
-        return pricing["jeddah-downtown-city"]?.[vehicleKey] ?? null;
+  // =========================
+  // DOWNTOWN
+  // =========================
+  price =
+    matchRoute("riyadh downtown", "city", "riyadh-downtown-city") ||
+    matchRoute("jeddah downtown", "city", "jeddah-downtown-city") ||
+    matchRoute("dammam downtown", "city", "dammam-downtown-city") ||
+    matchRoute("madina downtown", "city", "madina-downtown-city");
 
-      if (pickup.includes("dammam"))
-        return pricing["dammam-downtown-city"]?.[vehicleKey] ?? null;
+  if (price) return price;
 
-      if (
-        pickup.includes("madinah") ||
-        pickup.includes("medina") ||
-        pickup.includes("madina")
-      )
-        return pricing["madina-downtown-city"]?.[vehicleKey] ?? null;
-    }
+  // =========================
+  // INTERCITY
+  // =========================
+  price =
+    matchRoute("jeddah", "kaust", "jeddah-kaust") ||
+    matchRoute("jeddah", "kaec", "jeddah-kaec") ||
+    matchRoute("jeddah", "yanbu", "jeddah-yanbu") ||
+    matchRoute("jeddah", "neom", "jeddah-neom") ||
+    matchRoute("jeddah", "umluj", "jeddah-red-sea-umluj");
 
-    // =========================
-    // DEFAULT → HOURLY
-    // =========================
+  if (price) return price;
 
-    const fallbackPrice = pricing.hourly?.[vehicleKey];
+  // =========================
+  // MAKKAH ROUTES
+  // =========================
+  price =
+    matchRoute("jeddah airport", "makkah", "jeddah-airport-makkah") ||
+    matchRoute("makkah", "madinah", "jeddah-makkah-medina");
 
-return fallbackPrice ?? 100;
-  }, [formData.selectedCar, formData.pickupLocation]);
+  if (price) return price;
+
+  // =========================
+  // FALLBACK
+  // =========================
+  return pricing.hourly?.[vehicleKey] ?? 100;
+
+}, [formData.selectedCar, formData.pickupLocation, formData.destination]);
+
+
 
   const isAirportPickup = useMemo(() => {
     const pickup = formData.pickupLocation?.toLowerCase() || "";
@@ -933,208 +1005,212 @@ return fallbackPrice ?? 100;
       loc.toLowerCase().trim() ===
       formData.pickupLocation?.toLowerCase().trim(),
   );
-const handleBookNow = async () => {
-  try {
-    // =============================
-    // FIREBASE USER CHECK
-    // =============================
+  const handleBookNow = async () => {
+    try {
+      // =============================
+      // FIREBASE USER CHECK
+      // =============================
 
-    const firebaseUser = auth.currentUser;
+      const firebaseUser = auth.currentUser;
 
-    if (!firebaseUser) {
+      if (!firebaseUser) {
+        setSnackbar({
+          open: true,
+          message: "Please login first",
+          severity: "error",
+        });
+        return;
+      }
+
+      if (!firebaseUser.email) {
+        setSnackbar({
+          open: true,
+          message: "User email not found. Please login again.",
+          severity: "error",
+        });
+        return;
+      }
+
+      // =============================
+      // NORMALIZE VALUES
+      // =============================
+
+      const normalizedPickup =
+        formData.pickupLocation?.toLowerCase().trim().replace(/\s+/g, " ") ||
+        "";
+
+      const normalizedDestination =
+        formData.destination?.toLowerCase().trim().replace(/\s+/g, " ") || "";
+
+      // =============================
+      // NAME CHECK
+      // =============================
+
+      if (!name || name.trim().length < 3) {
+        setSnackbar({
+          open: true,
+          message: "Please enter valid full name",
+          severity: "error",
+        });
+        return;
+      }
+
+      // =============================
+      // PHONE CHECK
+      // =============================
+
+      if (!phone || phone.trim().length < 8) {
+        setSnackbar({
+          open: true,
+          message: "Please enter valid phone number",
+          severity: "error",
+        });
+        return;
+      }
+
+      // =============================
+      // VEHICLE CHECK
+      // =============================
+
+      if (!displayCar) {
+        setSnackbar({
+          open: true,
+          message: "Please select vehicle",
+          severity: "error",
+        });
+        return;
+      }
+
+      // =============================
+      // PICKUP CHECK
+      // =============================
+
+      if (!normalizedPickup) {
+        setSnackbar({
+          open: true,
+          message: "Please select pickup location",
+          severity: "error",
+        });
+        return;
+      }
+
+      // =============================
+      // DESTINATION CHECK
+      // =============================
+
+      if (!isAirportOnlyVehicle && !normalizedDestination) {
+        setSnackbar({
+          open: true,
+          message: "Please select destination location",
+          severity: "error",
+        });
+        return;
+      }
+
+      // =============================
+      // DATE CHECK
+      // =============================
+
+      if (!formData.pickupDate) {
+        setSnackbar({
+          open: true,
+          message: "Please select pickup date and time",
+          severity: "error",
+        });
+        return;
+      }
+
+      // =============================
+      // TIME LIMIT CHECK (2 HOURS)
+      // =============================
+
+      const selectedTime = new Date(formData.pickupDate);
+      const minAllowedTime = new Date(Date.now() + 2 * 60 * 60 * 1000);
+
+      if (selectedTime < minAllowedTime) {
+        setSnackbar({
+          open: true,
+          message: "Pickup time must be at least 2 hours from now",
+          severity: "error",
+        });
+        return;
+      }
+
+      // =============================
+      // PRICE CHECK
+      // =============================
+
+      if (
+        calculatePrice === null ||
+        calculatePrice === undefined ||
+        calculatePrice <= 0
+      ) {
+        setSnackbar({
+          open: true,
+          message:
+            "Unable to calculate price. Please select valid pickup location.",
+          severity: "error",
+        });
+        return;
+      }
+
+      // =============================
+      // START PROCESS
+      // =============================
+
+      setIsSubmitting(true);
+
+      // =============================
+      // SAVE BOOKING TO FIRESTORE
+      // =============================
+
+      await addDoc(collection(db, "bookings"), {
+        userId: firebaseUser.uid,
+        email: firebaseUser.email,
+        fullName: name.trim(),
+        phone: phone.trim(),
+        car: displayCar.name,
+        pickupLocation: normalizedPickup,
+        destination: normalizedDestination,
+        pickupDate: formData.pickupDate,
+        flightNumber: formData.returnDate || "",
+        estimatedPrice: calculatePrice,
+        createdAt: serverTimestamp(),
+      });
+
+      // =============================
+      // SEND EMAIL
+      // =============================
+
+      await sendBookingEmail({
+        fullName: name.trim(),
+        email: firebaseUser.email,
+        phone: phone.trim(),
+        selectedCar: displayCar.name,
+        pickupLocation: normalizedPickup,
+        destination: normalizedDestination,
+        pickupDate: formData.pickupDate,
+        returnDate: formData.returnDate,
+        price: calculatePrice,
+      });
+
       setSnackbar({
         open: true,
-        message: "Please login first",
-        severity: "error",
+        message: `${t("booking.success")} Please check spam folder as well.`,
+        severity: "success",
       });
-      return;
-    }
+    } catch (error: any) {
+      console.error(error);
 
-    if (!firebaseUser.email) {
       setSnackbar({
         open: true,
-        message: "User email not found. Please login again.",
+        message: error?.message || t("booking.error"),
         severity: "error",
       });
-      return;
+    } finally {
+      setIsSubmitting(false);
     }
-
-    // =============================
-    // NORMALIZE VALUES
-    // =============================
-
-    const normalizedPickup =
-      formData.pickupLocation?.toLowerCase().trim().replace(/\s+/g, " ") || "";
-
-    const normalizedDestination =
-      formData.destination?.toLowerCase().trim().replace(/\s+/g, " ") || "";
-
-    // =============================
-    // NAME CHECK
-    // =============================
-
-    if (!name || name.trim().length < 3) {
-      setSnackbar({
-        open: true,
-        message: "Please enter valid full name",
-        severity: "error",
-      });
-      return;
-    }
-
-    // =============================
-    // PHONE CHECK
-    // =============================
-
-    if (!phone || phone.trim().length < 8) {
-      setSnackbar({
-        open: true,
-        message: "Please enter valid phone number",
-        severity: "error",
-      });
-      return;
-    }
-
-    // =============================
-    // VEHICLE CHECK
-    // =============================
-
-    if (!displayCar) {
-      setSnackbar({
-        open: true,
-        message: "Please select vehicle",
-        severity: "error",
-      });
-      return;
-    }
-
-    // =============================
-    // PICKUP CHECK
-    // =============================
-
-    if (!normalizedPickup) {
-      setSnackbar({
-        open: true,
-        message: "Please select pickup location",
-        severity: "error",
-      });
-      return;
-    }
-
-    // =============================
-    // DESTINATION CHECK
-    // =============================
-
-    if (!isAirportOnlyVehicle && !normalizedDestination) {
-      setSnackbar({
-        open: true,
-        message: "Please select destination location",
-        severity: "error",
-      });
-      return;
-    }
-
-    // =============================
-    // DATE CHECK
-    // =============================
-
-    if (!formData.pickupDate) {
-      setSnackbar({
-        open: true,
-        message: "Please select pickup date and time",
-        severity: "error",
-      });
-      return;
-    }
-
-    // =============================
-    // TIME LIMIT CHECK (2 HOURS)
-    // =============================
-
-    const selectedTime = new Date(formData.pickupDate);
-    const minAllowedTime = new Date(Date.now() + 2 * 60 * 60 * 1000);
-
-    if (selectedTime < minAllowedTime) {
-      setSnackbar({
-        open: true,
-        message: "Pickup time must be at least 2 hours from now",
-        severity: "error",
-      });
-      return;
-    }
-
-    // =============================
-    // PRICE CHECK
-    // =============================
-
-    if (calculatePrice === null || calculatePrice === undefined || calculatePrice <= 0) {
-      setSnackbar({
-        open: true,
-        message: "Unable to calculate price. Please select valid pickup location.",
-        severity: "error",
-      });
-      return;
-    }
-
-    // =============================
-    // START PROCESS
-    // =============================
-
-    setIsSubmitting(true);
-
-    // =============================
-    // SAVE BOOKING TO FIRESTORE
-    // =============================
-
-    await addDoc(collection(db, "bookings"), {
-      userId: firebaseUser.uid,
-      email: firebaseUser.email,
-      fullName: name.trim(),
-      phone: phone.trim(),
-      car: displayCar.name,
-      pickupLocation: normalizedPickup,
-      destination: normalizedDestination,
-      pickupDate: formData.pickupDate,
-      flightNumber: formData.returnDate || "",
-      estimatedPrice: calculatePrice,
-      createdAt: serverTimestamp(),
-    });
-
-    // =============================
-    // SEND EMAIL
-    // =============================
-
-    await sendBookingEmail({
-      fullName: name.trim(),
-      email: firebaseUser.email,
-      phone: phone.trim(),
-      selectedCar: displayCar.name,
-      pickupLocation: normalizedPickup,
-      destination: normalizedDestination,
-      pickupDate: formData.pickupDate,
-      returnDate: formData.returnDate,
-      price: calculatePrice,
-    });
-
-    setSnackbar({
-      open: true,
-      message: `${t("booking.success")} Please check spam folder as well.`,
-      severity: "success",
-    });
-
-  } catch (error: any) {
-    console.error(error);
-
-    setSnackbar({
-      open: true,
-      message: error?.message || t("booking.error"),
-      severity: "error",
-    });
-
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+  };
 
   if (!isMounted) {
     return (
@@ -1764,11 +1840,9 @@ const handleBookNow = async () => {
                         }))
                       }
                       setDestinationLocation={(value) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          destination: value,
-                        }))
+                        setFormData((prev) => ({ ...prev, destination: value }))
                       }
+                      setSelectedRouteKey={setSelectedRouteKey}
                     />
 
                     {/* )} */}
