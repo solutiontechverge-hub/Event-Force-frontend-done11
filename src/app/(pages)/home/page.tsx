@@ -18,7 +18,7 @@ import { Divider } from '@mui/material';
 const HomePage = () => {
   return (
     <>
-    <RamadanPopup />
+    {/* <RamadanPopup /> */}
       <Header />
       <HeroSection />
       <MissionVision />
