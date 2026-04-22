@@ -6,7 +6,6 @@ import {
   Typography, 
   Container, 
   Card, 
-  CardContent, 
   Accordion, 
   AccordionSummary, 
   AccordionDetails,
@@ -23,88 +22,27 @@ import Footer from '@/components/Footer';
 import { ScaleInView, SlideUpInView } from '@/components/animations';
 import { HelpCenterBg } from '../../../../public/images';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { HELP_CENTER_CATEGORIES, HELP_CENTER_POPULAR_TOPICS } from '@/data/helpCenterContent';
 
 const HelpCenterPageClient = () => {
   const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedCategory, setExpandedCategory] = useState<string | false>(false);
 
-  const helpCategories = [
-    {
-      title: 'Getting Started',
-      icon: <Help />,
-      color: '#52A4C1',
-      articles: [
-        {
-          question: 'How do I create an account?',
-          answer: 'Creating an account is simple! Click on "Sign Up" in the top right corner, fill in your details, and verify your email address. You can also sign up using Google or Apple for faster registration.'
-        },
-        {
-          question: 'What information do I need to book a vehicle?',
-          answer: 'To book a vehicle, you\'ll need to provide your pickup location, destination, date and time, contact information, and any special requirements. We also need to know the number of passengers and luggage requirements.'
-        },
-        {
-          question: 'How far in advance should I book?',
-          answer: 'We recommend booking at least 24-48 hours in advance for standard services. For special events or peak times, booking 1-2 weeks ahead ensures better availability and pricing options.'
-        }
-      ]
-    },
-    {
-      title: 'Booking & Reservations',
-      icon: <Book />,
-      color: '#1976d2',
-      articles: [
-        {
-          question: 'Can I modify my booking?',
-          answer: 'Yes! You can modify your booking up to 24 hours before your scheduled pickup time. Changes include date, time, pickup location, and vehicle type. Contact our support team or use the "Manage Booking" section in your account.'
-        },
-        {
-          question: 'What is your cancellation policy?',
-          answer: 'Free cancellation is available up to 24 hours before your scheduled pickup. Cancellations within 24 hours may incur a 50% charge. Same-day cancellations are subject to full payment. Emergency situations are handled case-by-case.'
-        },
-        {
-          question: 'How do I track my vehicle?',
-          answer: 'Once your booking is confirmed, you\'ll receive a tracking link via SMS and email. You can also track your vehicle in real-time through our mobile app or website using your booking reference number.'
-        }
-      ]
-    },
-    {
-      title: 'Payment & Billing',
-      icon: <Support />,
-      color: '#f57c00',
-      articles: [
-        {
-          question: 'What payment methods do you accept?',
-          answer: 'We accept all major credit cards (Visa, MasterCard, American Express), bank transfers, and digital wallets. Corporate clients can also arrange monthly billing. All payments are processed securely through encrypted channels.'
-        },
-        {
-          question: 'When will I be charged?',
-          answer: 'Payment is typically charged at the time of booking confirmation. For long-term rentals, we may require a deposit upfront with the balance due before service delivery. Corporate accounts may have different billing arrangements.'
-        },
-        {
-          question: 'Can I get a receipt for my booking?',
-          answer: 'Yes! Receipts are automatically generated and sent to your email after payment. You can also download receipts from your account dashboard. For corporate clients, detailed invoices are provided for accounting purposes.'
-        }
-      ]
-    }
-  ];
-
-  const popularTopics = [
-    'Vehicle availability',
-    'Pricing information',
-    'Driver details',
-    'Booking modifications',
-    'Payment issues',
-    'Cancellation policy',
-    'Event logistics',
-    'Corporate services'
-  ];
+  const iconMap = {
+    help: <Help />,
+    book: <Book />,
+    support: <Support />,
+  } as const;
 
   const handleCategoryChange = (category: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
     setExpandedCategory(isExpanded ? category : false);
   };
 
-  const filteredCategories = helpCategories.filter(category =>
+  const filteredCategories = HELP_CENTER_CATEGORIES.map((c) => ({
+    ...c,
+    icon: iconMap[c.iconKey],
+  })).filter(category =>
     category.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     category.articles.some(article => 
       article.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -252,7 +190,7 @@ const HelpCenterPageClient = () => {
           </SlideUpInView>
           
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, justifyContent: 'center' }}>
-            {popularTopics.map((topic, index) => (
+            {HELP_CENTER_POPULAR_TOPICS.map((topic, index) => (
               <ScaleInView key={index} initialScale={0.8} duration={0.6} delay={index * 0.1}>
                 <Chip
                   label={topic}
@@ -351,7 +289,7 @@ const HelpCenterPageClient = () => {
           {filteredCategories.length === 0 && (
             <Box sx={{ textAlign: 'center', py: 8 }}>
               <Typography variant="h5" sx={{ mb: 2, color: '#666' }}>
-                No articles found for "{searchQuery}"
+                No articles found for &quot;{searchQuery}&quot;
               </Typography>
               <Typography variant="body1" sx={{ mb: 4, color: '#999' }}>
                 Try searching with different keywords or browse our categories above.

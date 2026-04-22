@@ -9,53 +9,50 @@ import {
   Grid,
   Link as MuiLink,
 } from '@mui/material';
-import { useMediaQuery } from '@/hooks/useMediaQuery';
 import {
-  Facebook,
-  Twitter,
-  Instagram,
-  LinkedIn,
-  YouTube,
   WhatsApp,
 } from '@mui/icons-material';
-import { LogoEventForce } from '../../public/images';
-import { ScaleInView, SlideSidewayInView, SlideUpInView } from '@/components/animations';
+import { LogoApplePay, LogoEventForce, LogoMada, LogoMastercard, LogoVisa } from '../../public/images';
+import { SlideSidewayInView, SlideUpInView } from '@/components/animations';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { FOOTER_LINKS } from './footer.data';
+
+const PaymentLogoCard = ({ label, src }: { label: string; src: any }) => {
+  return (
+    <Box
+      sx={{
+        backgroundColor: 'white',
+        borderRadius: 2,
+        px: 1.25,
+        py: 0.75,
+        height: 48,
+        width: 120,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+      }}
+    >
+      <Image
+        src={src}
+        alt={label}
+        width={110}
+        height={32}
+        style={{ objectFit: 'contain', maxWidth: '100%', height: 'auto' }}
+      />
+    </Box>
+  );
+};
 
 const Footer = () => {
-  const isMobile = useMediaQuery('(max-width:900px)');
   const { t, language } = useLanguage();
   const currentYear = 2026; // Static year to prevent hydration mismatch
 
   const footerLinks = useMemo(() => ({
-    navigation: [
-      { name: t('nav.about'), href: '/about-us' },
-      { name: t('nav.fleet'), href: '/our-fleet' },
-      { name: t('nav.booking'), href: '/manage-booking' },
-      { name: t('nav.contact'), href: '/contact-us' },
-    ],
-    services: [
-      { name: t('footer.luxuryTransportation'), href: '#' },
-      { name: t('footer.eventLogistics'), href: '#' },
-      { name: t('footer.corporateEvents'), href: '#' },
-      { name: t('footer.weddingServices'), href: '#' },
-    ],
-    support: [
-      { name: t('footer.helpCenter'), href: '/support/help-center' },
-      { name: t('footer.faq'), href: '/support/faq' },
-      { name: t('footer.terms'), href: '/support/terms' },
-      { name: t('footer.privacy'), href: '/support/privacy' },
-    ]
+    navigation: FOOTER_LINKS.navigation.map((l) => ({ name: t(l.labelKey), href: l.href })),
+    services: FOOTER_LINKS.services.map((l) => ({ name: t(l.labelKey), href: l.href })),
+    support: FOOTER_LINKS.support.map((l) => ({ name: t(l.labelKey), href: l.href })),
   }), [t, language]);
-
-  const socialIcons = [
-    { icon: <Facebook />, href: '#' },
-    { icon: <Twitter />, href: '#' },
-    { icon: <Instagram />, href: '#' },
-    { icon: <LinkedIn />, href: '#' },
-    { icon: <YouTube />, href: '#' },
-    { icon: <WhatsApp />, href: '#' },
-  ];
 
   return (
     <Box
@@ -195,6 +192,20 @@ const Footer = () => {
               gap: 2,
             }}
           >
+            <Box
+              sx={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 1,
+                justifyContent: { xs: 'center', md: 'flex-start' },
+                alignItems: 'center',
+              }}
+            >
+              <PaymentLogoCard label="Mada" src={LogoMada} />
+              <PaymentLogoCard label="Apple Pay" src={LogoApplePay} />
+              <PaymentLogoCard label="Mastercard" src={LogoMastercard} />
+              <PaymentLogoCard label="Visa" src={LogoVisa} />
+            </Box>
             <Box
               sx={{
                 display: 'flex',

@@ -14,9 +14,7 @@ export default function SuccessPage() {
           status: "paid",
           createdAt: new Date(),
         });
-        console.log("Booking saved successfully");
-      } catch (error) {
-        console.error("Error saving booking:", error);
+      } catch (_error) {
       }
     };
 

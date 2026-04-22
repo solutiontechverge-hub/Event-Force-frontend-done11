@@ -1200,8 +1200,6 @@ const calculatePrice = useMemo(() => {
         severity: "success",
       });
     } catch (error: any) {
-      console.error(error);
-
       setSnackbar({
         open: true,
         message: error?.message || t("booking.error"),

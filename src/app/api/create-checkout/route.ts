@@ -55,8 +55,6 @@ export async function POST(req: NextRequest) {
 
   } catch (err: any) {
 
-    console.log("Stripe error:", err.message);
-
     return NextResponse.json(
       { error: err.message },
       { status: 500 }
