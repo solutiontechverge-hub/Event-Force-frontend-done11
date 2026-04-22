@@ -5,11 +5,16 @@ import emailjs from "@emailjs/browser";
 ===================================================== */
 
 const getEmailJSConfig = () => {
+  // Prefer environment variables so config works across environments
+  // Fallbacks preserve current behavior if env is not set.
   return {
-    serviceId: "service_p81vwl5",
-    templateIdContact: "template_x36w5vj",
-    templateIdBooking: "template_m4d7mlk",
-    publicKey: "-mDuRKSIkk-3w_jOo",
+    serviceId: process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || "service_p81vwl5",
+    templateIdContact:
+      process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID_CONTACT || "template_x36w5vj",
+    templateIdBooking:
+      process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID_BOOKING || "template_m4d7mlk",
+    publicKey:
+      process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || "-mDuRKSIkk-3w_jOo",
   };
 };
 
