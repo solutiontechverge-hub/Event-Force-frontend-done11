@@ -222,6 +222,7 @@ const translations: Record<Language, Record<string, string>> = {
     "help.title": "Help Center",
     "help.subtitle":
       "Find answers to your questions and get the support you need",
+    "help.searchPlaceholder": "Search for help articles...",
     "help.gettingStarted": "Getting Started",
     "help.bookingReservations": "Booking & Reservations",
     "help.pricingPayment": "Pricing & Payment",
