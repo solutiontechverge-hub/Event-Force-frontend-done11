@@ -22,9 +22,7 @@ self.addEventListener('install', (event) => {
       .then((cache) => {
         return cache.addAll(STATIC_ASSETS);
       })
-      .then(() => self.skipWaiting())
-      .catch((error) => {
-      })
+      .catch(() => {})
   );
 });
 

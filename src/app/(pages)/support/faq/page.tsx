@@ -1,8 +1,7 @@
-import { metadata } from './metadata';
 import FAQPageClient from './FAQPageClient';
 
-// Re-export metadata
-export { metadata };
+export { metadata } from './metadata';
 
-// Export the client component as default
-export default FAQPageClient;
+export default function FAQPage() {
+  return <FAQPageClient />;
+}

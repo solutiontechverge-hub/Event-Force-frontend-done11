@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -31,6 +31,11 @@ const HeroSection = () => {
   const heroRef = useRef<HTMLDivElement>(null);
   const isMobile = useMediaQuery("(max-width:900px)");
   const { t, language } = useLanguage();
+  const [showWhatsAppFab, setShowWhatsAppFab] = useState(false);
+
+  useEffect(() => {
+    setShowWhatsAppFab(true);
+  }, []);
 
   useEffect(() => {
     let ticking = false;
@@ -391,36 +396,37 @@ const HeroSection = () => {
         </Box>
       </Container>
 
-      {/* Floating WhatsApp Button */}
-      <Fab
-        color="success"
-        aria-label="Contact us on WhatsApp - Opens in new window"
-        onClick={() => {
-          // WhatsApp redirect with the exact number from footer:
-          const phoneNumber = "+9660549454525"; //  from footer
-          const message =
-            "Hello! I would like to know more about Event Force services.";
-          const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-          window.open(whatsappUrl, "_blank", "noopener,noreferrer");
-        }}
-        sx={{
-          position: "fixed",
-          bottom: 24,
-          right: 24,
-          zIndex: 1000,
-          "&:hover": {
-            transform: "scale(1.1)",
-          },
-          "&:focus": {
-            outline: "2px solid #25D366",
-            outlineOffset: "2px",
-          },
-          transition: "transform 0.3s",
-          cursor: "pointer",
-        }}
-      >
-        <WhatsAppIcon />
-      </Fab>
+      {/* Floating WhatsApp Button — client-only to avoid hydration mismatch */}
+      {showWhatsAppFab && (
+        <Fab
+          color="success"
+          aria-label="Contact us on WhatsApp - Opens in new window"
+          onClick={() => {
+            const phoneNumber = "+9660549454525";
+            const message =
+              "Hello! I would like to know more about Event Force services.";
+            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+          }}
+          sx={{
+            position: "fixed",
+            bottom: 24,
+            right: 24,
+            zIndex: 1000,
+            "&:hover": {
+              transform: "scale(1.1)",
+            },
+            "&:focus": {
+              outline: "2px solid #25D366",
+              outlineOffset: "2px",
+            },
+            transition: "transform 0.3s",
+            cursor: "pointer",
+          }}
+        >
+          <WhatsAppIcon />
+        </Fab>
+      )}
 
       {/* Scroll Indicator */}
       <Box

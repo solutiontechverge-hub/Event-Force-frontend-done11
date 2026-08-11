@@ -31,7 +31,7 @@ const Footer = () => {
     navigation: [
       { name: t('nav.about'), href: '/about-us' },
       { name: t('nav.fleet'), href: '/our-fleet' },
-      { name: t('nav.booking'), href: '/manage-booking' },
+      { name: t('nav.booking'), href: '/book-now' },
       { name: t('nav.contact'), href: '/contact-us' },
     ],
     services: [

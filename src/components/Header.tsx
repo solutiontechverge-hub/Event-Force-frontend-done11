@@ -34,6 +34,47 @@ import { LogoEventForce } from "../../public/images";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import LanguageSelector from "@/components/LanguageSelector";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+
+const PRIMARY = "#52A4C1";
+const PRIMARY_HOVER = "#4A8FA8";
+
+const primaryCtaSx = {
+  backgroundColor: PRIMARY,
+  color: "#FFFFFF",
+  borderRadius: "8px",
+  minWidth: "120px",
+  height: "48px",
+  px: "20px",
+  fontSize: "16px",
+  fontWeight: 700,
+  textTransform: "none",
+  boxShadow: "0 4px 12px rgba(82, 164, 193, 0.25)",
+  "&:hover": {
+    backgroundColor: PRIMARY_HOVER,
+    transform: "scale(1.05)",
+  },
+  transition: "all 0.2s",
+} as const;
+
+const outlineCtaSx = {
+  color: "#FFFFFF",
+  borderColor: PRIMARY,
+  borderRadius: "8px",
+  width: "120px",
+  height: "48px",
+  px: "24px",
+  py: "10px",
+  fontSize: "16px",
+  fontWeight: 700,
+  textTransform: "none",
+  "&:hover": {
+    borderColor: PRIMARY_HOVER,
+    backgroundColor: "rgba(82, 164, 193, 0.12)",
+    transform: "scale(1.05)",
+  },
+  transition: "all 0.2s",
+} as const;
 
 const Header = () => {
   const router = useRouter();
@@ -44,7 +85,7 @@ const Header = () => {
   const pathname = usePathname();
   const { user, isAuthenticated, logout } = useAuth();
   const { t, language } = useLanguage();
-  useEffect(() => {}, [user, isAuthenticated]);
+  const isMobileNav = useMediaQuery("(max-width:899px)");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -118,6 +159,23 @@ const Header = () => {
         </IconButton>
       </Box>
       <Box sx={{ p: 3 }}>
+        <Button
+          component={Link}
+          href="/book-now"
+          variant="contained"
+          fullWidth
+          onClick={handleDrawerToggle}
+          sx={{
+            mb: 2,
+            ...primaryCtaSx,
+            borderRadius: "12px",
+            height: "56px",
+            fontSize: "18px",
+            width: "100%",
+          }}
+        >
+          {t("nav.booking")}
+        </Button>
         <List sx={{ gap: 1 }}>
           {navigation.map((item) => (
             <ListItem key={item.name} disablePadding sx={{ mb: 1 }}>
@@ -167,7 +225,7 @@ const Header = () => {
           }}
         >
           <Box sx={{ mb: 2 }}>
-            <LanguageSelector />
+            {isMobileNav ? <LanguageSelector /> : null}
           </Box>
           {isAuthenticated ? (
             <Box sx={{ display: "flex", flexDirection: "column" }}>
@@ -364,7 +422,17 @@ const Header = () => {
                 gap: 1,
               }}
             >
-              <LanguageSelector />
+              {!isMobileNav ? (
+                <Button
+                  component={Link}
+                  href="/book-now"
+                  variant="contained"
+                  sx={primaryCtaSx}
+                >
+                  {t("nav.booking")}
+                </Button>
+              ) : null}
+              {!isMobileNav ? <LanguageSelector /> : null}
               {isAuthenticated ? (
                 <Box>
                   <IconButton
@@ -454,23 +522,8 @@ const Header = () => {
                 <Button
                   component={Link}
                   href="/signin"
-                  variant="contained"
-                  sx={{
-                    backgroundColor: "#52A4C1",
-                    borderRadius: "8px",
-                    width: "120px",
-                    height: "48px",
-                    px: "24px",
-                    py: "10px",
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    textTransform: "none",
-                    "&:hover": {
-                      backgroundColor: "#4A8FA8",
-                      transform: "scale(1.05)",
-                    },
-                    transition: "all 0.2s",
-                  }}
+                  variant="outlined"
+                  sx={outlineCtaSx}
                 >
                   {t("header.signin")}
                 </Button>

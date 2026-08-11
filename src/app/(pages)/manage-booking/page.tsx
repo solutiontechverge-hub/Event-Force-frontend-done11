@@ -2,6 +2,9 @@ import { Suspense } from "react";
 import { Box, Typography, Container, Skeleton } from "@mui/material";
 import ManageBookingClient from "./ManageBookingClient";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { metadata } from "./metadata";
+
+export { metadata };
 
 // Loading component for Suspense fallback
 const ManageBookingLoading = () => (

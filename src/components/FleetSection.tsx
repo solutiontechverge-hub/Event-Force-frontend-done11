@@ -16,14 +16,6 @@ import {
   Chip,
 } from "@mui/material";
 import { ChevronLeft, ChevronRight } from "@mui/icons-material";
-import {
-  CarBmw7Series,
-  CarGmc,
-  CarMercedesS450,
-  CarFordTaurus,
-  CarMercedesVClass,
-  CarMw5Series,
-} from "../../public/images";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import {
   ScaleInView,
@@ -32,10 +24,19 @@ import {
 } from "@/components/animations";
 import OptimizedImage from "@/components/OptimizedImage";
 import { THEME, IMAGE_CONFIG } from "@/constants/theme";
-import { CarToyotaCoaster } from "../../public/images";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { usePricing } from "@/contexts/PricingContext";
+import { getFleetImageSrc } from "@/lib/fleetImageUtils";
 
 const FleetSection = () => {
+  const { homepageFleet } = usePricing();
+  const fleet = homepageFleet.map((car) => ({
+    name: car.name,
+    price: car.listPrice,
+    duration: car.listDuration,
+    image: car.image,
+    features: car.features,
+  }));
   const [currentIndex, setCurrentIndex] = useState(0);
   const [visible, setVisible] = useState(false);
   const [hoveredImageIndex, setHoveredImageIndex] = useState<number | null>(
@@ -51,55 +52,14 @@ const FleetSection = () => {
     "Toyota Hiace",
   ];
 
-  const fleet = [
-    {
-      name: "Ford Taurus",
-      price: "125 SAR",
-      duration: "Per hour",
-      image: CarFordTaurus,
-      features: ["Luxury Interior", "GPS Navigation", "Wi-Fi"],
-    },
-    {
-      name: "GMC Yukon",
-      price: "150 SAR",
-      duration: "Per hour",
-      image: CarGmc,
-      features: ["Spacious", "Premium Sound", "Climate Control"],
-    },
-    {
-      name: "BMW 5 Series",
-      price: "150 SAR",
-      duration: "Per hour",
-      image: CarMw5Series,
-      features: ["Executive Class", "Leather Seats", "Advanced Safety"],
-    },
-    {
-      name: "Mercedes S-Class",
-      price: "400 SAR",
-      duration: "Per hour",
-      image: CarMercedesS450,
-      features: ["Ultimate Luxury", "Chauffeur Service", "Premium Amenities"],
-    },
-    {
-      name: "Mercedes V-Class",
-      price: "300 SAR",
-      duration: "Per hour  ",
-      image: CarMercedesVClass,
-      features: ["Executive Comfort", "Advanced Tech", "Quiet Ride"],
-    },
-    {
-      name: "Toyota Coaster",
-      price: "150 SAR",
-      duration: "Per hour",
-      image: CarToyotaCoaster,
-      features: ["Off-Road Capable", "Luxury SUV", "All-Weather"],
-    },
-  ];
-
   useEffect(() => {
     const timer = setTimeout(() => setVisible(true), 100);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [language]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -168,7 +128,7 @@ const FleetSection = () => {
           <Box sx={{ position: "relative" }}>
             {/* Navigation Arrows */}
             <IconButton
-              key={language}
+              aria-label={language === "ar" ? "Next fleet" : "Previous fleet"}
               onClick={language === "ar" ? nextFleet : prevFleet}
               sx={{
                 position: "absolute",
@@ -189,7 +149,7 @@ const FleetSection = () => {
             </IconButton>
 
             <IconButton
-              key={language}
+              aria-label={language === "ar" ? "Previous fleet" : "Next fleet"}
               onClick={language === "ar" ? prevFleet : nextFleet}
               sx={{
                 position: "absolute",
@@ -212,7 +172,6 @@ const FleetSection = () => {
             {/* Fleet Cards Carousel */}
             <Box sx={{ overflow: "hidden", pb: 4 }}>
               <Box
-                key={language}
                 sx={{
                   display: "flex",
                   transition: "transform 0.5s ease-in-out",
@@ -294,7 +253,7 @@ const FleetSection = () => {
                             }}
                           >
                             <OptimizedImage
-                              src={car.image.src || car.image}
+                              src={getFleetImageSrc(car.image)}
                               alt={car.name}
                               fill
                               objectFit="contain"

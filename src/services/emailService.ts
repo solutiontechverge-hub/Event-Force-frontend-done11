@@ -92,8 +92,6 @@ export const sendContactEmail = async (
     to_email: "reservations@eventforce.sa.com",
   };
 
-  console.log("Contact email params:", params); // optional debug
-
   await emailjs.send(
     serviceId,
     templateIdContact,

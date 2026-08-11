@@ -5,6 +5,8 @@ import React, {
   useContext,
   useState,
   useEffect,
+  useCallback,
+  useMemo,
   ReactNode,
 } from "react";
 
@@ -28,8 +30,22 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.about": "About Us",
     "nav.fleet": "Our Fleet",
     "nav.contact": "Contact Us",
-    "nav.booking": "Booking",
+    "nav.booking": "Book a Ride",
     "nav.signin": "Sign In",
+
+    // Premium Force Book Now
+    "bookNow.title": "Book Your Car with Driver Now",
+    "bookNow.leadLine1":
+      "Contact us directly via WhatsApp to complete your booking quickly,",
+    "bookNow.leadLine2":
+      "or download the Premium Force app to book from the app.",
+    "bookNow.whatsapp": "Book Now via WhatsApp",
+    "bookNow.hint": "Fastest for booking and direct inquiries",
+    "bookNow.divider": "Or download the app",
+    "bookNow.downloadFrom": "Download on",
+    "bookNow.footer": "Premium Force • Luxury chauffeur service",
+    "bookNow.whatsappPrefill":
+      "Hello, I would like to book a car with a driver via Premium Force",
 
     // Common
     "common.loading": "Loading...",
@@ -260,8 +276,21 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.about": "من نحن",
     "nav.fleet": "أسطولنا",
     "nav.contact": "اتصل بنا",
-    "nav.booking": "الحجز",
+    "nav.booking": "احجز رحلتك",
     "nav.signin": "تسجيل الدخول",
+
+    // Premium Force Book Now
+    "bookNow.title": "احجز سيارتك مع سائق الآن",
+    "bookNow.leadLine1": "تواصل معنا مباشرة عبر واتساب لإتمام الحجز بسرعة،",
+    "bookNow.leadLine2": "أو حمّل تطبيق Premium Force للحجز من التطبيق.",
+    "bookNow.whatsapp": "احجز الآن عبر واتساب",
+    "bookNow.hint": "الأسرع للحجز والاستفسار المباشر",
+    "bookNow.divider": "أو حمّل التطبيق",
+    "bookNow.downloadFrom": "تحميل من",
+    "bookNow.footer": "Premium Force • خدمة نقل فاخرة مع سائق",
+    "bookNow.whatsappPrefill":
+      "مرحباً، أرغب بحجز سيارة مع سائق عبر Premium Force",
+
     // Common
     "common.loading": "جاري التحميل...",
     "common.submit": "إرسال",
@@ -486,16 +515,17 @@ const translations: Record<Language, Record<string, string>> = {
 };
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState<Language>(() => {
-    // Initialize from localStorage if available (client-side only)
-    if (typeof window !== "undefined") {
-      const savedLanguage = localStorage.getItem("language") as Language;
-      if (savedLanguage && (savedLanguage === "en" || savedLanguage === "ar")) {
-        return savedLanguage;
-      }
+  const [language, setLanguageState] = useState<Language>("ar");
+
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem("language") as Language;
+    if (
+      savedLanguage &&
+      (savedLanguage === "en" || savedLanguage === "ar")
+    ) {
+      setLanguageState(savedLanguage);
     }
-    return "en";
-  });
+  }, []);
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
@@ -515,24 +545,33 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     }
   }, [language]);
 
-  const t = (key: string): string => {
-    // Ensure we have a valid language
-    const currentLang = language || "en";
-    const translation = translations[currentLang]?.[key];
-    if (translation) {
-      return translation;
-    }
-    // Fallback to English if Arabic translation not found
-    if (currentLang === "ar" && translations["en"]?.[key]) {
-      return translations["en"][key];
-    }
-    return key;
-  };
+  const t = useCallback(
+    (key: string): string => {
+      const currentLang = language || "ar";
+      const translation = translations[currentLang]?.[key];
+      if (translation) {
+        return translation;
+      }
+      if (currentLang === "ar" && translations["en"]?.[key]) {
+        return translations["en"][key];
+      }
+      if (currentLang === "en" && translations["ar"]?.[key]) {
+        return translations["ar"][key];
+      }
+      return key;
+    },
+    [language],
+  );
 
   const isRTL = language === "ar";
 
+  const contextValue = useMemo(
+    () => ({ language, setLanguage, t, isRTL }),
+    [language, t, isRTL],
+  );
+
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t, isRTL }}>
+    <LanguageContext.Provider value={contextValue}>
       {children}
     </LanguageContext.Provider>
   );

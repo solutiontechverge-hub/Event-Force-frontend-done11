@@ -53,12 +53,11 @@ export async function POST(req: NextRequest) {
       url: session.url,
     });
 
-  } catch (err: any) {
-
-    console.log("Stripe error:", err.message);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Checkout failed";
 
     return NextResponse.json(
-      { error: err.message },
+      { error: message },
       { status: 500 }
     );
   }

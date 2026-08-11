@@ -26,9 +26,10 @@ import { useAuth } from '@/contexts/AuthContext';
 interface DashboardAuthFormProps {
   mode: 'signup' | 'signin';
   onSocialLogin?: (provider: string) => void;
+  redirectTo?: string;
 }
 
-const DashboardAuthForm: React.FC<DashboardAuthFormProps> = memo(({ mode, onSocialLogin }) => {
+const DashboardAuthForm: React.FC<DashboardAuthFormProps> = memo(({ mode, onSocialLogin, redirectTo = '/' }) => {
   const router = useRouter();
   const { login, register, error, isLoading, clearError } = useAuth();
   const [formData, setFormData] = useState({ 
@@ -62,7 +63,7 @@ const DashboardAuthForm: React.FC<DashboardAuthFormProps> = memo(({ mode, onSoci
           rememberMe: formData.rememberMe,
         };
         await login(credentials);
-        router.push('/');
+        router.push(redirectTo);
       } else {
         const credentials = {
           email: formData.email,
@@ -70,12 +71,12 @@ const DashboardAuthForm: React.FC<DashboardAuthFormProps> = memo(({ mode, onSoci
           name: formData.fullName,
         };
         await register(credentials);
-        router.push('/');
+        router.push(redirectTo);
       }
     } catch (error: any) {
       setAuthError(error.message || 'Authentication failed');
     }
-  }, [formData, mode, login, register, clearError, router]);
+  }, [formData, mode, login, register, clearError, router, redirectTo]);
 
   const handleSocialLogin = useCallback((provider: string) => {
     onSocialLogin?.(provider);

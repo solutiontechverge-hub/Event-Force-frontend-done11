@@ -1,8 +1,7 @@
-import { metadata } from './metadata';
 import HelpCenterPageClient from './HelpCenterPageClient';
 
-// Re-export metadata
-export { metadata };
+export { metadata } from './metadata';
 
-// Export the client component as default
-export default HelpCenterPageClient;
+export default function HelpCenterPage() {
+  return <HelpCenterPageClient />;
+}

@@ -1,0 +1,138 @@
+'use client';
+
+import React from 'react';
+import { usePageMount } from '@/hooks/usePageMount';
+import { Box, Typography, Container } from '@mui/material';
+import Image from 'next/image';
+import Header from '@/components/Header';
+import FleetPage from '@/components/FleetPage';
+import Footer from '@/components/Footer';
+import { SlideUpInView } from '@/components/animations';
+import { PageSkeleton } from '@/components/PageSkeleton';
+import { FleetBg } from '../../../../public/images';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { FLEET_VEHICLES } from '@/data/fleet';
+import { SEO } from '@/constants/theme';
+
+const OurFleetClient = () => {
+  const { t } = useLanguage();
+  const isMounted = usePageMount();
+
+  const fleetListJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Event Force Fleet',
+    itemListElement: FLEET_VEHICLES.map((vehicle, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      url: `${SEO.siteUrl}/our-fleet/${vehicle.slug}`,
+      name: vehicle.name,
+    })),
+  };
+
+  if (!isMounted) {
+    return <PageSkeleton heroHeight="60vh" contentType="fleet" />;
+  }
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(fleetListJsonLd) }}
+      />
+      <Header />
+
+      <Box component="main">
+      <Box
+        sx={{
+          pt: 8,
+          minHeight: '60vh',
+          position: 'relative',
+          display: 'flex',
+          alignItems: 'center',
+          overflow: 'hidden',
+          backgroundImage: `url(${FleetBg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }}
+      >
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 0,
+          }}
+        >
+          <Image
+            src={FleetBg}
+            alt="Fleet Background"
+            fill
+            style={{
+              objectFit: 'cover',
+              objectPosition: 'center',
+            }}
+            priority
+          />
+        </Box>
+
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background:
+              'linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 100%)',
+            zIndex: 1,
+          }}
+        />
+
+        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2 }}>
+          <Box sx={{ textAlign: 'center' }}>
+            <SlideUpInView initialY={60} duration={0.8}>
+              <Typography
+                variant="h2"
+                component="h1"
+                sx={{
+                  fontWeight: 'bold',
+                  mb: 4,
+                  color: 'white',
+                  textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
+                  fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
+                }}
+              >
+                {t('nav.fleet')}
+              </Typography>
+            </SlideUpInView>
+            <SlideUpInView initialY={40} duration={0.9} delay={0.2}>
+              <Typography
+                variant="h5"
+                sx={{
+                  color: 'rgba(255,255,255,0.9)',
+                  lineHeight: 1.6,
+                  textShadow: '1px 1px 2px rgba(0,0,0,0.5)',
+                  fontSize: { xs: '1.1rem', sm: '1.3rem', md: '1.5rem' },
+                  maxWidth: '800px',
+                  mx: 'auto',
+                }}
+              >
+                {t('fleet.description')}
+              </Typography>
+            </SlideUpInView>
+          </Box>
+        </Container>
+      </Box>
+
+      <FleetPage />
+      </Box>
+      <Footer />
+    </>
+  );
+};
+
+export default OurFleetClient;
