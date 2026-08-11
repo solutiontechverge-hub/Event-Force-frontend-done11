@@ -17,7 +17,7 @@ export const muiTheme = createTheme({
     },
 
     background: {
-      default: THEME.colors.background.paper, // whole site bg
+      default: THEME.colors.background.default, // whole site bg
       paper: '#ffffff', // cards bg
     },
 
@@ -29,7 +29,7 @@ export const muiTheme = createTheme({
   },
 
   typography: {
-    fontFamily: THEME.typography.fontFamily.secondary,
+    fontFamily: THEME.typography.fontFamily.primary,
   },
 
   shape: {
@@ -41,7 +41,7 @@ export const muiTheme = createTheme({
     MuiCssBaseline: {
       styleOverrides: {
         body: {
-          backgroundColor: THEME.colors.background.paper,
+          backgroundColor: THEME.colors.background.default,
         },
       },
     },
@@ -50,6 +50,31 @@ export const muiTheme = createTheme({
       styleOverrides: {
         root: {
           backgroundColor: '#ffffff',
+        },
+      },
+    },
+
+    MuiButton: {
+      styleOverrides: {
+        containedPrimary: {
+          backgroundColor: THEME.colors.primary,
+          '&:hover': {
+            backgroundColor: THEME.colors.primaryDark,
+          },
+        },
+        outlinedPrimary: {
+          borderColor: THEME.colors.primary,
+          color: THEME.colors.primary,
+          '&:hover': {
+            borderColor: THEME.colors.primaryDark,
+            backgroundColor: 'rgba(82, 164, 193, 0.08)',
+          },
+        },
+        textPrimary: {
+          color: THEME.colors.primary,
+          '&:hover': {
+            backgroundColor: 'rgba(82, 164, 193, 0.08)',
+          },
         },
       },
     },

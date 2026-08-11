@@ -25,6 +25,10 @@ export { default as HeroImages } from './hero-images.png';
 
 // Logo Images
 export { default as LogoEventForce } from './logo-event-force.png';
+export { default as LogoApplePay } from './logo-apple-pay.png';
+export { default as LogoMada } from './logo-mada.png';
+export { default as LogoMastercard } from './logo-mastercard.png';
+export { default as LogoVisa } from './logo-visa.png';
 
 // Auth Images
 export { default as AuthBg } from './auth-bg.png';
