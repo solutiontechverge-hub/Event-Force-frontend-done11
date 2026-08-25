@@ -24,13 +24,14 @@ jobs:
             git fetch origin
             git checkout dev
             git pull origin dev
+            export NODE_ENV=production
             npm ci
             npm run build
             if ! command -v pm2 >/dev/null 2>&1; then
               echo "PM2 is not installed. Run: sudo npm i -g pm2"
               exit 1
             fi
-            pm2 describe event-force >/dev/null 2>&1 \
-              && pm2 restart event-force --update-env \
-              || pm2 start npm --name event-force -- start
+            pm2 delete event-force || true
+            pm2 delete eventforce || true
+            pm2 start npm --name eventforce --cwd "${{ secrets.DEPLOY_PATH }}" -- start
             pm2 save
