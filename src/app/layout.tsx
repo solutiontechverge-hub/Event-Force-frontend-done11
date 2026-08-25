@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
-import ThemeProvider from '@/components/ThemeProvider';
-import { AuthProvider } from '@/contexts/AuthContext';
-import { LanguageProvider } from '@/contexts/LanguageContext';
-import PerformanceMonitor from '@/components/PerformanceMonitor';
+import AppProviders from "@/components/AppProviders";
 import { SEO } from '@/constants/theme';
 import "./globals.css";
 
@@ -60,7 +57,7 @@ export const metadata: Metadata = {
     description: SEO.defaultDescription,
     url: SEO.siteUrl,
     type: "website",
-    locale: "en_US",
+    locale: "ar_SA",
     siteName: SEO.siteName,
     images: [
       {
@@ -87,7 +84,7 @@ export const metadata: Metadata = {
 export const viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
+  maximumScale: 5,
 };
 
 export default function RootLayout({
@@ -107,7 +104,7 @@ export default function RootLayout({
         "@type": "ContactPoint",
         telephone: SEO.contact.phone,
         contactType: "customer service",
-        availableLanguage: ["English", "Arabic"],
+        availableLanguage: ["Arabic", "English"],
       },
     ],
     address: {
@@ -127,16 +124,11 @@ export default function RootLayout({
     "@type": "WebSite",
     name: SEO.siteName,
     url: SEO.siteUrl,
-    inLanguage: ["en", "ar"],
-    potentialAction: {
-      "@type": "SearchAction",
-      target: `${SEO.siteUrl}/search?q={search_term_string}`,
-      "query-input": "required name=search_term_string",
-    },
+    inLanguage: ["ar", "en"],
   };
 
   return (
-    <html lang="en" dir="ltr">
+    <html lang="ar" dir="rtl">
       <head>
         <meta name="emotion-insertion-point" content="" />
         <meta name="google-site-verification" content="SJCwkBWfbHB2rVkhSR9h1CxZg8mxVt0yCyKxXkJ1ExU" />
@@ -172,30 +164,19 @@ export default function RootLayout({
             height={54}
           />
           <div className="loading-spinner"></div>
-          <p className="loading-text">Loading...</p>
+          <p className="loading-text">جاري التحميل...</p>
         </div>
         
-        <ThemeProvider>
-          <LanguageProvider>
-            <AuthProvider>
-              {children}
-              <PerformanceMonitor />
-            </AuthProvider>
-          </LanguageProvider>
-        </ThemeProvider>
+        <AppProviders>{children}</AppProviders>
         
         {/* Script to hide loading screen once styles are ready */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              // Mark body as styles loaded and hide loading screen
-              // Only hide via CSS class, let React handle DOM removal to avoid hydration issues
+              // Mark body as styles loaded — CSS hides the loading screen via body.styles-loaded
+              // Only modify body (suppressHydrationWarning) to avoid React hydration mismatch
               (function() {
                 function hideLoadingScreen() {
-                  var loadingScreen = document.getElementById('initial-loading-screen');
-                  if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
-                    loadingScreen.classList.add('hidden');
-                  }
                   document.body.classList.add('styles-loaded');
                 }
                 
@@ -212,57 +193,54 @@ export default function RootLayout({
             `,
           }}
         />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-             if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator){
-                window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/service-worker.js')
-                    .then(function(registration) {
-                     
-                      
-                      // Check for updates
-                      registration.addEventListener('updatefound', function() {
-                        const newWorker = registration.installing;
-                        if (newWorker) {
-                          newWorker.addEventListener('statechange', function() {
-                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                              // New content is available, prompt user to refresh
-                              if (confirm('New version available! Refresh to update?')) {
-                                window.location.reload();
+        {process.env.NODE_ENV === 'production' ? (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                if ('serviceWorker' in navigator) {
+                  window.addEventListener('load', function() {
+                    navigator.serviceWorker.register('/service-worker.js')
+                      .then(function(registration) {
+                        registration.addEventListener('updatefound', function() {
+                          var newWorker = registration.installing;
+                          if (newWorker) {
+                            newWorker.addEventListener('statechange', function() {
+                              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                if (confirm('New version available! Refresh to update?')) {
+                                  newWorker.postMessage({ type: 'SKIP_WAITING' });
+                                  window.location.reload();
+                                }
                               }
-                            }
-                          });
+                            });
+                          }
+                        });
+
+                        if (registration.active && !sessionStorage.getItem('sw-support-cached')) {
+                          registration.active.postMessage({ type: 'CACHE_SUPPORT_PAGES' });
+                          sessionStorage.setItem('sw-support-cached', '1');
                         }
-                      });
-                      
-                      // Cache support pages on registration
-                      if (registration.active) {
-                        registration.active.postMessage({ type: 'CACHE_SUPPORT_PAGES' });
-                      }
-                    })
-                    .catch(function(error) {
+                      })
+                      .catch(function() {});
+                  });
+                }
+              `,
+            }}
+          />
+        ) : (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                if ('serviceWorker' in navigator) {
+                  navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                    registrations.forEach(function(registration) {
+                      registration.unregister();
                     });
-                });
-                
-                // Handle service worker updates
-                navigator.serviceWorker.addEventListener('controllerchange', function() {
-                  window.location.reload();
-                });
-                
-                // Handle offline/online events
-                window.addEventListener('online', function() {
-                  // Optionally show a notification or update UI
-                });
-                
-                window.addEventListener('offline', function() {
-                  // Optionally show offline indicator
-                });
-              } else {
-              }
-            `,
-          }}
-        />
+                  });
+                }
+              `,
+            }}
+          />
+        )}
       </body>
     </html>
   );

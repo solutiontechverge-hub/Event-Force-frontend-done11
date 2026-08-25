@@ -1,21 +1,22 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { 
-  Box, 
-  Typography, 
-  Container, 
-  Card, 
-  CardContent, 
-  Accordion, 
-  AccordionSummary, 
+import React, { useState } from 'react';
+import { usePageMount } from '@/hooks/usePageMount';
+import {
+  Box,
+  Typography,
+  Container,
+  Card,
+  CardContent,
+  Accordion,
+  AccordionSummary,
   AccordionDetails,
   TextField,
   InputAdornment,
   Chip,
   Grid,
   Button,
-  Skeleton
+  Skeleton,
 } from '@mui/material';
 import { Search, ExpandMore, Help, Book, Support } from '@mui/icons-material';
 import Image from 'next/image';
@@ -23,51 +24,48 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { ScaleInView, SlideUpInView } from '@/components/animations';
 import { HelpCenterBg } from '../../../../../public/images';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { HELP_CENTER_CATEGORIES, HELP_CENTER_POPULAR_TOPICS } from '@/data/helpCenterContent';
 
+const iconMap = {
+  help: <Help />,
+  book: <Book />,
+  support: <Support />,
+} as const;
 
 const HelpCenterPageClient = () => {
+  const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedCategory, setExpandedCategory] = useState<string | false>(false);
-  const [isMounted, setIsMounted] = useState(false);
+  const isMounted = usePageMount();
   const [heroImageLoaded, setHeroImageLoaded] = useState(false);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsMounted(true);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const iconMap = {
-    help: <Help />,
-    book: <Book />,
-    support: <Support />,
-  } as const;
-
-  const handleCategoryChange = (category: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
-    setExpandedCategory(isExpanded ? category : false);
-  };
+  const handleCategoryChange =
+    (category: string) =>
+    (_event: React.SyntheticEvent, isExpanded: boolean) => {
+      setExpandedCategory(isExpanded ? category : false);
+    };
 
   const filteredCategories = HELP_CENTER_CATEGORIES.map((c) => ({
     ...c,
     icon: iconMap[c.iconKey],
-  })).filter(category =>
-    category.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    category.articles.some(article => 
-      article.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      article.answer.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+  })).filter(
+    (category) =>
+      category.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      category.articles.some(
+        (article) =>
+          article.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          article.answer.toLowerCase().includes(searchQuery.toLowerCase()),
+      ),
   );
 
   if (!isMounted) {
     return (
       <>
         <Header />
-        
-        {/* Hero Section Skeleton */}
-        <Box 
-          sx={{ 
+
+        <Box
+          sx={{
             pt: 8,
             height: '35vh',
             minHeight: '300px',
@@ -80,28 +78,32 @@ const HelpCenterPageClient = () => {
         >
           <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2 }}>
             <Box sx={{ textAlign: 'center' }}>
-              <Skeleton 
-                variant="text" 
-                width="40%" 
-                height={60} 
+              <Skeleton
+                variant="text"
+                width="40%"
+                height={60}
                 animation="wave"
-                sx={{ mx: 'auto', mb: 2 }} 
+                sx={{ mx: 'auto', mb: 2 }}
               />
-              <Skeleton 
-                variant="text" 
-                width="60%" 
-                height={40} 
+              <Skeleton
+                variant="text"
+                width="60%"
+                height={40}
                 animation="wave"
-                sx={{ mx: 'auto' }} 
+                sx={{ mx: 'auto' }}
               />
             </Box>
           </Container>
         </Box>
 
-        {/* Content Skeleton */}
         <Box sx={{ py: 8, backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
           <Container maxWidth="lg">
-            <Skeleton variant="rectangular" height={56} animation="wave" sx={{ borderRadius: '8px', mb: 4, maxWidth: '600px', mx: 'auto' }} />
+            <Skeleton
+              variant="rectangular"
+              height={56}
+              animation="wave"
+              sx={{ borderRadius: '8px', mb: 4, maxWidth: '600px', mx: 'auto' }}
+            />
             <Skeleton variant="text" width="30%" height={40} animation="wave" sx={{ mb: 3 }} />
             {[1, 2, 3].map((item) => (
               <Card key={item} sx={{ mb: 3 }}>
@@ -130,10 +132,9 @@ const HelpCenterPageClient = () => {
   return (
     <>
       <Header />
-      
-      {/* Hero Section */}
-      <Box 
-        sx={{ 
+
+      <Box
+        sx={{
           pt: 8,
           height: '35vh',
           minHeight: '300px',
@@ -144,7 +145,6 @@ const HelpCenterPageClient = () => {
           backgroundColor: '#52A4C1',
         }}
       >
-        {/* Background Image */}
         {isMounted && (
           <Box
             className={heroImageLoaded ? 'hero-image-container loaded' : 'hero-image-container'}
@@ -163,7 +163,7 @@ const HelpCenterPageClient = () => {
               fill
               style={{
                 objectFit: 'cover',
-                objectPosition: 'center'
+                objectPosition: 'center',
               }}
               priority
               onLoad={() => setHeroImageLoaded(true)}
@@ -171,8 +171,7 @@ const HelpCenterPageClient = () => {
             />
           </Box>
         )}
-        
-        {/* Overlay for better text readability */}
+
         <Box
           sx={{
             position: 'absolute',
@@ -181,33 +180,33 @@ const HelpCenterPageClient = () => {
             right: 0,
             bottom: 0,
             background: 'linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 100%)',
-            zIndex: 1
+            zIndex: 1,
           }}
         />
-        
+
         <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2 }}>
           <Box sx={{ textAlign: 'center' }}>
             <SlideUpInView initialY={60} duration={0.8}>
-              <Typography 
-                variant="h2" 
-                component="h1" 
-                sx={{ 
-                  fontWeight: { xs: 700, sm: 700, md: 'bold' }, 
+              <Typography
+                variant="h2"
+                component="h1"
+                sx={{
+                  fontWeight: { xs: 700, sm: 700, md: 'bold' },
                   mb: { xs: 1.5, sm: 2, md: 2 },
                   color: 'white',
                   textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
                   fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem', lg: '3rem' },
-                  lineHeight: { xs: 1.2, sm: 1.3, md: 1.3 }
+                  lineHeight: { xs: 1.2, sm: 1.3, md: 1.3 },
                 }}
               >
-                Help Center
+                {t('help.title')}
               </Typography>
             </SlideUpInView>
             <SlideUpInView initialY={40} duration={0.9} delay={0.2}>
-              <Typography 
-                variant="h5" 
-                sx={{ 
-                  color: 'rgba(255,255,255,0.9)', 
+              <Typography
+                variant="h5"
+                sx={{
+                  color: 'rgba(255,255,255,0.9)',
                   lineHeight: { xs: 1.4, sm: 1.5, md: 1.6 },
                   textShadow: '1px 1px 2px rgba(0,0,0,0.5)',
                   fontSize: { xs: '0.875rem', sm: '1rem', md: '1.25rem', lg: '1.5rem' },
@@ -215,18 +214,17 @@ const HelpCenterPageClient = () => {
                   mb: { xs: 3, sm: 4, md: 4 },
                   maxWidth: '800px',
                   mx: 'auto',
-                  px: { xs: 2, sm: 0, md: 0 }
+                  px: { xs: 2, sm: 0, md: 0 },
                 }}
               >
-                Find answers to your questions and get the support you need
+                {t('help.subtitle')}
               </Typography>
             </SlideUpInView>
-            
-            {/* Search Bar */}
+
             <SlideUpInView initialY={40} duration={1.0} delay={0.4}>
               <TextField
                 fullWidth
-                placeholder="Search for help articles..."
+                placeholder={t('help.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 sx={{
@@ -253,24 +251,23 @@ const HelpCenterPageClient = () => {
         </Container>
       </Box>
 
-      {/* Popular Topics Section */}
       <Box sx={{ py: 6, backgroundColor: '#f8f9fa' }}>
         <Container maxWidth="lg">
           <SlideUpInView initialY={60} duration={0.8}>
-            <Typography 
-              variant="h4" 
+            <Typography
+              variant="h4"
               component="h2"
-              sx={{ 
-                textAlign: 'center', 
-                mb: 4, 
+              sx={{
+                textAlign: 'center',
+                mb: 4,
                 fontWeight: 'bold',
-                color: '#333'
+                color: '#333',
               }}
             >
               Popular Topics
             </Typography>
           </SlideUpInView>
-          
+
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, justifyContent: 'center' }}>
             {HELP_CENTER_POPULAR_TOPICS.map((topic, index) => (
               <ScaleInView key={index} initialScale={0.8} duration={0.6} delay={index * 0.1}>
@@ -284,7 +281,7 @@ const HelpCenterPageClient = () => {
                     cursor: 'pointer',
                     '&:hover': {
                       backgroundColor: '#4A8FA8',
-                    }
+                    },
                   }}
                 />
               </ScaleInView>
@@ -293,18 +290,17 @@ const HelpCenterPageClient = () => {
         </Container>
       </Box>
 
-      {/* Help Categories Section */}
       <Box sx={{ py: 8 }}>
         <Container maxWidth="lg">
           <SlideUpInView initialY={60} duration={0.8}>
-            <Typography 
-              variant="h3" 
+            <Typography
+              variant="h3"
               component="h2"
-              sx={{ 
-                textAlign: 'center', 
-                mb: 6, 
+              sx={{
+                textAlign: 'center',
+                mb: 6,
                 fontWeight: 'bold',
-                color: '#333'
+                color: '#333',
               }}
             >
               Browse by Category
@@ -316,7 +312,7 @@ const HelpCenterPageClient = () => {
               <Grid size={{ xs: 12 }} key={categoryIndex}>
                 <ScaleInView initialScale={0.9} duration={0.8} delay={categoryIndex * 0.2}>
                   <Card sx={{ mb: 2 }}>
-                    <Accordion 
+                    <Accordion
                       expanded={expandedCategory === category.title}
                       onChange={handleCategoryChange(category.title)}
                       sx={{ boxShadow: 'none' }}
@@ -328,8 +324,8 @@ const HelpCenterPageClient = () => {
                           color: 'white',
                           '&:hover': {
                             backgroundColor: category.color,
-                            opacity: 0.9
-                          }
+                            opacity: 0.9,
+                          },
                         }}
                       >
                         <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
@@ -343,13 +339,13 @@ const HelpCenterPageClient = () => {
                         {category.articles.map((article, articleIndex) => (
                           <Box key={articleIndex}>
                             <Box sx={{ p: 3, borderBottom: '1px solid #eee' }}>
-                              <Typography 
-                                variant="h6" 
-                                sx={{ 
-                                  fontWeight: 'bold', 
-                                  mb: 2, 
+                              <Typography
+                                variant="h6"
+                                sx={{
+                                  fontWeight: 'bold',
+                                  mb: 2,
                                   color: '#333',
-                                  cursor: 'pointer'
+                                  cursor: 'pointer',
                                 }}
                               >
                                 {article.question}
@@ -371,20 +367,20 @@ const HelpCenterPageClient = () => {
           {filteredCategories.length === 0 && (
             <Box sx={{ textAlign: 'center', py: 8 }}>
               <Typography variant="h5" sx={{ mb: 2, color: '#666' }}>
-                No articles found.
+                No articles found for &quot;{searchQuery}&quot;
               </Typography>
               <Typography variant="body1" sx={{ mb: 4, color: '#999' }}>
                 Try searching with different keywords or browse our categories above.
               </Typography>
-              <Button 
-                variant="contained" 
+              <Button
+                variant="contained"
                 onClick={() => {
                   setSearchQuery('');
                   setExpandedCategory(false);
                 }}
-                sx={{ 
+                sx={{
                   backgroundColor: '#52A4C1',
-                  '&:hover': { backgroundColor: '#4A8FA8' }
+                  '&:hover': { backgroundColor: '#4A8FA8' },
                 }}
               >
                 Clear Search
@@ -394,18 +390,17 @@ const HelpCenterPageClient = () => {
         </Container>
       </Box>
 
-      {/* Contact Support Section */}
       <Box sx={{ py: 8, backgroundColor: '#f8f9fa' }}>
         <Container maxWidth="lg">
           <Box sx={{ textAlign: 'center' }}>
             <SlideUpInView initialY={60} duration={0.8}>
-              <Typography 
-                variant="h3" 
+              <Typography
+                variant="h3"
                 component="h2"
-                sx={{ 
+                sx={{
                   fontWeight: 'bold',
                   mb: 4,
-                  color: '#333'
+                  color: '#333',
                 }}
               >
                 Still Need Help?
@@ -413,19 +408,20 @@ const HelpCenterPageClient = () => {
             </SlideUpInView>
             <SlideUpInView initialY={40} duration={0.9} delay={0.2}>
               <Typography variant="body1" sx={{ mb: 4, color: '#666', maxWidth: '600px', mx: 'auto' }}>
-                If you can&apos;t find the answer you&apos;re looking for, our support team is ready to help you with any questions or concerns.
+                If you can&apos;t find the answer you&apos;re looking for, our support team is ready to
+                help you with any questions or concerns.
               </Typography>
             </SlideUpInView>
             <SlideUpInView initialY={40} duration={1.0} delay={0.4}>
-              <Button 
-                variant="contained" 
+              <Button
+                variant="contained"
                 size="large"
                 href="/support"
-                sx={{ 
+                sx={{
                   backgroundColor: '#52A4C1',
                   px: 4,
                   py: 1.5,
-                  '&:hover': { backgroundColor: '#4A8FA8' }
+                  '&:hover': { backgroundColor: '#4A8FA8' },
                 }}
               >
                 Contact Support

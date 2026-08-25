@@ -1,36 +1,19 @@
 "use client";
 
+import React from "react";
 import dynamic from "next/dynamic";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { PageContentSkeleton } from "./LoadingSkeleton";
 
-/* ======================
-   LAZY IMPORTS
-====================== */
+const lazySection = (importer: () => Promise<{ default: React.ComponentType }>) =>
+  dynamic(() => importer().then((mod) => mod.default), {
+    loading: () => <PageContentSkeleton />,
+  });
 
-const FleetSection = dynamic(() => import("./FleetSection"), {
-  ssr: false,
-  loading: () => <PageContentSkeleton />,
-});
-
-const TestimonialsSection = dynamic(() => import("./TestimonialsSection"), {
-  ssr: false,
-  loading: () => <PageContentSkeleton />,
-});
-
-const BenefitsSection = dynamic(() => import("./BenefitsSection"), {
-  ssr: false,
-  loading: () => <PageContentSkeleton />,
-});
-
-const ContactSection = dynamic(() => import("./ContactSection"), {
-  ssr: false,
-  loading: () => <PageContentSkeleton />,
-});
-
-/* ======================
-   EXPORTS
-====================== */
+const FleetSection = lazySection(() => import("./FleetSection"));
+const TestimonialsSection = lazySection(() => import("./TestimonialsSection"));
+const BenefitsSection = lazySection(() => import("./BenefitsSection"));
+const ContactSection = lazySection(() => import("./ContactSection"));
 
 export function SuspenseFleetSection() {
   const { language } = useLanguage();

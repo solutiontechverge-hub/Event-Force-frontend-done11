@@ -5,10 +5,18 @@ import { Box, Button, Menu, MenuItem, Typography } from "@mui/material";
 import { Language as LanguageIcon } from "@mui/icons-material";
 import { useLanguage } from "@/contexts/LanguageContext";
 
+const PRIMARY = "#52A4C1";
+const PRIMARY_HOVER = "#4A8FA8";
+
 const LanguageSelector = () => {
   const { language, setLanguage } = useLanguage();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [mounted, setMounted] = useState(false);
   const open = Boolean(anchorEl);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // --- Naya useEffect Section ---
   useEffect(() => {
@@ -33,39 +41,54 @@ const LanguageSelector = () => {
   };
 
   const languages = [
-    { code: "en" as const, name: "English", nativeName: "English" },
     { code: "ar" as const, name: "Arabic", nativeName: "العربية" },
+    { code: "en" as const, name: "English", nativeName: "English" },
   ];
+
+  if (!mounted) {
+    return (
+      <Box
+        sx={{
+          width: "120px",
+          height: "48px",
+          borderRadius: "8px",
+          backgroundColor: PRIMARY,
+        }}
+        aria-hidden
+      />
+    );
+  }
 
   return (
     <Box>
       <Button
-        key={language}
         onClick={handleClick}
+        suppressHydrationWarning
         sx={{
-          backgroundColor: "#52A4C1",
+          backgroundColor: PRIMARY,
+          color: "#FFFFFF",
           borderRadius: "8px",
           width: "120px",
           height: "48px",
           px: "24px",
           py: "10px",
           fontSize: "16px",
-          fontWeight: "bold",
+          fontWeight: 700,
           textTransform: "none",
           "&:hover": {
-            backgroundColor: "#4A8FA8",
+            backgroundColor: PRIMARY_HOVER,
             transform: "scale(1.05)",
           },
           transition: "all 0.2s",
-          border: "1px solid #4A8FA8",
+          border: `1px solid ${PRIMARY_HOVER}`,
         }}
       >
-        <LanguageIcon sx={{ fontSize: "1.2rem", color: "#000000" }} />
+        <LanguageIcon sx={{ fontSize: "1.2rem", color: "#FFFFFF" }} />
         <Typography
           sx={{
             fontSize: language === "ar" ? "0.75rem" : "0.875rem",
             fontWeight: language === "ar" ? 700 : 600,
-            color: "#000000",
+            color: "#FFFFFF",
             ml: 1,
             mr: language === "ar" ? 1 : 0,
           }}

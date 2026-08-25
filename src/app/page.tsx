@@ -1,5 +1,2 @@
-import HomePage from "./(pages)/home/page";
-
-export default function Home() {
-  return <HomePage />;
-}
+export { metadata } from './(pages)/home/metadata';
+export { default } from './(pages)/home/page';
