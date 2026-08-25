@@ -499,7 +499,7 @@ const SupportPage = () => {
                               key={index}
                               {...commonProps}
                               onClick={() => {
-                                const phoneNumber = "++966549454525";
+                                const phoneNumber = "+966594279012";
                                 const message =
                                   "Hello! I need support regarding Event Force services.";
                                 const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;

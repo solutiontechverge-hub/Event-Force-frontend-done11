@@ -512,7 +512,7 @@ const PrivacyPolicyPage = () => {
                   Email: privacy@eventforce.sa.com
                 </Typography>
                 <Typography variant="body1" sx={{ color: '#333', fontWeight: 'bold' }}>
-                  Phone: ++966 54 945 4525 (WhatsApp) | +966125786869 
+                  Phone: +966594279012 (WhatsApp) | +966125786869 
                 </Typography>
               </Box>
             </SlideUpInView>

@@ -234,7 +234,7 @@ const Footer = () => {
                   }}
                 >
                   <WhatsApp sx={{ fontSize: '1rem' }} />
-                  <Typography variant="body2">Event Force Tel: +9660549454525</Typography>
+                  <Typography variant="body2">Event Force Tel: +966594279012</Typography>
                 </MuiLink>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>

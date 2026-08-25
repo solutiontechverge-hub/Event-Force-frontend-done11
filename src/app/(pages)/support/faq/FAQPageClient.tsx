@@ -435,7 +435,7 @@ const FAQPageClient = () => {
                       Call Us
                     </Typography>
                     <Typography variant="body1" sx={{ color: '#666' }}>
-                      +9660549454525 (WhatsApp) | +966125786869 
+                      +966594279012 (WhatsApp) | +966125786869 
                     </Typography>
                   </Card>
                 </ScaleInView>

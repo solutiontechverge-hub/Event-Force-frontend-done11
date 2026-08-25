@@ -397,7 +397,7 @@ const HeroSection = () => {
         aria-label="Contact us on WhatsApp - Opens in new window"
         onClick={() => {
           // WhatsApp redirect with the exact number from footer:
-          const phoneNumber = "+9660549454525"; //  from footer
+          const phoneNumber = "+966594279012"; //  from footer
           const message =
             "Hello! I would like to know more about Event Force services.";
           const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;

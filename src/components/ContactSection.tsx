@@ -116,7 +116,7 @@ const ContactSection = () => {
 
                   <Stack direction="row" spacing={2}>
                     <MobileIcon />
-                    <Typography>+966549454525</Typography>
+                    <Typography>+966594279012</Typography>
                   </Stack>
 
                   <Stack direction="row" spacing={2}>

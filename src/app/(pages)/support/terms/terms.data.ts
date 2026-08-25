@@ -72,7 +72,7 @@ export const SUPPORT_TERMS_SECTIONS: TermsSimpleSection[] = [
   {
     title: '14. Contact Information',
     content:
-      'For questions about these terms or our services, please contact us at:\n\nEmail: legal@eventforce.sa.com\nPhone: +9660549454525 (WhatsApp) | +966125786869 \nAddress: Riyadh, Saudi Arabia',
+      'For questions about these terms or our services, please contact us at:\n\nEmail: legal@eventforce.sa.com\nPhone: +966594279012 (WhatsApp) | +966125786869 \nAddress: Riyadh, Saudi Arabia',
   },
 ];
 
